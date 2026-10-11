@@ -1,0 +1,74 @@
+{
+  "sourceLanguage": "ar",
+  "strings": {
+    "common.done": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تم"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Done"
+          }
+        }
+      }
+    },
+    "share.copied": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تم نسخ الرابط. افتح لخّص واضغط «لصق» في الوصفات."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Link copied. Open Lakhas and tap Paste in Recipes."
+          }
+        }
+      }
+    },
+    "share.queued": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تم الحفظ. افتح لخّص لإكمال استيراد الوصفة."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Saved. Open Lakhas to finish importing the recipe."
+          }
+        }
+      }
+    },
+    "share.unsupported": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لم نجد رابطًا هنا. شارك رابط الفيديو من تيك توك أو إنستجرام أو يوتيوب."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No link found. Share the video link from TikTok, Instagram or YouTube."
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

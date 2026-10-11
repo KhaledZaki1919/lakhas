@@ -1,0 +1,40 @@
+{
+  "sourceLanguage": "ar",
+  "strings": {
+    "CFBundleDisplayName": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لخّص"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لخّص"
+          }
+        }
+      }
+    },
+    "NSCameraUsageDescription": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نحتاج الكاميرا لتصوير وجباتك ومسح الباركود."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lakhas uses the camera to photograph your meals and scan barcodes."
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

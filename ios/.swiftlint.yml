@@ -1,0 +1,29 @@
+included:
+  - Lakhas
+  - LakhasWidgets
+  - LakhasShare
+  - LakhasTests
+  - LakhasKit/Sources
+  - LakhasKit/Tests
+excluded:
+  - build
+  - LakhasKit/.build
+opt_in_rules:
+  - force_unwrapping
+  - empty_count
+  - first_where
+  - contains_over_first_not_nil
+  - sorted_first_last
+  - toggle_bool
+force_unwrapping:
+  severity: error
+force_cast:
+  severity: error
+line_length:
+  warning: 140
+  error: 200
+identifier_name:
+  min_length: 2
+  excluded: [id, x, y]
+nesting:
+  type_level: 2

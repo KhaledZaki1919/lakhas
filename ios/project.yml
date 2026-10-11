@@ -1,0 +1,85 @@
+# XcodeGen spec — "lite" variant: the app only, no extensions (ADR-012, ADR-014).
+# project.full.yml includes this file and adds the widget + share extensions.
+# Never hand-edit the generated Lakhas.xcodeproj.
+name: Lakhas
+options:
+  bundleIdPrefix: com.khaled
+  deploymentTarget:
+    iOS: "17.0"
+  developmentLanguage: ar
+  createIntermediateGroups: true
+
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    TARGETED_DEVICE_FAMILY: "1"
+    # No team: Simulator builds are ad-hoc signed ("-"); device builds run with
+    # CODE_SIGNING_ALLOWED=NO and are signed by Sideloadly at install time.
+    CODE_SIGN_STYLE: Manual
+    CODE_SIGN_IDENTITY: "-"
+    DEVELOPMENT_TEAM: ""
+    LOCALIZATION_PREFERS_STRING_CATALOGS: YES
+    SWIFT_EMIT_LOC_STRINGS: YES
+    LAKHAS_API_BASE_URL: "https://api.lakhas.invalid"
+
+packages:
+  LakhasKit:
+    path: LakhasKit
+
+targets:
+  Lakhas:
+    type: application
+    platform: iOS
+    sources:
+      - path: Lakhas
+    dependencies:
+      - package: LakhasKit
+        product: LakhasKit
+    entitlements:
+      path: Config/Lakhas.entitlements
+    info:
+      path: Lakhas/Info.plist
+      properties:
+        CFBundleDisplayName: "لخّص"
+        CFBundleDevelopmentRegion: ar
+        CFBundleLocalizations: [ar, en]
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+        ITSAppUsesNonExemptEncryption: false
+        NSCameraUsageDescription: "نحتاج الكاميرا لتصوير وجباتك ومسح الباركود."
+        LakhasAppGroup: group.com.khaled.lakhas
+        LakhasAPIBaseURL: $(LAKHAS_API_BASE_URL)
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.khaled.lakhas
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+
+  LakhasTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: LakhasTests
+    dependencies:
+      - target: Lakhas
+      - package: LakhasKit
+        product: LakhasKit
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.khaled.lakhas.tests
+        GENERATE_INFOPLIST_FILE: YES
+
+schemes:
+  Lakhas:
+    build:
+      targets:
+        Lakhas: all
+        LakhasTests: [test]
+    test:
+      config: Debug
+      targets:
+        - LakhasTests

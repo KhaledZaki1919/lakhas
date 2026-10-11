@@ -1,0 +1,108 @@
+{
+  "sourceLanguage": "ar",
+  "strings": {
+    "widget.probe.appSeen": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "آخر فتح للتطبيق"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "App last opened"
+          }
+        }
+      }
+    },
+    "widget.probe.description": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "يتأكد أن الودجت يرى بيانات التطبيق."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Checks that widgets can see the app's data."
+          }
+        }
+      }
+    },
+    "widget.probe.name": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حالة لخّص"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lakhas status"
+          }
+        }
+      }
+    },
+    "widget.probe.noGroup": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "افتح لخّص لإعداد الودجت"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open Lakhas to set up widgets"
+          }
+        }
+      }
+    },
+    "widget.probe.openApp": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "افتح لخّص مرة واحدة"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open Lakhas once"
+          }
+        }
+      }
+    },
+    "widget.probe.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لخّص"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lakhas"
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

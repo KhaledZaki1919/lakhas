@@ -1,0 +1,61 @@
+# XcodeGen spec — "full" variant: project.yml plus the widget and share extensions.
+# XcodeGen merges included specs additively (dictionaries merge, arrays append).
+include:
+  - project.yml
+
+targets:
+  Lakhas:
+    dependencies:
+      - target: LakhasWidgets
+      - target: LakhasShare
+    settings:
+      base:
+        SWIFT_ACTIVE_COMPILATION_CONDITIONS: "$(inherited) LAKHAS_EXTENSIONS"
+
+  LakhasWidgets:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: LakhasWidgets
+    dependencies:
+      - package: LakhasKit
+        product: LakhasKit
+      - sdk: WidgetKit.framework
+      - sdk: SwiftUI.framework
+    entitlements:
+      path: Config/LakhasWidgets.entitlements
+    info:
+      path: LakhasWidgets/Info.plist
+      properties:
+        CFBundleDisplayName: "لخّص"
+        LakhasAppGroup: group.com.khaled.lakhas
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.khaled.lakhas.widgets
+
+  LakhasShare:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: LakhasShare
+    dependencies:
+      - package: LakhasKit
+        product: LakhasKit
+    entitlements:
+      path: Config/LakhasShare.entitlements
+    info:
+      path: LakhasShare/Info.plist
+      properties:
+        CFBundleDisplayName: "لخّص"
+        LakhasAppGroup: group.com.khaled.lakhas
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.share-services
+          NSExtensionPrincipalClass: $(PRODUCT_MODULE_NAME).ShareViewController
+          NSExtensionAttributes:
+            NSExtensionActivationRule:
+              NSExtensionActivationSupportsWebURLWithMaxCount: 1
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.khaled.lakhas.share
