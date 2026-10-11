@@ -1,0 +1,37 @@
+# lakhas-api — Cloudflare Worker (see docs/architecture.md)
+name = "lakhas-api"
+main = "src/index.ts"
+compatibility_date = "2026-10-01"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+ENVIRONMENT = "dev"
+APP_VERSION = "0.1.0"
+
+# IDs are placeholders until the Cloudflare account exists (Phase 2 deploy).
+[[d1_databases]]
+binding = "DB"
+database_name = "lakhas"
+database_id = "00000000-0000-0000-0000-000000000000"
+migrations_dir = "migrations"
+
+[[r2_buckets]]
+binding = "MEDIA"
+bucket_name = "lakhas-media"
+
+[[kv_namespaces]]
+binding = "CACHE"
+id = "00000000000000000000000000000000"
+
+# Per-IP burst limit (Workers Rate Limiting binding)
+[[ratelimits]]
+name = "IP_LIMITER"
+namespace_id = "1001"
+simple = { limit = 60, period = 60 }
+
+[triggers]
+# every 10 min: purge nonces + stale cap reservations; daily: photo retention
+crons = ["*/10 * * * *", "15 3 * * *"]
+
+# Secrets (wrangler secret put): ANTHROPIC_API_KEY, TOKEN_ENC_KEY, LOG_HASH_KEY,
+# YOUTUBE_API_KEY, META_OEMBED_TOKEN
