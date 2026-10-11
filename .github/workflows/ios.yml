@@ -1,0 +1,104 @@
+# iOS CI (ADR-012): tests on every push/PR; unsigned IPAs for Sideloadly on main.
+name: iOS
+
+on:
+  push:
+    branches: [main]
+    paths: ["ios/**", ".github/workflows/ios.yml"]
+  pull_request:
+    paths: ["ios/**", ".github/workflows/ios.yml"]
+  workflow_dispatch:
+
+concurrency:
+  group: ios-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    working-directory: ios
+
+jobs:
+  test:
+    name: Lint & test
+    runs-on: macos-15
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Toolchain
+        run: |
+          xcodebuild -version
+          swift --version
+
+      - name: Install XcodeGen and SwiftLint
+        run: |
+          brew install xcodegen
+          command -v swiftlint || brew install swiftlint
+
+      - name: Localization check
+        run: python3 scripts/check-strings.py
+
+      - name: SwiftLint
+        run: swiftlint lint --quiet
+
+      - name: LakhasKit tests
+        run: swift test --package-path LakhasKit
+
+      - name: Generate project (full)
+        run: xcodegen generate --spec project.full.yml
+
+      - name: App tests (Simulator)
+        run: |
+          UDID=$(xcrun simctl list devices available -j | python3 scripts/pick-simulator.py)
+          xcodebuild test \
+            -project Lakhas.xcodeproj -scheme Lakhas \
+            -destination "id=$UDID" \
+            -resultBundlePath build/TestResults.xcresult \
+            -quiet
+
+      - name: Upload test results
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: TestResults
+          path: ios/build/TestResults.xcresult
+          retention-days: 7
+
+  ipa:
+    name: IPA (${{ matrix.variant }})
+    needs: test
+    if: github.event_name != 'pull_request'
+    runs-on: macos-15
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        variant: [full, lite]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate project
+        run: xcodegen generate --spec ${{ matrix.variant == 'full' && 'project.full.yml' || 'project.yml' }}
+
+      - name: Build (unsigned, Release)
+        run: |
+          xcodebuild build \
+            -project Lakhas.xcodeproj -scheme Lakhas \
+            -configuration Release -sdk iphoneos -destination 'generic/platform=iOS' \
+            -derivedDataPath build/DerivedData \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
+            CURRENT_PROJECT_VERSION=${{ github.run_number }} \
+            -quiet
+
+      - name: Package IPA
+        run: bash scripts/build-ipa.sh build/DerivedData/Build/Products/Release-iphoneos/Lakhas.app build/Lakhas-${{ matrix.variant }}.ipa
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Lakhas-${{ matrix.variant }}
+          path: ios/build/Lakhas-${{ matrix.variant }}.ipa
+          if-no-files-found: error
+          retention-days: 30
