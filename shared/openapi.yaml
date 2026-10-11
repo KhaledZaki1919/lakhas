@@ -1,0 +1,599 @@
+openapi: 3.1.0
+info:
+  title: Lakhas API
+  version: 0.1.0
+  license:
+    name: Proprietary (personal use)
+    identifier: LicenseRef-Proprietary
+  description: |
+    Backend for لخّص (Lakhas). Every route except `/health` requires a device access token,
+    with each request HMAC-signed (ADR-013). See docs/architecture.md §5.
+
+    Canonical string signed with HMAC-SHA256(token secret):
+    `"LK1\n" + METHOD + "\n" + path[?query] + "\n" + timestamp + "\n" + nonce + "\n" + hex(SHA256(body))`
+servers:
+  - url: https://api.lakhas.invalid
+    description: Placeholder until the Cloudflare domain is set
+security:
+  - tokenId: []
+    timestamp: []
+    nonce: []
+    signature: []
+
+tags:
+  - name: system
+    description: Service health
+  - name: device
+    description: Device token, caps and data deletion
+  - name: analyze
+    description: AI meal analysis (photo, text, correction)
+  - name: barcode
+    description: Product lookup and contribution
+  - name: recipes
+    description: Recipe import from links and screenshots
+  - name: foods
+    description: Food database search
+  - name: explore
+    description: Curated dish library and votes
+
+paths:
+  /health:
+    get:
+      tags: [system]
+      operationId: getHealth
+      summary: "Liveness check"
+      security: []
+      responses:
+        "200":
+          description: Service is up
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, version]
+                properties:
+                  ok: { type: boolean }
+                  version: { type: string }
+
+  /v1/device:
+    get:
+      tags: [device]
+      operationId: getDevice
+      summary: Verify the token and fetch this device's label and caps
+      parameters: [{ $ref: "#/components/parameters/AppLang" }, { $ref: "#/components/parameters/Timezone" }]
+      responses:
+        "200":
+          description: Token is valid
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/DeviceInfo" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+    delete:
+      tags: [device]
+      operationId: deleteDevice
+      summary: Delete all server data for this device and revoke its token
+      responses:
+        "204": { description: Deleted }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /v1/analyze/photo:
+    post:
+      tags: [analyze]
+      operationId: analyzePhoto
+      summary: "Analyze a meal photo (optional leftover photo)"
+      parameters: [{ $ref: "#/components/parameters/AppLang" }, { $ref: "#/components/parameters/Timezone" }]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [image]
+              properties:
+                image: { type: string, format: binary, description: "JPEG ≤ 2 MB, ≤ 1568 px, metadata stripped" }
+                leftover: { type: string, format: binary, description: Optional photo of what was left }
+                mealHint: { $ref: "#/components/schemas/MealType" }
+                advanced: { type: boolean, default: false }
+      responses:
+        "200": { $ref: "#/components/responses/Analysis" }
+        "400": { $ref: "#/components/responses/Error" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "413": { $ref: "#/components/responses/Error" }
+        "429": { $ref: "#/components/responses/CapReached" }
+        "502": { $ref: "#/components/responses/Error" }
+
+  /v1/analyze/text:
+    post:
+      tags: [analyze]
+      operationId: analyzeText
+      summary: "Analyze a typed meal description"
+      parameters: [{ $ref: "#/components/parameters/AppLang" }, { $ref: "#/components/parameters/Timezone" }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [text]
+              additionalProperties: false
+              properties:
+                text: { type: string, minLength: 1, maxLength: 500 }
+                advanced: { type: boolean, default: false }
+      responses:
+        "200": { $ref: "#/components/responses/Analysis" }
+        "400": { $ref: "#/components/responses/Error" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "429": { $ref: "#/components/responses/CapReached" }
+        "502": { $ref: "#/components/responses/Error" }
+
+  /v1/analyze/correct:
+    post:
+      tags: [analyze]
+      operationId: analyzeCorrect
+      summary: "Revise an analysis with a typed correction"
+      parameters: [{ $ref: "#/components/parameters/AppLang" }, { $ref: "#/components/parameters/Timezone" }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [analysisId, correction]
+              additionalProperties: false
+              properties:
+                analysisId: { type: string }
+                correction: { type: string, minLength: 1, maxLength: 300 }
+      responses:
+        "200": { $ref: "#/components/responses/Analysis" }
+        "400": { $ref: "#/components/responses/Error" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/Error" }
+        "429": { $ref: "#/components/responses/CapReached" }
+
+  /v1/barcode/{code}:
+    get:
+      tags: [barcode]
+      operationId: getBarcode
+      summary: "Look up a product by barcode"
+      parameters:
+        - { $ref: "#/components/parameters/AppLang" }
+        - { $ref: "#/components/parameters/Timezone" }
+        - name: code
+          in: path
+          required: true
+          schema: { type: string, pattern: "^[0-9]{8,14}$" }
+      responses:
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "200":
+          description: Product found (counts toward the barcode cap)
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Product" }
+        "404": { $ref: "#/components/responses/Error" }
+        "429": { $ref: "#/components/responses/CapReached" }
+
+  /v1/products/contribute:
+    post:
+      tags: [barcode]
+      operationId: contributeProduct
+      summary: "Contribute a missing product from two photos"
+      parameters: [{ $ref: "#/components/parameters/AppLang" }, { $ref: "#/components/parameters/Timezone" }]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [barcode, label, front]
+              properties:
+                barcode: { type: string, pattern: "^[0-9]{8,14}$" }
+                label: { type: string, format: binary, description: Nutrition table photo }
+                front: { type: string, format: binary, description: Product front photo }
+      responses:
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "200":
+          description: Product saved as pending_review, usable by the contributor
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Product" }
+        "400": { $ref: "#/components/responses/Error" }
+        "429": { $ref: "#/components/responses/CapReached" }
+
+  /v1/recipes/import-link:
+    post:
+      tags: [recipes]
+      operationId: importRecipeLink
+      summary: "Import a recipe from a TikTok, Instagram or YouTube link"
+      parameters: [{ $ref: "#/components/parameters/AppLang" }, { $ref: "#/components/parameters/Timezone" }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [url]
+              additionalProperties: false
+              properties:
+                url: { type: string, format: uri, maxLength: 2048 }
+      responses:
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "200": { $ref: "#/components/responses/RecipeResult" }
+        "400": { $ref: "#/components/responses/Error" }
+        "422": { $ref: "#/components/responses/Error" }
+        "429": { $ref: "#/components/responses/CapReached" }
+
+  /v1/recipes/import-image:
+    post:
+      tags: [recipes]
+      operationId: importRecipeImage
+      summary: "Import a recipe from a screenshot"
+      parameters: [{ $ref: "#/components/parameters/AppLang" }, { $ref: "#/components/parameters/Timezone" }]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [image]
+              properties:
+                image: { type: string, format: binary }
+      responses:
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "200": { $ref: "#/components/responses/RecipeResult" }
+        "400": { $ref: "#/components/responses/Error" }
+        "429": { $ref: "#/components/responses/CapReached" }
+
+  /v1/foods/search:
+    get:
+      tags: [foods]
+      operationId: searchFoods
+      summary: "Search the food database"
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema: { type: string, minLength: 1, maxLength: 80 }
+        - name: lang
+          in: query
+          schema: { $ref: "#/components/schemas/AppLang" }
+      responses:
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "200":
+          description: Matching foods
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items:
+                    type: array
+                    items: { $ref: "#/components/schemas/Food" }
+
+  /v1/explore:
+    get:
+      tags: [explore]
+      operationId: listExplore
+      summary: "List curated Explore dishes"
+      parameters:
+        - name: goal
+          in: query
+          schema: { $ref: "#/components/schemas/Goal" }
+        - name: meal
+          in: query
+          schema: { $ref: "#/components/schemas/MealType" }
+        - name: sort
+          in: query
+          schema: { type: string, enum: [newest, top], default: newest }
+        - name: cursor
+          in: query
+          schema: { type: string }
+      responses:
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "200":
+          description: A page of dishes
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items:
+                    type: array
+                    items: { $ref: "#/components/schemas/ExploreDish" }
+                  next: { type: [string, "null"] }
+
+  /v1/explore/{id}/vote:
+    post:
+      tags: [explore]
+      operationId: voteExplore
+      summary: "Vote on an Explore dish"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [vote]
+              additionalProperties: false
+              properties:
+                vote: { type: integer, enum: [1, -1] }
+      responses:
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "200":
+          description: Updated counts
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [up, down, mine]
+                properties:
+                  up: { type: integer }
+                  down: { type: integer }
+                  mine: { type: integer, enum: [1, -1] }
+        "404": { $ref: "#/components/responses/Error" }
+
+  /v1/quota:
+    get:
+      tags: [device]
+      operationId: getQuota
+      summary: "Today's cost-cap usage"
+      parameters: [{ $ref: "#/components/parameters/Timezone" }]
+      responses:
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "200":
+          description: Today's cap usage
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CapStatus" }
+
+components:
+  securitySchemes:
+    tokenId: { type: apiKey, in: header, name: X-Lakhas-Token-Id }
+    timestamp: { type: apiKey, in: header, name: X-Lakhas-Timestamp, description: "Unix ms, ±5 min" }
+    nonce: { type: apiKey, in: header, name: X-Lakhas-Nonce, description: "16 random bytes, base64url, single use" }
+    signature: { type: apiKey, in: header, name: X-Lakhas-Signature, description: "base64url HMAC-SHA256" }
+
+  parameters:
+    AppLang:
+      name: X-App-Lang
+      in: header
+      schema: { $ref: "#/components/schemas/AppLang" }
+    Timezone:
+      name: X-Timezone
+      in: header
+      description: IANA timezone, e.g. Africa/Cairo
+      schema: { type: string, maxLength: 64 }
+
+  responses:
+    Error:
+      description: Error
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+    Unauthorized:
+      description: Missing, invalid, stale, replayed or revoked credentials
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+    CapReached:
+      description: A daily cost cap was reached (cap_reached / daily_cap) or the IP is rate limited
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+    Analysis:
+      description: Analysis result
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/AnalysisResult" }
+    RecipeResult:
+      description: Extracted recipe
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Recipe" }
+
+  schemas:
+    AppLang: { type: string, enum: [ar, en] }
+    MealType: { type: string, enum: [breakfast, lunch, dinner, snack] }
+    Goal: { type: string, enum: [lose, maintain, gain] }
+    CapType: { type: string, enum: [photo, text, recipe, barcode, correct] }
+
+    ErrorCode:
+      type: string
+      enum:
+        [invalid_request, unauthorized, token_revoked, bad_signature, stale_request, replayed_request,
+         cap_reached, daily_cap, rate_limited, ai_unavailable, ai_invalid_output, not_found,
+         not_implemented, unsupported_url, fetch_failed, payload_too_large, internal]
+
+    ErrorEnvelope:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, retryable, message]
+          properties:
+            code: { $ref: "#/components/schemas/ErrorCode" }
+            retryable: { type: boolean }
+            message: { type: string, description: Localized per X-App-Lang; the client prefers its own strings }
+            details:
+              type: object
+              additionalProperties: true
+              properties:
+                cap: { $ref: "#/components/schemas/CapType" }
+                resetsAt: { type: string, format: date-time }
+
+    Macros:
+      type: object
+      required: [kcal, protein, carbs, fat]
+      properties:
+        kcal: { type: number, minimum: 0 }
+        protein: { type: number, minimum: 0 }
+        carbs: { type: number, minimum: 0 }
+        fat: { type: number, minimum: 0 }
+
+    CapUsage:
+      type: object
+      required: [used, limit]
+      properties:
+        used: { type: integer, minimum: 0 }
+        limit: { type: integer, minimum: 0 }
+
+    CapStatus:
+      type: object
+      required: [day, resetsAt, caps, global]
+      properties:
+        day: { type: string, format: date }
+        resetsAt: { type: string, format: date-time }
+        caps:
+          type: object
+          required: [photo, text, recipe, barcode, correct]
+          properties:
+            photo: { $ref: "#/components/schemas/CapUsage" }
+            text: { $ref: "#/components/schemas/CapUsage" }
+            recipe: { $ref: "#/components/schemas/CapUsage" }
+            barcode: { $ref: "#/components/schemas/CapUsage" }
+            correct: { $ref: "#/components/schemas/CapUsage" }
+        global: { $ref: "#/components/schemas/CapUsage" }
+
+    DeviceInfo:
+      type: object
+      required: [label, caps, serverTime]
+      properties:
+        label: { type: string }
+        caps: { $ref: "#/components/schemas/CapStatus" }
+        serverTime: { type: string, format: date-time }
+
+    AnalysisItem:
+      type: object
+      required: [id, nameAr, nameEn, grams, confidence, per100, foodDbId, valueSource]
+      properties:
+        id: { type: string }
+        nameAr: { type: string }
+        nameEn: { type: string }
+        grams: { type: number, minimum: 0 }
+        confidence: { type: number, minimum: 0, maximum: 1 }
+        per100: { $ref: "#/components/schemas/Macros" }
+        foodDbId: { type: [string, "null"] }
+        valueSource: { type: string, enum: [db, ai] }
+        leftoverGrams: { type: number, minimum: 0 }
+
+    AnalysisResult:
+      type: object
+      required: [analysisId, model, promptVersion, items, totals]
+      properties:
+        analysisId: { type: string }
+        model: { type: string, enum: [standard, advanced] }
+        promptVersion: { type: string }
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/AnalysisItem" }
+        totals: { $ref: "#/components/schemas/Macros" }
+        notes: { type: string }
+
+    Ingredient:
+      type: object
+      required: [nameAr, nameEn, grams, per100]
+      properties:
+        nameAr: { type: string }
+        nameEn: { type: string }
+        grams: { type: number, minimum: 0 }
+        per100: { $ref: "#/components/schemas/Macros" }
+        foodDbId: { type: [string, "null"] }
+
+    Recipe:
+      type: object
+      required: [title, servings, ingredients, steps, perServing, source]
+      properties:
+        title:
+          type: object
+          required: [ar, en]
+          properties:
+            ar: { type: string }
+            en: { type: string }
+        servings: { type: integer, minimum: 1 }
+        ingredients:
+          type: array
+          items: { $ref: "#/components/schemas/Ingredient" }
+        steps:
+          type: array
+          items: { type: string }
+        perServing: { $ref: "#/components/schemas/Macros" }
+        source:
+          type: object
+          properties:
+            url: { type: string, format: uri }
+            platform: { type: string, enum: [tiktok, instagram, youtube, screenshot] }
+            creatorHandle: { type: string }
+        illustrationUrl: { type: string, format: uri }
+
+    Product:
+      type: object
+      required: [barcode, nameAr, nameEn, per100, status, origin]
+      properties:
+        barcode: { type: string }
+        nameAr: { type: string }
+        nameEn: { type: string }
+        brand: { type: string }
+        servingG: { type: number }
+        per100: { $ref: "#/components/schemas/Macros" }
+        status: { type: string, enum: [approved, pending_review] }
+        origin: { type: string, enum: [off, contributed] }
+        illustrationUrl: { type: string, format: uri }
+        attribution: { type: string, description: e.g. "Open Food Facts (ODbL)" }
+
+    Portion:
+      type: object
+      required: [labelAr, labelEn, grams]
+      properties:
+        labelAr: { type: string }
+        labelEn: { type: string }
+        grams: { type: number }
+
+    Food:
+      type: object
+      required: [id, nameAr, nameEn, per100, source]
+      properties:
+        id: { type: string }
+        nameAr: { type: string }
+        nameEn: { type: string }
+        per100: { $ref: "#/components/schemas/Macros" }
+        portions:
+          type: array
+          items: { $ref: "#/components/schemas/Portion" }
+        source: { type: string, enum: [usda, curated_estimate, curated_verified] }
+
+    ExploreDish:
+      type: object
+      required: [id, title, goal, mealTypes, perServing, servings, up, down, createdAt]
+      properties:
+        id: { type: string }
+        title:
+          type: object
+          required: [ar, en]
+          properties:
+            ar: { type: string }
+            en: { type: string }
+        description:
+          type: object
+          properties:
+            ar: { type: string }
+            en: { type: string }
+        photoUrl: { type: string, format: uri }
+        goal: { $ref: "#/components/schemas/Goal" }
+        mealTypes:
+          type: array
+          items: { $ref: "#/components/schemas/MealType" }
+        ingredients:
+          type: array
+          items: { $ref: "#/components/schemas/Ingredient" }
+        perServing: { $ref: "#/components/schemas/Macros" }
+        servings: { type: integer }
+        up: { type: integer }
+        down: { type: integer }
+        createdAt: { type: string, format: date-time }
