@@ -26,8 +26,22 @@ fi
 codesign --force --sign - --timestamp=none \
   --entitlements "$CONFIG_DIR/Lakhas.entitlements" "$BUNDLE"
 
-echo "Embedded entitlements:"
-codesign -d --entitlements - "$BUNDLE" 2>/dev/null || true
+# Verify each signed bundle really carries the App Group entitlement.
+verify_entitlements() {
+  local bundle="$1"
+  local plist
+  plist="$(codesign -d --entitlements :- "$bundle" 2>/dev/null || true)"
+  echo "Entitlements of $(basename "$bundle"):"
+  echo "$plist"
+  if ! grep -q "com.apple.security.application-groups" <<<"$plist"; then
+    echo "error: $(basename "$bundle") is missing the App Group entitlement" >&2
+    exit 1
+  fi
+}
+verify_entitlements "$BUNDLE"
+if [ -d "$BUNDLE/PlugIns" ]; then
+  for appex in "$BUNDLE"/PlugIns/*.appex; do verify_entitlements "$appex"; done
+fi
 
 # No secrets may ship in the IPA (PROJECT_PROMPT.md §3.1).
 if grep -rIl --exclude='*.png' -e 'sk-ant-' -e 'BEGIN PRIVATE KEY' "$BUNDLE" >/dev/null 2>&1; then

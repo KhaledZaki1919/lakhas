@@ -62,22 +62,25 @@ extension Color {
     }
 }
 
-private func components(_ hex: UInt32) -> (CGFloat, CGFloat, CGFloat) {
-    (CGFloat((hex >> 16) & 0xFF) / 255, CGFloat((hex >> 8) & 0xFF) / 255, CGFloat(hex & 0xFF) / 255)
+/// One 8-bit channel of a 0xRRGGBB value as 0...1.
+private func channel(_ hex: UInt32, shift: UInt32) -> CGFloat {
+    CGFloat((hex >> shift) & 0xFF) / 255
 }
 
 #if canImport(UIKit)
 extension UIColor {
     convenience init(rgbHex: UInt32) {
-        let (red, green, blue) = components(rgbHex)
-        self.init(red: red, green: green, blue: blue, alpha: 1)
+        self.init(
+            red: channel(rgbHex, shift: 16), green: channel(rgbHex, shift: 8), blue: channel(rgbHex, shift: 0), alpha: 1
+        )
     }
 }
 #elseif canImport(AppKit)
 extension NSColor {
     convenience init(rgbHex: UInt32) {
-        let (red, green, blue) = components(rgbHex)
-        self.init(srgbRed: red, green: green, blue: blue, alpha: 1)
+        self.init(
+            srgbRed: channel(rgbHex, shift: 16), green: channel(rgbHex, shift: 8), blue: channel(rgbHex, shift: 0), alpha: 1
+        )
     }
 }
 #endif

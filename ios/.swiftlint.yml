@@ -8,6 +8,8 @@ included:
 excluded:
   - build
   - LakhasKit/.build
+disabled_rules:
+  - trailing_comma        # trailing commas are our style (cleaner diffs)
 opt_in_rules:
   - force_unwrapping
   - empty_count

@@ -56,6 +56,16 @@ jobs:
             -resultBundlePath build/TestResults.xcresult \
             -quiet
 
+      - name: Test summary
+        run: |
+          xcrun xcresulttool get test-results summary --path build/TestResults.xcresult --compact > build/summary.json
+          python3 - <<'PY'
+          import json
+          s = json.load(open("build/summary.json"))
+          print(f"App tests: {s['passedTests']} passed, {s['failedTests']} failed, {s['skippedTests']} skipped of {s['totalTestCount']}")
+          assert s["totalTestCount"] >= 3 and s["failedTests"] == 0, "expected at least 3 passing app tests"
+          PY
+
       - name: Upload test results
         if: failure()
         uses: actions/upload-artifact@v4
