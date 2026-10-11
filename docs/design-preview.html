@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lakhas Visual Directions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;700&display=swap">
+<style>
+/* Layout: page chrome is a quiet neutral so the three directions carry all the color.
+   Wide screens: 3 direction columns side by side, phones aligned in rows via subgrid.
+   Narrow screens: one direction per block, phones wrap. */
+:root {
+  --bg: #EEF0F2; --surface: #FFFFFF; --ink: #1A1D21; --muted: #5D6470; --line: #D6DAE0; --sel: #1A1D21; --onsel: #FFFFFF;
+  --f-display: "Readex Pro", "IBM Plex Sans Arabic", system-ui, sans-serif;
+  --f-body: "IBM Plex Sans Arabic", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-phone: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Arabic", "IBM Plex Sans Arabic", "Segoe UI", system-ui, sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --bg: #0F1113; --surface: #181B1F; --ink: #E8EAED; --muted: #9AA1AC; --line: #2C3138; --sel: #E8EAED; --onsel: #0F1113; color-scheme: dark; }
+}
+:root[data-theme="dark"] { --bg: #0F1113; --surface: #181B1F; --ink: #E8EAED; --muted: #9AA1AC; --line: #2C3138; --sel: #E8EAED; --onsel: #0F1113; color-scheme: dark; }
+
+* { box-sizing: border-box; }
+html { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.55 var(--f-body); }
+.wrap { max-width: 1240px; margin: 0 auto; padding-inline: 20px; padding-block: 32px 64px; }
+
+header.page { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 16px 32px; margin-bottom: 28px; }
+header.page h1 { font: 700 clamp(26px, 4vw, 36px)/1.15 var(--f-display); margin: 0 0 6px; text-wrap: balance; }
+header.page p { margin: 0; color: var(--muted); max-width: 62ch; }
+.controls { display: flex; flex-direction: column; gap: 6px; }
+.controls .lbl { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; padding: 3px; background: var(--surface); }
+.seg button { font: 500 14px var(--f-body); color: var(--ink); background: none; border: 0; border-radius: 999px; padding: 6px 14px; cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--sel); color: var(--onsel); }
+.seg button:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+.grid { display: grid; gap: 28px; grid-template-columns: minmax(0, 1fr); }
+.dir { display: grid; gap: 18px; min-width: 0; }
+@media (min-width: 1040px) {
+  .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 24px; }
+  .dir { grid-row: span var(--rows); grid-template-rows: subgrid; gap: 18px; }
+}
+.dhead { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.dtitle { display: flex; align-items: center; gap: 10px; }
+.letter { width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; font: 700 15px var(--f-display); background: var(--sel); color: var(--onsel); flex: none; }
+.dtitle h2 { margin: 0; font: 700 18px/1.2 var(--f-display); }
+.dtitle h2 span { display: block; font: 500 13px var(--f-body); color: var(--muted); }
+.rec { margin-inline-start: auto; font-size: 11px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; border: 1px solid var(--line); border-radius: 999px; padding: 2px 9px; color: var(--muted); }
+.dhead p { margin: 0; color: var(--muted); font-size: 14px; }
+.swatches { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; }
+.sw { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.sw i { display: block; height: 28px; border-radius: 6px; box-shadow: inset 0 0 0 1px rgba(127,127,127,.25); }
+.sw small { font-size: 10px; color: var(--muted); font-variant-numeric: tabular-nums; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.logos { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; padding-top: 4px; border-top: 1px solid var(--line); padding-top: 14px; }
+.logos .small { display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 10px; color: var(--muted); }
+.wm { display: flex; flex-direction: column; gap: 0; min-width: 0; }
+.wm .ar { font: 700 30px/1.1 var(--f-phone); }
+.wm .la { font-size: 18px; line-height: 1.2; }
+
+.cell { display: flex; flex-direction: column; align-items: center; gap: 8px; min-width: 0; }
+.cell .tag { font-size: 12px; color: var(--muted); letter-spacing: .04em; }
+footer.note { margin-top: 36px; color: var(--muted); font-size: 14px; display: grid; gap: 6px; max-width: 80ch; }
+footer.note b { color: var(--ink); }
+
+/* ---------- Phone mock ---------- */
+.phone { width: 290px; max-width: 100%; height: 730px; border-radius: 46px; padding: 9px; background: #0B0B0D; box-shadow: 0 0 0 1px var(--line), 0 22px 44px -22px rgba(0,0,0,.5); }
+.screen { position: relative; height: 100%; border-radius: 38px; overflow: hidden; background: var(--p-bg); color: var(--p-ink); font-family: var(--f-phone); font-size: 13px; line-height: 1.35; }
+.island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 86px; height: 25px; border-radius: 13px; background: #000; }
+.status { display: flex; justify-content: space-between; align-items: center; height: 44px; padding: 6px 28px 0; font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.content { padding: 2px 16px 96px; display: flex; flex-direction: column; gap: 10px; }
+.top { display: flex; align-items: center; gap: 10px; }
+.top .t1 { font-size: 22px; font-weight: 700; line-height: 1.1; }
+.top .t2 { font-size: 12px; color: var(--p-muted); }
+.strip { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; gap: 2px; }
+.day { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 4px 0 6px; border-radius: 12px; position: relative; }
+.day .dl { font-size: 10px; color: var(--p-muted); }
+.day .dn { font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.hero { display: flex; justify-content: center; }
+.ring { position: relative; width: 136px; height: 136px; }
+.ring svg { width: 100%; height: 100%; display: block; }
+.ring .c { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+.ring .big { font-size: 34px; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; letter-spacing: -.01em; }
+.ring .lab { font-size: 12px; color: var(--p-muted); margin-top: 3px; }
+.ring .sub { font-size: 11px; color: var(--p-muted); font-variant-numeric: tabular-nums; margin-top: 2px; }
+.macros { display: flex; flex-direction: column; gap: 9px; }
+.m .row { display: flex; justify-content: space-between; align-items: center; font-size: 12px; margin-bottom: 4px; }
+.m .nm { display: flex; align-items: center; gap: 5px; font-weight: 600; }
+.m .nm svg { width: 13px; height: 13px; color: var(--mc); }
+.m .val { color: var(--p-muted); font-variant-numeric: tabular-nums; }
+.bar { height: var(--bh, 8px); border-radius: 99px; background: var(--p-track); overflow: hidden; }
+.bar > i { display: block; height: 100%; background: var(--mc); border-radius: inherit; }
+.meals { display: flex; flex-direction: column; gap: 8px; }
+.gh { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; margin-top: 2px; }
+.gh span:last-child { color: var(--p-muted); font-weight: 500; font-variant-numeric: tabular-nums; }
+.meal { background: var(--p-surface); border-radius: var(--r); padding: 10px; display: flex; flex-direction: column; gap: 8px; }
+.meal .mt { display: flex; align-items: center; gap: 10px; }
+.meal .im { flex: none; width: 44px; height: 44px; }
+.meal .info { flex: 1; min-width: 0; }
+.meal .ti { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.meal .su { font-size: 11px; color: var(--p-muted); }
+.meal .kc { text-align: end; font-variant-numeric: tabular-nums; }
+.meal .kc b { display: block; font-size: 17px; line-height: 1.1; }
+.meal .kc span { font-size: 10px; color: var(--p-muted); }
+.mm { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.mm div { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.mm small { font-size: 10px; color: var(--p-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mm b { font-size: 12px; font-variant-numeric: tabular-nums; }
+.mm .bar { --bh: 3px; }
+.add { border: 1.5px dashed var(--p-line); border-radius: var(--r); padding: 10px; text-align: center; color: var(--p-primary-text); font-weight: 600; font-size: 13px; }
+.tabbar { position: absolute; inset-inline: 0; bottom: 0; height: 80px; padding: 8px 6px 0; display: grid; grid-template-columns: repeat(6, 1fr); align-items: start; background: var(--p-surface); border-top: 1px solid var(--p-line); }
+.tab { display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 9.5px; color: var(--p-muted); }
+.tab svg { width: 21px; height: 21px; }
+.tab.on { color: var(--p-primary-text); font-weight: 600; }
+.plusw { display: flex; justify-content: center; }
+.plus { width: 50px; height: 50px; margin-top: -22px; display: grid; place-items: center; background: var(--p-primary); color: var(--p-on); }
+.plus svg { width: 22px; height: 22px; }
+
+/* Direction A — Tahini & Mint */
+.v-A { --r: 20px; }
+.v-A .macros { background: var(--p-surface); border-radius: var(--r); padding: 12px; box-shadow: var(--p-shadow); }
+.v-A .meal { box-shadow: var(--p-shadow); }
+.v-A .day.today { background: var(--p-primary); color: var(--p-on); }
+.v-A .day.today .dl { color: inherit; opacity: .85; }
+.v-A .plus { border-radius: 50%; box-shadow: 0 0 0 5px var(--p-halo); }
+.v-A .meal .im { border-radius: 50%; }
+
+/* Direction B — Night Market */
+.v-B { --r: 14px; }
+.v-B .macros { border: 1px solid var(--p-line); border-radius: var(--r); padding: 12px; --bh: 6px; }
+.v-B .meal { border: 1px solid var(--p-line); }
+.v-B .day.today .dn { color: var(--p-primary-text); }
+.v-B .day.today::after { content: ""; position: absolute; bottom: 0; width: 6px; height: 6px; border-radius: 50%; background: var(--p-primary); box-shadow: 0 0 8px 2px var(--p-glow); }
+.v-B .ring .big { font-size: 38px; font-weight: 800; }
+.v-B .seg-tip { filter: drop-shadow(0 0 5px var(--p-glow)); }
+.v-B .plusw { filter: drop-shadow(0 0 10px var(--p-glow)); }
+.v-B .plus { width: 54px; height: 50px; clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0 50%); border-radius: 0; }
+
+/* Direction C — Hibiscus Ledger */
+.v-C { --r: 10px; }
+.v-C .macros { --bh: 4px; gap: 0; }
+.v-C .m { padding: 8px 0; border-bottom: 1px solid var(--p-line); }
+.v-C .m:first-child { border-top: 1px solid var(--p-line); }
+.v-C .meal { background: none; padding: 8px 0; border-radius: 0; border-bottom: 1px solid var(--p-line); }
+.v-C .day.today .dn { color: var(--p-primary-text); }
+.v-C .day.today::after { content: ""; position: absolute; bottom: 1px; width: 18px; height: 2px; background: var(--p-primary); }
+.v-C .plus { border-radius: 50%; }
+.v-C .plus path { stroke-width: 1.4; }
+.v-C .meal .im { border-radius: 8px; }
+.ledger { width: 100%; display: flex; flex-direction: column; gap: 8px; padding: 6px 0 2px; }
+.lg { display: flex; align-items: end; justify-content: space-between; gap: 4px; }
+.lg .it { display: flex; flex-direction: column; align-items: center; }
+.lg .it b { font-size: 20px; font-weight: 600; font-variant-numeric: tabular-nums; line-height: 1.1; }
+.lg .it.left b { font-size: 30px; font-weight: 700; color: var(--p-primary-text); }
+.lg .it span { font-size: 11px; color: var(--p-muted); }
+.lg .op { font-size: 18px; color: var(--p-muted); padding-bottom: 14px; }
+.rule { height: 2px; background: var(--p-track); }
+.rule i { display: block; height: 100%; background: var(--p-primary); width: 56%; }
+.lgcap { font-size: 11px; color: var(--p-muted); }
+
+@media (prefers-reduced-motion: no-preference) { .seg button { transition: background .15s, color .15s; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="page">
+    <div>
+      <h1>لخّص · Lakhas visual directions</h1>
+      <p>The same Today screen (sample day: 1,179 of 2,100 kcal) drawn in each direction, in light and dark. Switch the language to check Arabic (RTL) and English (LTR) layouts.</p>
+    </div>
+    <div class="controls">
+      <span class="lbl" id="langlbl">Phone language</span>
+      <div class="seg" role="group" aria-labelledby="langlbl">
+        <button type="button" id="l-ar" data-mode="ar" aria-pressed="true">العربية</button>
+        <button type="button" id="l-en" data-mode="en" aria-pressed="false">English</button>
+        <button type="button" id="l-both" data-mode="both" aria-pressed="false">Both</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="grid" id="grid"></main>
+
+  <footer class="note">
+    <div><b>Fonts:</b> the phones use system fonts. On an iPhone they render in SF Arabic and SF Pro; on other computers you'll see a close substitute.</div>
+    <div><b>Logo:</b> the mark is the shadda (ّ) of لخّص drawn as fork tines over a plate. The wordmarks here are typeset; the final logo with a hand-drawn shadda comes after you choose.</div>
+    <div><b>Tab bar:</b> five tabs plus a center "+" can't be perfectly centered (2 tabs on one side, 3 on the other). This needs a decision; see the reply in Claude Code.</div>
+    <div><b>To choose:</b> reply in Claude Code with A, B or C, plus any tweaks (e.g. "B's palette with A's shapes").</div>
+  </footer>
+</div>
+
+<script>
+(function () {
+  var S = {
+    ar: { today: "اليوم", date: "الأحد، 11 أكتوبر", left: "سعرة متبقية", target: "الهدف", eaten: "أكلت", leftS: "متبقٍ",
+          pct: "56% من هدف اليوم", protein: "بروتين", carbs: "كربوهيدرات", fat: "دهون", g: "جم", kcal: "سعرة",
+          breakfast: "الفطور", lunch: "الغداء", dinner: "العشاء", foul: "فول مدمس، بيضتان، عيش بلدي", foulSub: "3 أصناف · كتابة",
+          kosh: "كشري", koshSub: "450 جم · من صورة", add: "+ أضف العشاء",
+          tabs: ["اليوم", "الوصفات", "استكشف", "التمارين", "التقدم"], days: ["ن", "ث", "ر", "خ", "ج", "س", "ح"],
+          light: "فاتح", dark: "داكن", langName: "العربية" },
+    en: { today: "Today", date: "Sunday, Oct 11", left: "kcal left", target: "Target", eaten: "Eaten", leftS: "Left",
+          pct: "56% of today's target", protein: "Protein", carbs: "Carbs", fat: "Fat", g: "g", kcal: "kcal",
+          breakfast: "Breakfast", lunch: "Lunch", dinner: "Dinner", foul: "Foul, 2 eggs, baladi bread", foulSub: "3 items · typed",
+          kosh: "Koshary", koshSub: "450 g · from photo", add: "+ Add dinner",
+          tabs: ["Today", "Recipes", "Explore", "Workouts", "Progress"], days: ["M", "T", "W", "T", "F", "S", "S"],
+          light: "Light", dark: "Dark", langName: "English" }
+  };
+
+  var D = [
+    { id: "A", ar: "طحينة ونعناع", en: "Tahini & Mint", rec: true,
+      blurb: "Warm and food-forward. Feels like a kitchen, not a gym.",
+      latin: "font-family: ui-rounded, 'SF Pro Rounded', var(--f-phone); font-weight: 700;",
+      logo: { bg: "#1F7A5A", plate: "#EAD9BA", mark: "#FFFFFF", sw: 6 },
+      light: { bg: "#FBF7F0", surface: "#FFFFFF", ink: "#2A2420", muted: "#6B6158", primary: "#1F7A5A", primaryText: "#1F7A5A", on: "#FFFFFF", track: "#EFE7DA", line: "#E6DCCC", halo: "#EAD9BA", shadow: "0 1px 2px rgba(42,36,32,.06), 0 6px 16px rgba(42,36,32,.07)", protein: "#2F6FB0", carbs: "#C98A1B", fat: "#8A5BB8" },
+      dark:  { bg: "#171412", surface: "#221E1B", ink: "#F3EDE4", muted: "#A89E93", primary: "#5CC59B", primaryText: "#5CC59B", on: "#0E1F18", track: "#3A332D", line: "#332D28", halo: "#4A3F30", shadow: "none", protein: "#6FA8E6", carbs: "#E7B44F", fat: "#B993E3" },
+      swatches: [["#FBF7F0", "cream"], ["#1F7A5A", "mint"], ["#B4363F", "pomegranate"], ["#2A2420", "ink"], ["#EAD9BA", "tahini"], ["#171412", "dark bg"]] },
+    { id: "B", ar: "سوق الليل", en: "Night Market",
+      blurb: "Dark-first and energetic: saffron lights on deep indigo.",
+      latin: "font-family: var(--f-phone); font-weight: 800; letter-spacing: .14em; text-transform: uppercase; font-size: 16px;",
+      logo: { bg: "#12141F", plate: "#3FD0C0", mark: "#F4B23E", sw: 6 },
+      light: { bg: "#F6F5F2", surface: "#FFFFFF", ink: "#151826", muted: "#5B6075", primary: "#9A5B00", primaryText: "#9A5B00", on: "#FFFFFF", track: "#E6E5E0", line: "#DCDCE3", glow: "rgba(154,91,0,.35)", protein: "#00756B", carbs: "#9A5B00", fat: "#7A4FD0" },
+      dark:  { bg: "#12141F", surface: "#1C1F2E", ink: "#F5F3EE", muted: "#9AA0B8", primary: "#F4B23E", primaryText: "#F4B23E", on: "#1A1408", track: "#2A2E42", line: "#2C3047", glow: "rgba(244,178,62,.6)", protein: "#3FD0C0", carbs: "#F4B23E", fat: "#A98BFF" },
+      swatches: [["#12141F", "indigo"], ["#F4B23E", "saffron"], ["#3FD0C0", "teal"], ["#FF7A6E", "coral"], ["#F5F3EE", "ink (dark)"], ["#F6F5F2", "light bg"]] },
+    { id: "C", ar: "كركديه", en: "Hibiscus Ledger",
+      blurb: "Calm and numbers-first, with one deep hibiscus accent.",
+      latin: "font-family: var(--f-phone); font-weight: 500; letter-spacing: .08em; text-transform: lowercase; font-size: 20px;",
+      logo: { bg: "#FFFFFF", plate: "#1B1D22", mark: "#A3214A", sw: 3.5, border: "#E1E2E6" },
+      light: { bg: "#FFFFFF", surface: "#F5F5F7", ink: "#1B1D22", muted: "#5F6470", primary: "#A3214A", primaryText: "#A3214A", on: "#FFFFFF", track: "#E6E7EA", line: "#E6E7EA", protein: "#1B1D22", carbs: "#5F6470", fat: "#9A9FAA" },
+      dark:  { bg: "#0E0F12", surface: "#1A1B20", ink: "#ECEDEF", muted: "#9A9FAA", primary: "#F0729A", primaryText: "#F0729A", on: "#2A0712", track: "#2A2C33", line: "#26282E", protein: "#ECEDEF", carbs: "#9A9FAA", fat: "#5F6470" },
+      swatches: [["#FFFFFF", "paper"], ["#A3214A", "hibiscus"], ["#1B1D22", "ink"], ["#5F6470", "graphite"], ["#1E7A4C", "success"], ["#0E0F12", "dark bg"]] }
+  ];
+
+  var ICON = {
+    plus: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>',
+    tabs: [
+      '<circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 8 8"/>',
+      '<path d="M5 4h10a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h10"/>',
+      '<circle cx="12" cy="12" r="8"/><path d="M15 9l-2 5-4 1 2-5z"/>',
+      '<path d="M4 9v6M7 7v10M17 7v10M20 9v6M7 12h10"/>',
+      '<path d="M5 19v-8M12 19V5M19 19v-6"/>'
+    ],
+    protein: '<svg viewBox="0 0 16 16" aria-hidden="true"><ellipse cx="8" cy="8.8" rx="4.6" ry="5.6" fill="currentColor"/></svg>',
+    carbs: '<svg viewBox="0 0 16 16" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M8 15V4"/><path d="M8 7C6 7 5 6 5 4c2 0 3 1 3 3zM8 7c2 0 3-1 3-3-2 0-3 1-3 3zM8 11c-2 0-3-1-3-3 2 0 3 1 3 3zM8 11c2 0 3-1 3-3-2 0-3 1-3 3z"/></g></svg>',
+    fat: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5c3 4 4.6 6.4 4.6 8.7a4.6 4.6 0 0 1-9.2 0C3.4 7.9 5 5.5 8 1.5z" fill="currentColor"/></svg>',
+    signal: '<svg width="42" height="11" viewBox="0 0 42 11" aria-hidden="true"><g fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="6" rx="1"/><rect x="10" y="3" width="3" height="8" rx="1"/><rect x="15" y="1" width="3" height="10" rx="1"/><rect x="22" y="1" width="18" height="9" rx="2.5" fill="none" stroke="currentColor" stroke-width="1"/><rect x="24" y="3" width="12" height="5" rx="1"/></g></svg>'
+  };
+
+  // Flat illustrations (fixed food colors, like the AI-generated SVGs will be)
+  var KOSHARY = '<svg class="im" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="23" fill="#F3EFE8" stroke="#D9D1C4"/><circle cx="24" cy="25" r="16.5" fill="#C9A274"/><circle cx="17" cy="22" r="2" fill="#E8D7B5"/><circle cx="30" cy="28" r="2" fill="#E8D7B5"/><path d="M14 23c4-7 16-7 20 0-3 6-6.5 8-10 8s-7-2-10-8z" fill="#B23A2B"/><g fill="#6E3F1C"><circle cx="20" cy="20" r="1.6"/><circle cx="26" cy="19" r="1.4"/><circle cx="29" cy="23" r="1.5"/><circle cx="22" cy="26" r="1.3"/><circle cx="17" cy="25" r="1.2"/></g></svg>';
+  var FOUL = '<svg class="im" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="23" fill="#F3EFE8" stroke="#D9D1C4"/><circle cx="21" cy="25" r="13" fill="#8B5A33"/><circle cx="21" cy="25" r="3" fill="#D8C27A"/><ellipse cx="36" cy="18" rx="6" ry="7.5" fill="#FFFFFF" stroke="#E2DACB"/><ellipse cx="36" cy="19" rx="3" ry="3.2" fill="#F2B632"/><path d="M28 38c4-4 12-4 15 0" stroke="#D49A55" stroke-width="5" fill="none" stroke-linecap="round"/></svg>';
+
+  function logo(l, size) {
+    return '<svg width="' + size + '" height="' + size + '" viewBox="0 0 100 100" role="img" aria-label="Lakhas app icon">' +
+      '<rect x="0.5" y="0.5" width="99" height="99" rx="23" fill="' + l.bg + '"' + (l.border ? ' stroke="' + l.border + '"' : '') + '/>' +
+      '<circle cx="50" cy="61" r="25" fill="none" stroke="' + l.plate + '" stroke-width="' + l.sw + '"/>' +
+      '<path d="M32 42V28M32 42q0 9 9 9t9-9V21M50 42q0 9 9 9t9-9V28" fill="none" stroke="' + l.mark + '" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  }
+
+  var C = 2 * Math.PI * 60;
+  function ringA() {
+    return '<svg viewBox="0 0 148 148" aria-hidden="true"><g transform="rotate(-90 74 74)">' +
+      '<circle cx="74" cy="74" r="60" fill="none" stroke="var(--p-track)" stroke-width="14"/>' +
+      '<circle cx="74" cy="74" r="60" fill="none" stroke="var(--p-primary)" stroke-width="14" stroke-linecap="round" stroke-dasharray="' + (C * 0.561).toFixed(1) + ' ' + C.toFixed(1) + '"/></g></svg>';
+  }
+  function ringB() {
+    var s1 = C * 0.229, s2 = C * 0.332, gap = 5;
+    return '<svg viewBox="0 0 148 148" aria-hidden="true"><g transform="rotate(-90 74 74)">' +
+      '<circle cx="74" cy="74" r="60" fill="none" stroke="var(--p-track)" stroke-width="10"/>' +
+      '<circle cx="74" cy="74" r="60" fill="none" stroke="var(--p-primary)" stroke-opacity=".75" stroke-width="10" stroke-dasharray="' + s1.toFixed(1) + ' ' + C.toFixed(1) + '"/>' +
+      '<circle class="seg-tip" cx="74" cy="74" r="60" fill="none" stroke="var(--p-primary)" stroke-width="10" stroke-dasharray="' + s2.toFixed(1) + ' ' + C.toFixed(1) + '" stroke-dashoffset="' + (-(s1 + gap)).toFixed(1) + '"/></g></svg>';
+  }
+
+  function macros(t) {
+    var M = [["protein", 52, 140], ["carbs", 164, 243], ["fat", 35, 63]];
+    return '<section class="macros">' + M.map(function (m) {
+      return '<div class="m" style="--mc: var(--p-' + m[0] + ')"><div class="row"><span class="nm">' + ICON[m[0]] + t[m[0]] + '</span>' +
+        '<span class="val">' + m[1] + ' / ' + m[2] + ' ' + t.g + '</span></div>' +
+        '<div class="bar"><i style="width:' + Math.round(m[1] / m[2] * 100) + '%"></i></div></div>';
+    }).join('') + '</section>';
+  }
+
+  function hero(d, t) {
+    if (d.id === "C") {
+      return '<section class="hero"><div class="ledger"><div class="lg">' +
+        '<div class="it"><b>2,100</b><span>' + t.target + '</span></div><div class="op">−</div>' +
+        '<div class="it"><b>1,179</b><span>' + t.eaten + '</span></div><div class="op">=</div>' +
+        '<div class="it left"><b>921</b><span>' + t.leftS + '</span></div></div>' +
+        '<div class="rule"><i></i></div><div class="lgcap">' + t.pct + '</div></div></section>';
+    }
+    return '<section class="hero"><div class="ring">' + (d.id === "A" ? ringA() : ringB()) +
+      '<div class="c"><span class="big">921</span><span class="lab">' + t.left + '</span><span class="sub">1,179 / 2,100</span></div></div></section>';
+  }
+
+  function phone(d, theme, lang) {
+    var p = d[theme], t = S[lang];
+    var vars = Object.keys(p).map(function (k) {
+      var name = k.replace(/[A-Z]/g, function (c) { return "-" + c.toLowerCase(); });
+      return "--p-" + name + ":" + p[k];
+    }).join(";");
+    var days = t.days.map(function (l, i) {
+      return '<div class="day' + (i === 6 ? ' today' : '') + '"><span class="dl">' + l + '</span><span class="dn">' + (5 + i) + '</span></div>';
+    }).join('');
+    var tabs = '';
+    for (var i = 0; i < 5; i++) {
+      if (i === 2) tabs += '<div class="plusw"><div class="plus" aria-label="Log">' + ICON.plus + '</div></div>';
+      tabs += '<div class="tab' + (i === 0 ? ' on' : '') + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + ICON.tabs[i] + '</svg>' + t.tabs[i] + '</div>';
+    }
+    var mm = d.id === "C" ? '' : '<div class="mm">' +
+      [["protein", 22, 52], ["carbs", 112, 164], ["fat", 18, 35]].map(function (m) {
+        return '<div style="--mc: var(--p-' + m[0] + ')"><small>' + t[m[0]] + '</small><b>' + m[1] + ' ' + t.g + '</b><div class="bar"><i style="width:' + Math.round(m[1] / m[2] * 100) + '%"></i></div></div>';
+      }).join('') + '</div>';
+    var meal = function (img, title, sub, kcal, extra) {
+      return '<div class="meal"><div class="mt">' + img + '<div class="info"><div class="ti">' + title + '</div><div class="su">' + sub + '</div></div>' +
+        '<div class="kc"><b>' + kcal + '</b><span>' + t.kcal + '</span></div></div>' + (extra || '') + '</div>';
+    };
+    return '<div class="phone v-' + d.id + '" dir="' + (lang === "ar" ? "rtl" : "ltr") + '" lang="' + lang + '" role="img" aria-label="' + d.en + ', ' + theme + ' mode, ' + S[lang].langName + '">' +
+      '<div class="screen" style="' + vars + '"><div class="island"></div>' +
+      '<div class="status"><span>9:41</span>' + ICON.signal + '</div>' +
+      '<div class="content">' +
+        '<div class="top">' + logo(d.logo, 30) + '<div><div class="t1">' + t.today + '</div><div class="t2">' + t.date + '</div></div></div>' +
+        '<div class="strip">' + days + '</div>' +
+        hero(d, t) + macros(t) +
+        '<section class="meals">' +
+          '<div class="gh"><span>' + t.breakfast + '</span><span>481 ' + t.kcal + '</span></div>' + meal(FOUL, t.foul, t.foulSub, 481) +
+          '<div class="gh"><span>' + t.lunch + '</span><span>698 ' + t.kcal + '</span></div>' + meal(KOSHARY, t.kosh, t.koshSub, 698, mm) +
+          '<div class="gh"><span>' + t.dinner + '</span><span>0 ' + t.kcal + '</span></div><div class="add">' + t.add + '</div>' +
+        '</section>' +
+      '</div><nav class="tabbar">' + tabs + '</nav></div></div>';
+  }
+
+  function head(d) {
+    return '<div class="dhead"><div class="dtitle"><span class="letter">' + d.id + '</span><h2>' + d.en + '<span lang="ar" dir="rtl">' + d.ar + '</span></h2>' +
+      (d.rec ? '<span class="rec">Recommended</span>' : '') + '</div><p>' + d.blurb + '</p>' +
+      '<div class="swatches">' + d.swatches.map(function (s) {
+        return '<div class="sw"><i style="background:' + s[0] + '"></i><small title="' + s[1] + ' ' + s[0] + '">' + s[1] + '</small></div>';
+      }).join('') + '</div>' +
+      '<div class="logos">' + logo(d.logo, 64) +
+        '<div class="small">' + logo(d.logo, 29) + '<span>29 pt</span></div>' +
+        '<div class="wm"><span class="ar" lang="ar" dir="rtl">لخّص</span><span class="la" style="' + d.latin + '">Lakhas</span></div>' +
+      '</div></div>';
+  }
+
+  var grid = document.getElementById("grid");
+  function render(mode) {
+    var langs = mode === "both" ? ["ar", "en"] : [mode];
+    var cells = [];
+    langs.forEach(function (l) { ["light", "dark"].forEach(function (th) { cells.push([th, l]); }); });
+    grid.innerHTML = D.map(function (d) {
+      return '<section class="dir" style="--rows:' + (cells.length + 1) + '" aria-label="Direction ' + d.id + ': ' + d.en + '">' + head(d) +
+        cells.map(function (c) {
+          return '<div class="cell"><span class="tag">' + S.en[c[0]] + ' · ' + S[c[1]].langName + '</span>' + phone(d, c[0], c[1]) + '</div>';
+        }).join('') + '</section>';
+    }).join('');
+    document.querySelectorAll(".seg button").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.mode === mode)); });
+    try { localStorage.setItem("lakhas-preview-lang", mode); } catch (e) {}
+  }
+  document.querySelectorAll(".seg button").forEach(function (b) { b.addEventListener("click", function () { render(b.dataset.mode); }); });
+  var start = "ar";
+  try { start = localStorage.getItem("lakhas-preview-lang") || "ar"; } catch (e) {}
+  render(["ar", "en", "both"].indexOf(start) >= 0 ? start : "ar");
+})();
+</script>
+</body>
+</html>

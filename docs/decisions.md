@@ -8,7 +8,7 @@ Short ADRs. Status values: **Accepted** (from the brief), **Proposed** (awaiting
 **Status:** Accepted (brief §2). Layout: `/ios /backend /shared /admin /docs`.
 
 ### ADR-002 — Native structured outputs instead of forced `tool_choice`
-**Status:** Proposed.
+**Status:** Accepted (2026-10-11). The brief §2 has been updated to match.
 **Context:** The brief asks every AI call to force a single tool call through `tool_choice`. On current models, `claude-sonnet-5-5` (our `MODEL_ADVANCED`) and `claude-opus-5-5` reject `tool_choice` `any`/`tool` with HTTP 400.
 **Decision:** Use structured outputs, `client.messages.parse({ output_config: { format: zodOutputFormat(Schema) } })`, for all AI calls on both models. The zod schema is the single source; it also generates `/shared/schemas/*.json`. Keep server-side zod validation + one retry as defense in depth, and check `stop_reason` (refusal / max_tokens) before parsing.
 **Consequences:** Same guarantees as the brief intended, with one code path. Prompt files describe the output schema in prose instead of as a tool.
@@ -42,3 +42,12 @@ Short ADRs. Status values: **Accepted** (from the brief), **Proposed** (awaiting
 
 ### ADR-010 — Logs snapshot names and nutrition values
 **Status:** Proposed. `MealItem`, `SetLog` and `WorkoutSession` store copies of names and per-100g values plus a stable id, never live relationships to editable entities. Editing foods, recipes or programs can't alter history.
+
+### ADR-011 — Product defaults resolved in Phase 0
+**Status:** Accepted (2026-10-11).
+- **Protein at BMI ≥ 30:** the reference weight is the weight at BMI 25 for the user's height (`25 × m²`). No goal-weight question in onboarding; an optional goal weight in My Goals overrides it.
+- **"Correct with AI":** separate Pro-only quota type `correct`, 10/day, under the global per-device cap.
+- **Leftover photo:** part of the same photo scan, so one `photo` quota covers both images.
+- **Pace options:** lose 0.25 / 0.5 / 0.75 / 1.0 kg/week; gain 0.25 / 0.5 kg/week; maintain 0.
+- **Arabic names for USDA foods and exercises:** machine-translated at seed time, stored with `name_ar_source = 'machine_translated'`, and listed in an admin review queue.
+- **Delete my data:** `transactions` and `referral_attributions` are kept for accounting with `device_id` set to NULL. All other device data is deleted. The Privacy Policy will say so.

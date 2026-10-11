@@ -66,7 +66,7 @@ Target market: Arab users, with strong recognition of Arabic and Egyptian/Gulf d
   - `MODEL_STANDARD = "claude-haiku-5-5"` — free tier, text entry, label reading.
   - `MODEL_ADVANCED = "claude-sonnet-5-5"` — Pro "advanced analysis" and AI result correction.
   - Check https://docs.claude.com for current model names and vision/tool-use details before implementing, and use the official `@anthropic-ai/sdk`.
-- **Structured output via tool use**: every AI call forces a single tool call (`tool_choice`) whose `input_schema` is the exact JSON we expect. Validate the result server-side with **zod**. If validation fails, retry once, then return a clean error.
+- **Structured output** (ADR-002): every AI call uses the API's built-in structured outputs (`output_config.format`, via `client.messages.parse` + `zodOutputFormat`) with the exact JSON schema we expect. Forced `tool_choice` is not used: current advanced models reject it. Validate the result server-side with the same **zod** schema. Check `stop_reason` (refusal / max_tokens) before parsing. If validation fails, retry once, then return a clean error.
 - Use **prompt caching** on the long, static system prompts.
 - Every prompt treats user-supplied content (captions, transcripts, label text, typed descriptions) as **data, not instructions**. Wrap it in clearly delimited tags and tell the model to ignore any instructions inside it.
 

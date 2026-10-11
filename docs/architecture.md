@@ -120,8 +120,8 @@ All `@Model` types live in `LakhasKit`. The store sits at `AppGroup/Library/Appl
   weightKg: Double            // latest; history in WeightEntry
   activity: ActivityLevel     // .sedentary .light .active .veryActive
   goal: Goal                  // .lose .maintain .gain
-  paceKgPerWeek: Double       // 0, 0.25, 0.5, 0.75, 1.0 (see Q8)
-  goalWeightKg: Double?       // see Q7
+  paceKgPerWeek: Double       // lose 0.25–1.0, gain 0.25–0.5, maintain 0 (ADR-011)
+  goalWeightKg: Double?       // optional (My Goals); default ref = BMI-25 weight (ADR-011)
   referralCode: String?
   onboardedAt: Date
 
@@ -189,7 +189,7 @@ Non-sensitive preferences go in App Group `UserDefaults`: language, units, digit
 ### 3.5 Workouts
 ```swift
 @Model Exercise               // seeded from bundled JSON, read-mostly
-  id (dataset slug), nameAr, nameEn, primaryMuscles: [Muscle], secondaryMuscles,
+  id (dataset slug), nameAr, nameEn, nameArMachineTranslated: Bool, primaryMuscles: [Muscle], secondaryMuscles,
   equipment: Equipment, level, imageNames: [String], alternativeIds: [String]
 
 @Model WorkoutProgram
@@ -251,7 +251,7 @@ referral_codes(code PK, label, active, created_at)
 referral_attributions(original_transaction_id PK, code, device_id, product_id, first_seen_at)
 
 -- food data
-foods(id TEXT PK, name_en, name_ar, aliases_en, aliases_ar,
+foods(id TEXT PK, name_en, name_ar, name_ar_source /* human | machine_translated */, aliases_en, aliases_ar,
       kcal_100, protein_100, carbs_100, fat_100, fiber_100 NULL,
       portions TEXT /* JSON: [{label_ar,label_en,grams}] */,
       source TEXT,     -- 'usda' | 'curated_estimate' | 'curated_verified'
@@ -282,7 +282,7 @@ abuse_events(id PK, device_id NULL, ip_hash, kind, detail, created_at)
 admin_audit(id PK, actor, action, target, created_at)
 ```
 
-**Deletion (`DELETE /v1/device`)** removes rows from every table keyed by `device_id`, plus that device's R2 objects (meal uploads, unreviewed contribution photos), KV cache entries (indexed by a per-device key list), and the push token. Approved contributed products stay, with `contributor_device_id` nulled. Referral attributions and transactions are kept for accounting **with `device_id` nulled** (see Q12).
+**Deletion (`DELETE /v1/device`)** removes rows from every table keyed by `device_id`, plus that device's R2 objects (meal uploads, unreviewed contribution photos), KV cache entries (indexed by a per-device key list), and the push token. Approved contributed products stay, with `contributor_device_id` nulled. Referral attributions and transactions are kept for accounting **with `device_id` nulled** (ADR-011).
 
 ---
 
@@ -315,7 +315,7 @@ Codes: `invalid_request`, `attest_failed`, `quota_exhausted`, `daily_cap`, `rate
 | `POST /v1/attest/register` | `{keyId, attestation, challenge}` | `204` | — |
 | `POST /v1/analyze/photo` | multipart: `image` (≤ 2 MB JPEG), `leftover?`, `mealHint?`, `advanced?` | `AnalysisResult` | `photo` (1 per request, leftover included) |
 | `POST /v1/analyze/text` | `{text ≤ 500 chars, advanced?}` | `AnalysisResult` | `text` |
-| `POST /v1/analyze/correct` | `{analysisId, correction ≤ 300 chars}` | `AnalysisResult` | Pro; `correct` (see Q5) |
+| `POST /v1/analyze/correct` | `{analysisId, correction ≤ 300 chars}` | `AnalysisResult` | Pro; `correct` (10/day, ADR-011) |
 | `GET /v1/barcode/:code` | — | `Product` or `404` | `barcode` (only when found, see §6.3) |
 | `POST /v1/products/contribute` | multipart: `barcode`, `label`, `front` | `Product` (`pending_review`) | `barcode` |
 | `POST /v1/recipes/import-link` | `{url}` | `Recipe` | `recipe` |
@@ -431,7 +431,7 @@ The sanitized SVG is rasterized to PNG at 512×512 with **resvg-wasm** inside th
 ## 7. AI integration
 
 - **SDK:** `@anthropic-ai/sdk` (official), used only in `backend/src/ai/`. Model IDs are read from `config`: `MODEL_STANDARD = claude-haiku-5-5`, `MODEL_ADVANCED = claude-sonnet-5-5`.
-- **Structured output (ADR-002 ⚠ Proposed):** current Sonnet 5.5 (and Opus 5.5) **reject forced `tool_choice`** (`any`/`tool`) with a 400. The brief's "force a single tool call" can't be implemented on `MODEL_ADVANCED`. Instead, every call uses native structured outputs: `client.messages.parse({ output_config: { format: zodOutputFormat(Schema) } })`. That's schema-constrained JSON from the same zod schema we validate with, so it keeps the intent ("exact JSON we expect, validated with zod, retry once"). One code path covers both models.
+- **Structured output (ADR-002, accepted):** current Sonnet 5.5 (and Opus 5.5) **reject forced `tool_choice`** (`any`/`tool`) with a 400. The brief's "force a single tool call" can't be implemented on `MODEL_ADVANCED`. Instead, every call uses native structured outputs: `client.messages.parse({ output_config: { format: zodOutputFormat(Schema) } })`. That's schema-constrained JSON from the same zod schema we validate with, so it keeps the intent ("exact JSON we expect, validated with zod, retry once"). One code path covers both models.
 - **Effort:** `low` for standard/Haiku routes (classification-like extraction), `medium` for advanced and correction. Tuned in Phase 4 against a small eval set of real plates.
 - **Prompt caching:** the system prompt (role, Arabic food guidance, few-shots) is static and carries `cache_control`. Volatile parts (language, candidate list, user content) come after the breakpoint. Cache hits are checked through `usage.cache_read_input_tokens` in logs.
 - **Injection resistance:** user text, captions, and OCR text are wrapped in `<user_content>…</user_content>`, and the system prompt says the content is data and its instructions must be ignored. Output is schema-constrained, so injected text can at most produce wrong food entries, which the user reviews before saving.
@@ -460,7 +460,7 @@ The sanitized SVG is rasterized to PNG at 512×512 with **resvg-wasm** inside th
 
 ---
 
-## 9. Open questions (please answer before Phase 1)
+## 9. Open questions (✅ = resolved 2026-10-11)
 
 **Blocking / high impact**
 
@@ -481,22 +481,22 @@ The sanitized SVG is rasterized to PNG at 512×512 with **resvg-wasm** inside th
    - (c) the share extension forwards whatever text Instagram shares (often just the URL).
 
    I recommend (a), with (b) as the fallback UX.
-4. **Forced tool use vs structured outputs (ADR-002).** OK to use native structured outputs instead of forced `tool_choice`? Forced `tool_choice` returns a 400 on `claude-sonnet-5-5`.
+4. ✅ **Resolved → ADR-002 accepted.** **Forced tool use vs structured outputs (ADR-002).** OK to use native structured outputs instead of forced `tool_choice`? Forced `tool_choice` returns a 400 on `claude-sonnet-5-5`.
 
 **Product / spec clarifications**
 
-5. **"Correct with AI" quota.** Should it consume the original type's quota (photo/text), or have its own Pro-only counter? I propose its own counter, `correct` = 10/day, still under the global cap.
-6. **Leftover photo.** I propose it's part of the same photo scan (1 quota for both images). OK?
-7. **BMI ≥ 30 protein.** The brief says "use goal-weight-adjusted weight", but onboarding doesn't collect a goal weight. Options:
+5. ✅ **Resolved → ADR-011.** **"Correct with AI" quota.** Should it consume the original type's quota (photo/text), or have its own Pro-only counter? I propose its own counter, `correct` = 10/day, still under the global cap.
+6. ✅ **Resolved → ADR-011.** **Leftover photo.** I propose it's part of the same photo scan (1 quota for both images). OK?
+7. ✅ **Resolved → ADR-011 (option b).** **BMI ≥ 30 protein.** The brief says "use goal-weight-adjusted weight", but onboarding doesn't collect a goal weight. Options:
    - (a) add an optional goal-weight step;
    - (b) use the weight at BMI 25 for their height (no new question).
 
    I recommend (b), with (a) as an optional field in My Goals.
-8. **Pace values.** I propose lose: 0.25 / 0.5 / 0.75 / 1.0 kg/week, gain: 0.25 / 0.5 kg/week, maintain: 0. OK?
+8. ✅ **Resolved → ADR-011.** **Pace values.** I propose lose: 0.25 / 0.5 / 0.75 / 1.0 kg/week, gain: 0.25 / 0.5 kg/week, maintain: 0. OK?
 9. **Water.** §4.7 says the target is adjusted by "height/activity", but §6 uses weight + activity only. I'll follow §6 exactly unless you want height included.
-10. **Arabic names for USDA foods and exercises.** These datasets are English-only. I propose a one-time AI-assisted translation at seed time, stored with `source = machine_translated` and listed in the admin panel for human review. Acceptable? Do you have an Arabic reviewer?
+10. ✅ **Resolved → ADR-011.** **Arabic names for USDA foods and exercises.** These datasets are English-only. I propose a one-time AI-assisted translation at seed time, stored with `source = machine_translated` and listed in the admin panel for human review. Acceptable? Do you have an Arabic reviewer?
 11. **Explore voting "after logging".** The server doesn't know local logs. I propose the client gates the vote button (shown only after logging), and the server enforces one vote per device per dish. OK?
-12. **Delete my data vs accounting.** Purchase and referral records are needed for creator payouts and Apple refunds. I propose nulling `device_id` on those rows instead of deleting them, and saying so in the Privacy Policy. OK?
+12. ✅ **Resolved → ADR-011.** **Delete my data vs accounting.** Purchase and referral records are needed for creator payouts and Apple refunds. I propose nulling `device_id` on those rows instead of deleting them, and saying so in the Privacy Policy. OK?
 13. **Recipe language.** I propose titles and ingredient names in **both** languages (like foods), and steps only in the language active at import. Re-translating steps on demand would cost quota. OK?
 14. **Admin auth.** Cloudflare Access (free for ≤ 50 users, SSO/email OTP) or admin token + IP allow-list? I recommend Access.
 
