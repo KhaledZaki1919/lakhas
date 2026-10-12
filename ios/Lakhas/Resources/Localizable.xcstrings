@@ -324,6 +324,23 @@
         }
       }
     },
+    "probe.section.server": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الخادم والرمز"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Server & token"
+          }
+        }
+      }
+    },
     "probe.section.storage": {
       "extractionState": "manual",
       "localizations": {
@@ -337,6 +354,40 @@
           "stringUnit": {
             "state": "translated",
             "value": "Storage & widgets"
+          }
+        }
+      }
+    },
+    "probe.server": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الخادم"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Server"
+          }
+        }
+      }
+    },
+    "probe.server.notConfigured": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "غير مضبوط"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not configured"
           }
         }
       }
@@ -422,6 +473,57 @@
           "stringUnit": {
             "state": "translated",
             "value": "Sideloading status"
+          }
+        }
+      }
+    },
+    "probe.token": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "رمز الجهاز"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Device token"
+          }
+        }
+      }
+    },
+    "probe.token.enter": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إدخال رمز الجهاز"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter device token"
+          }
+        }
+      }
+    },
+    "probe.token.replace": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "استبدال رمز الجهاز"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Replace device token"
           }
         }
       }
@@ -575,6 +677,244 @@
           "stringUnit": {
             "state": "translated",
             "value": "Workouts"
+          }
+        }
+      }
+    },
+    "token.activate": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تفعيل"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Activate"
+          }
+        }
+      }
+    },
+    "token.continueOffline": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "المتابعة بدون خادم"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Continue without server"
+          }
+        }
+      }
+    },
+    "token.error.clock": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "وقت الجهاز غير مضبوط. فعّل الضبط التلقائي للوقت ثم حاول مرة أخرى."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your device clock is off. Turn on automatic time, then try again."
+          }
+        }
+      }
+    },
+    "token.error.format": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هذا لا يبدو رمز جهاز صحيحًا. انسخ الرمز كاملًا من لوحة التحكم."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "That doesn't look like a device token. Copy the whole token from the admin panel."
+          }
+        }
+      }
+    },
+    "token.error.generic": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حدث خطأ غير متوقع. حاول مرة أخرى."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Something went wrong. Try again."
+          }
+        }
+      }
+    },
+    "token.error.invalid": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هذا الرمز غير صالح أو تم إلغاؤه. أنشئ رمزًا جديدًا من لوحة التحكم."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This token isn't valid or was revoked. Create a new one in the admin panel."
+          }
+        }
+      }
+    },
+    "token.error.network": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تعذّر الوصول إلى الخادم. تحقق من الاتصال وحاول مرة أخرى."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't reach the server. Check your connection and try again."
+          }
+        }
+      }
+    },
+    "token.error.notConfigured": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لم يُضبط عنوان الخادم في هذه النسخة."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This build has no server address."
+          }
+        }
+      }
+    },
+    "token.error.rateLimited": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "محاولات كثيرة. انتظر دقيقة ثم حاول مرة أخرى."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Too many attempts. Wait a minute and try again."
+          }
+        }
+      }
+    },
+    "token.placeholder": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "رمز الجهاز (يبدأ بـ lk1_)"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Device token (starts with lk1_)"
+          }
+        }
+      }
+    },
+    "token.scan": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "امسح QR"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scan QR"
+          }
+        }
+      }
+    },
+    "token.serverNotConfigured": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لم يُضبط عنوان الخادم في هذه النسخة بعد. يمكنك المتابعة بدون خادم الآن."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This build has no server address yet. You can continue without the server for now."
+          }
+        }
+      }
+    },
+    "token.subtitle": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الصق رمز الجهاز من لوحة التحكم أو امسح رمز QR. ستحتاجه مرة واحدة فقط."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Paste the device token from the admin panel or scan its QR code. You only need to do this once."
+          }
+        }
+      }
+    },
+    "token.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "فعّل هذا الجهاز"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Activate this device"
           }
         }
       }
