@@ -24,6 +24,9 @@ targets:
       - sdk: SwiftUI.framework
     entitlements:
       path: Config/LakhasWidgets.entitlements
+      # XcodeGen writes this file from `properties` on every generate.
+      properties:
+        com.apple.security.application-groups: [group.com.khaled.lakhas]
     info:
       path: LakhasWidgets/Info.plist
       properties:
@@ -45,6 +48,9 @@ targets:
         product: LakhasKit
     entitlements:
       path: Config/LakhasShare.entitlements
+      # XcodeGen writes this file from `properties` on every generate.
+      properties:
+        com.apple.security.application-groups: [group.com.khaled.lakhas]
     info:
       path: LakhasShare/Info.plist
       properties:
