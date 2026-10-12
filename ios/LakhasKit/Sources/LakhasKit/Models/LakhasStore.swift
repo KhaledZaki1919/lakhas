@@ -5,7 +5,10 @@ import SwiftData
 /// Creates the SwiftData container in the resolved store location (ADR-014) and applies
 /// file protection to the store files (PROJECT_PROMPT.md §3.4).
 public enum LakhasStore {
-    public static let schema = Schema([UserProfile.self, GoalOverride.self, Meal.self, MealItem.self])
+    /// Computed: `Schema` is not Sendable, so it cannot be a stored static under Swift 6.
+    public static var schema: Schema {
+        Schema([UserProfile.self, GoalOverride.self, Meal.self, MealItem.self])
+    }
 
     public static func makeContainer(
         location: StoreLocation = AppGroupResolver.resolve(), inMemory: Bool = false

@@ -152,7 +152,7 @@ struct QRScannerView: UIViewControllerRepresentable {
     func makeCoordinator() -> Coordinator { Coordinator(onScan: onScan) }
 
     @MainActor
-    final class Coordinator: NSObject, DataScannerViewControllerDelegate {
+    final class Coordinator: NSObject, @preconcurrency DataScannerViewControllerDelegate {
         private let onScan: (String) -> Void
         private var delivered = false
 

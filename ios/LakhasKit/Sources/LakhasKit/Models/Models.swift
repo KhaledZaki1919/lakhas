@@ -199,6 +199,6 @@ public final class MealItem {
 public enum DayKey {
     public static func make(_ date: Date, calendar: Calendar = .current) -> String {
         let parts = calendar.dateComponents([.year, .month, .day], from: date)
-        return String(format: "%04d-%02d-%02d", parts.year ?? 0, parts.month ?? 0, parts.day ?? 0)
+        return String(format: "%04ld-%02ld-%02ld", parts.year ?? 0, parts.month ?? 0, parts.day ?? 0)
     }
 }
