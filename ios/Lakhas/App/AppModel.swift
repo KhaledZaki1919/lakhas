@@ -2,8 +2,8 @@ import LakhasKit
 import Observation
 import SwiftUI
 
-/// App-wide session state: nothing that talks to the server works until a device token is
-/// verified (PROJECT_PROMPT.md §4.1, ADR-013).
+/// App-wide session state. Server features (AI, barcode lookup, Explore) need a verified device
+/// token (ADR-013); onboarding, Today and manual logging work without one.
 @MainActor
 @Observable
 final class AppModel {
@@ -11,18 +11,26 @@ final class AppModel {
         case needsToken
         /// The token is stored and was accepted by the server.
         case ready(DeviceToken)
-        /// No API domain in this build yet (placeholder URL): the app runs without the server.
+        /// No token (skipped): local features only. Server features ask for a token.
         case offline
     }
 
     private(set) var phase: Phase
     let configuration: APIConfiguration?
     private let tokenStore: TokenStore
+    private let defaults: UserDefaults
+    private static let skippedKey = "tokenSkipped"
 
-    init(tokenStore: TokenStore = TokenStore(), configuration: APIConfiguration? = .fromBundle()) {
+    init(tokenStore: TokenStore = TokenStore(), configuration: APIConfiguration? = .fromBundle(),
+         defaults: UserDefaults = .standard) {
         self.tokenStore = tokenStore
         self.configuration = configuration
-        phase = tokenStore.load().map(Phase.ready) ?? .needsToken
+        self.defaults = defaults
+        if let token = tokenStore.load() {
+            phase = .ready(token)
+        } else {
+            phase = defaults.bool(forKey: Self.skippedKey) ? .offline : .needsToken
+        }
     }
 
     var isServerConfigured: Bool { configuration.map { !$0.isPlaceholder } ?? false }
@@ -55,14 +63,16 @@ final class AppModel {
         return nil
     }
 
+    /// Continue without a token; remembered so the token screen doesn't return on every launch.
     func continueOffline() {
-        guard !isServerConfigured else { return }
+        defaults.set(true, forKey: Self.skippedKey)
         phase = .offline
     }
 
     /// Called on `token_revoked` / `unauthorized`, or from Settings → Replace token. Local data stays.
     func forgetToken() {
         tokenStore.clear()
+        defaults.set(false, forKey: Self.skippedKey)
         phase = .needsToken
     }
 }

@@ -27,9 +27,7 @@ struct TokenEntryView: View {
                             .font(.callout)
                             .foregroundStyle(Theme.Palette.accent)
                     }
-                    if !model.isServerConfigured {
-                        offlineNote
-                    }
+                    offlineNote
                 }
                 .padding(Theme.Space.screenMargin)
                 .padding(.top, Theme.Space.xxl)
@@ -113,10 +111,12 @@ struct TokenEntryView: View {
 
     private var offlineNote: some View {
         VStack(alignment: .leading, spacing: Theme.Space.xs) {
-            Text("token.serverNotConfigured")
+            Text(model.isServerConfigured
+                 ? LocalizedStringKey("token.skipNote") : LocalizedStringKey("token.serverNotConfigured"))
                 .font(.footnote)
                 .foregroundStyle(Theme.Palette.muted)
             Button("token.continueOffline") { model.continueOffline() }
+                .accessibilityIdentifier("ax.token.skip")
                 .font(.footnote.weight(.semibold))
                 .tint(Theme.Palette.primary)
         }

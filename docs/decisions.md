@@ -72,6 +72,7 @@ Short ADRs. Status values: **Accepted**, **Proposed** (awaiting approval), **Sup
 - **Verification:** the server rejects skew > 5 min. It rejects a nonce already seen for that token: D1 `request_nonces` with PK `(token_id, nonce)`, purged after 10 min by cron. It compares signatures in constant time.
 - **Revocation:** the admin can revoke a token. Requests then return `401 token_revoked`, and the app clears the Keychain item and shows the token screen.
 - **Shared test vectors** in `/shared/test-vectors/signing.json` are used by both the Swift and TypeScript tests.
+**Update (2026-10-12):** the token gates server features only. Onboarding, Today and manual logging work without one; the token screen can always be skipped (remembered), and a token can be added later.
 **Consequences:** No secret is compiled into the IPA. A stolen token is limited by its device caps and revocable. The token ID is the server-side device identity, replacing the client-generated UUID.
 
 ### ADR-014 — Free Apple ID capability fallbacks

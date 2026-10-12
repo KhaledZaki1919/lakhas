@@ -17,7 +17,7 @@ struct TodayHeader: View {
                 .background(Theme.Palette.primary, in: RoundedRectangle(cornerRadius: 12))
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 0) {
-                Text(isToday ? "today.title" : "today.pastDay")
+                Text(isToday ? LocalizedStringKey("today.title") : LocalizedStringKey("today.pastDay"))
                     .font(.title2.bold())
                     .foregroundStyle(Theme.Palette.ink)
                 Text(verbatim: format.longDate(date))
@@ -126,7 +126,7 @@ struct CalorieRing: View {
                     .font(.largeTitle.bold().monospacedDigit())
                     .foregroundStyle(isOver ? Theme.Palette.accent : Theme.Palette.ink)
                     .contentTransition(.numericText())
-                Text(isOver ? "today.ring.over" : "today.ring.left")
+                Text(isOver ? LocalizedStringKey("today.ring.over") : LocalizedStringKey("today.ring.left"))
                     .font(.caption)
                     .foregroundStyle(Theme.Palette.muted)
                 Text(verbatim: "\(format.number(Int(eaten.rounded()))) / \(format.number(target))")

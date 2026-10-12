@@ -109,7 +109,7 @@ These are requirements, not suggestions.
 ## 4. Features (all required, all enabled for everyone)
 
 ### 4.1 First launch & onboarding
-- **Access token** screen first (paste or scan QR). Nothing else works until the token is verified.
+- **Access token** screen first (paste or scan QR), with **Continue without a token** always available. Onboarding, Today and manual logging work without a token; server features (AI analysis, barcode lookup, recipe import, Explore) need a verified token.
 - Collect sex, age, height, weight, activity level (4 levels), goal (lose / maintain / gain) and pace (lose 0.25–1.0 kg/week, gain 0.25–0.5 kg/week).
 - Show a plain-language body summary: BMI category and the healthy weight range for their height.
 - Compute targets with the formula in §6.

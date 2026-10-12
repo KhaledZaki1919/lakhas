@@ -100,6 +100,19 @@ public struct DailyTargets: Sendable, Equatable {
     public let floorApplied: Bool
     /// True when fat had to drop below 27% (to as low as 20%) to keep carbs non-negative.
     public let fatReduced: Bool
+
+    public init(bmr: Double, tdee: Double, calories: Int, proteinG: Int, carbsG: Int, fatG: Int,
+                waterMl: Int, floorApplied: Bool, fatReduced: Bool) {
+        self.bmr = bmr
+        self.tdee = tdee
+        self.calories = calories
+        self.proteinG = proteinG
+        self.carbsG = carbsG
+        self.fatG = fatG
+        self.waterMl = waterMl
+        self.floorApplied = floorApplied
+        self.fatReduced = fatReduced
+    }
 }
 
 public struct BodySummary: Sendable, Equatable {

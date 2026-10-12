@@ -11,7 +11,8 @@ struct LakhasApp: App {
         // UI tests launch with -uiTesting: in-memory store, no token, no server.
         let uiTesting = ProcessInfo.processInfo.arguments.contains("-uiTesting")
         let model = uiTesting
-            ? AppModel(tokenStore: TokenStore(keychain: KeychainStore(service: "lakhas.uitest")))
+            ? AppModel(tokenStore: TokenStore(keychain: KeychainStore(service: "lakhas.uitest")),
+                       defaults: UserDefaults(suiteName: "lakhas.uitest") ?? .standard)
             : AppModel()
         if uiTesting {
             model.forgetToken()

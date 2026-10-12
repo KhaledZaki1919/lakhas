@@ -2200,13 +2200,13 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "المتابعة بدون خادم"
+            "value": "المتابعة بدون رمز"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Continue without server"
+            "value": "Continue without a token"
           }
         }
       }
@@ -2377,6 +2377,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "This build has no server address yet. You can continue without the server for now."
+          }
+        }
+      }
+    },
+    "token.skipNote": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "يمكنك تسجيل وجباتك يدويًا بدون رمز. التحليل بالذكاء الاصطناعي والباركود يحتاجان الرمز، ويمكنك إضافته لاحقًا من الإعدادات."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You can log meals manually without a token. AI analysis and barcode lookup need one; you can add it later in Settings."
           }
         }
       }

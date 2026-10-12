@@ -61,6 +61,10 @@ private struct DayContent: View {
 
     private var eaten: Macros { meals.reduce(.zero) { $0 + $1.totals } }
 
+    private var relogKey: LocalizedStringKey {
+        isToday ? LocalizedStringKey("meal.relog") : LocalizedStringKey("meal.logAgainToday")
+    }
+
     var body: some View {
         List {
             Section {
@@ -132,7 +136,7 @@ private struct DayContent: View {
                         }
                         .swipeActions(edge: .leading, allowsFullSwipe: true) {
                             Button { logAgainToday(meal) } label: {
-                                Label(isToday ? "meal.relog" : "meal.logAgainToday", systemImage: "arrow.clockwise")
+                                Label(relogKey, systemImage: "arrow.clockwise")
                             }
                             .tint(Theme.Palette.primary)
                         }
@@ -159,13 +163,21 @@ private struct DayContent: View {
 
     @ViewBuilder
     private func mealMenu(_ meal: Meal) -> some View {
-        Picker(selection: Binding(get: { meal.mealType }, set: { meal.mealType = $0; save() })) {
-            ForEach(MealType.allCases) { Text($0.titleKey).tag($0) }
+        Menu {
+            ForEach(MealType.allCases) { type in
+                Button {
+                    meal.mealType = type
+                    save()
+                } label: {
+                    Text(type.titleKey)
+                }
+                .disabled(meal.mealType == type)
+            }
         } label: {
             Label("meal.changeType", systemImage: "arrow.left.arrow.right")
         }
         Button { logAgainToday(meal) } label: {
-            Label(isToday ? "meal.relog" : "meal.logAgainToday", systemImage: "arrow.clockwise")
+            Label(relogKey, systemImage: "arrow.clockwise")
         }
         Button(role: .destructive) { delete(meal) } label: {
             Label("common.delete", systemImage: "trash")
