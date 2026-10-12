@@ -2,3 +2,5 @@
 *.png binary
 *.jpg binary
 *.sqlite binary
+*.der binary
+*.cer binary

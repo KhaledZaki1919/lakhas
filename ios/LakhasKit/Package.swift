@@ -14,6 +14,6 @@ let package = Package(
         .target(name: "NutritionMath"),
         .target(name: "LakhasKit", dependencies: ["NutritionMath"]),
         .testTarget(name: "NutritionMathTests", dependencies: ["NutritionMath"]),
-        .testTarget(name: "LakhasKitTests", dependencies: ["LakhasKit"]),
+        .testTarget(name: "LakhasKitTests", dependencies: ["LakhasKit"], resources: [.copy("Fixtures")]),
     ]
 )
