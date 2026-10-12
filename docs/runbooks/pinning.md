@@ -21,6 +21,9 @@ Sources (2026-10-12):
 
 Missing: **SSL.com TLS ECC Root CA 2022**. It couldn't be fetched from this network. Add it before relying on an SSL.com-issued certificate (see "Add a pin" below).
 
+## Our API host
+The API runs on the free **workers.dev** subdomain (no custom domain). Its chain on 2026-10-12: `*.workers.dev` → **GTS WE1** → **GTS Root R4** (pinned; also cross-signed by GlobalSign Root CA). The CA for workers.dev can't be chosen, which is why both the Google and Let's Encrypt families stay pinned.
+
 ## Compute a pin
 ```
 openssl x509 -in root.pem -noout -pubkey \

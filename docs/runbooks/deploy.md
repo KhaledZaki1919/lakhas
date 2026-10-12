@@ -30,13 +30,14 @@ npx wrangler secret put ANTHROPIC_API_KEY     # Phase 4
 ```
 **Losing `TOKEN_ENC_KEY` invalidates every device token.** Store a copy in your password manager.
 
-## 5. Custom domain
-In the Cloudflare dashboard, go to **Workers & Pages → lakhas-api → Settings → Domains & Routes** and add `api.<your-domain>`. Then:
-1. Set `LAKHAS_API_BASE_URL` in `ios/project.yml` to `https://api.<your-domain>`.
-2. Under **SSL/TLS → Edge Certificates**, keep the CA on Let's Encrypt or Google (pinned, see `pinning.md`).
+## 5. API address: the free workers.dev subdomain
+No custom domain is needed. `npx wrangler deploy` prints the URL, e.g. `https://lakhas-api.<account-subdomain>.workers.dev`.
+- Set `LAKHAS_API_BASE_URL` in `ios/project.yml` to that URL and push. CI builds a new IPA.
+- **Pinning works as shipped.** workers.dev certificates are issued by Google Trust Services (WE1 → GTS Root R4, checked 2026-10-12), and GTS R4 is pinned. You can't pick the CA for workers.dev, but Let's Encrypt is pinned too.
+- If you add a custom domain later, keep its CA on Let's Encrypt or Google (see `pinning.md`).
 
 ## 6. Cloudflare Access for `/admin`
-1. In **Zero Trust → Access → Applications → Add → Self-hosted**, set the domain to `api.<your-domain>` and the path to `admin`. Add a policy: Allow → Emails → your email (one-time PIN login).
+1. Protect the admin panel on workers.dev: **Workers & Pages → lakhas-api → Settings → Domains & Routes → workers.dev → Enable Cloudflare Access**. Then edit the generated Access application so its path covers `admin`, with a policy: Allow → Emails → your email (one-time PIN login). The `/v1` API must stay outside Access, because the app authenticates with device tokens.
 2. Copy the application's **AUD tag**, and note the team domain (`<team>.cloudflareaccess.com`).
 3. Store both:
    ```
@@ -47,9 +48,9 @@ In the Cloudflare dashboard, go to **Workers & Pages → lakhas-api → Settings
 ## 7. Deploy and smoke-test
 ```
 npx wrangler deploy
-curl https://api.<your-domain>/health          # {"ok":true,...}
+curl https://lakhas-api.<account-subdomain>.workers.dev/health          # {"ok":true,...}
 ```
-Open `https://api.<your-domain>/admin`, log in through Access, create a device token, and enter it in the app.
+Open `https://lakhas-api.<account-subdomain>.workers.dev/admin`, log in through Access, create a device token, and enter it in the app.
 
 ## 8. Production environment flag
 `ENVIRONMENT` is `dev` in `wrangler.toml`. Before relying on the deployment, set it to `production` (test-only code paths check `ENVIRONMENT === "test"` and stay off either way).

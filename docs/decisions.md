@@ -22,6 +22,7 @@ Short ADRs. Status values: **Accepted**, **Proposed** (awaiting approval), **Sup
 ### ADR-005 — Certificate pinning strategy
 **Status:** Accepted (2026-10-11).
 **Decision:** Pin SPKI hashes of the CA chain Cloudflare uses for our edge certificate (primary + backup CAs), checked in a `URLSessionDelegate`. A rotation runbook goes in `/docs/runbooks/pinning.md`. Pins are delivered in the app build; a pin change ships as a new IPA.
+**Update (2026-10-12):** the API uses the free `*.workers.dev` subdomain (no custom domain). Its chain ends in GTS Root R4, which is pinned, so no change was needed.
 
 ### ADR-006 — App Attest dev bypass
 **Status:** Superseded by ADR-013. App Attest needs the paid Developer Program and isn't available to sideloaded free-team apps.
