@@ -1,0 +1,215 @@
+{
+  "description": "Daily target vectors (PROJECT_PROMPT.md §6). bmr/tdee rounded to 0.01.",
+  "cases": [
+    {
+      "name": "man, active, lose 0.5",
+      "profile": {
+        "sex": "male",
+        "age": 30,
+        "heightCm": 180,
+        "weightKg": 80,
+        "activity": "active",
+        "goal": "lose",
+        "paceKgPerWeek": 0.5
+      },
+      "expected": {
+        "bmr": 1780,
+        "tdee": 2759,
+        "calories": 2259,
+        "proteinG": 160,
+        "carbsG": 252,
+        "fatG": 68,
+        "waterMl": 3000,
+        "floorApplied": false,
+        "fatReduced": false,
+        "bmiCategory": "normal",
+        "healthyMinKg": 59.9,
+        "healthyMaxKg": 80.7
+      }
+    },
+    {
+      "name": "woman, light, maintain",
+      "profile": {
+        "sex": "female",
+        "age": 28,
+        "heightCm": 165,
+        "weightKg": 60,
+        "activity": "light",
+        "goal": "maintain",
+        "paceKgPerWeek": 0
+      },
+      "expected": {
+        "bmr": 1330.25,
+        "tdee": 1829.09,
+        "calories": 1829,
+        "proteinG": 96,
+        "carbsG": 238,
+        "fatG": 55,
+        "waterMl": 2000,
+        "floorApplied": false,
+        "fatReduced": false,
+        "bmiCategory": "normal",
+        "healthyMinKg": 50.4,
+        "healthyMaxKg": 67.8
+      }
+    },
+    {
+      "name": "woman, BMI ≥ 30, floor applies",
+      "profile": {
+        "sex": "female",
+        "age": 45,
+        "heightCm": 160,
+        "weightKg": 95,
+        "activity": "sedentary",
+        "goal": "lose",
+        "paceKgPerWeek": 1
+      },
+      "expected": {
+        "bmr": 1564,
+        "tdee": 1876.8,
+        "calories": 1564,
+        "proteinG": 128,
+        "carbsG": 157,
+        "fatG": 47,
+        "waterMl": 3250,
+        "floorApplied": true,
+        "fatReduced": false,
+        "bmiCategory": "obese",
+        "healthyMinKg": 47.4,
+        "healthyMaxKg": 63.7
+      }
+    },
+    {
+      "name": "man, very active, gain 0.5",
+      "profile": {
+        "sex": "male",
+        "age": 25,
+        "heightCm": 175,
+        "weightKg": 70,
+        "activity": "veryActive",
+        "goal": "gain",
+        "paceKgPerWeek": 0.5
+      },
+      "expected": {
+        "bmr": 1673.75,
+        "tdee": 2887.22,
+        "calories": 3387,
+        "proteinG": 126,
+        "carbsG": 492,
+        "fatG": 102,
+        "waterMl": 2750,
+        "floorApplied": false,
+        "fatReduced": false,
+        "bmiCategory": "normal",
+        "healthyMinKg": 56.7,
+        "healthyMaxKg": 76.3
+      }
+    },
+    {
+      "name": "man, BMI ≥ 30 with goal weight",
+      "profile": {
+        "sex": "male",
+        "age": 40,
+        "heightCm": 178,
+        "weightKg": 110,
+        "activity": "light",
+        "goal": "lose",
+        "paceKgPerWeek": 0.75,
+        "goalWeightKg": 85
+      },
+      "expected": {
+        "bmr": 2017.5,
+        "tdee": 2774.06,
+        "calories": 2024,
+        "proteinG": 170,
+        "carbsG": 199,
+        "fatG": 61,
+        "waterMl": 3750,
+        "floorApplied": false,
+        "fatReduced": false,
+        "bmiCategory": "obese",
+        "healthyMinKg": 58.6,
+        "healthyMaxKg": 78.9
+      }
+    },
+    {
+      "name": "man, underweight, gain 0.25",
+      "profile": {
+        "sex": "male",
+        "age": 19,
+        "heightCm": 182,
+        "weightKg": 58,
+        "activity": "sedentary",
+        "goal": "gain",
+        "paceKgPerWeek": 0.25
+      },
+      "expected": {
+        "bmr": 1627.5,
+        "tdee": 1953,
+        "calories": 2203,
+        "proteinG": 104,
+        "carbsG": 298,
+        "fatG": 66,
+        "waterMl": 2000,
+        "floorApplied": false,
+        "fatReduced": false,
+        "bmiCategory": "underweight",
+        "healthyMinKg": 61.3,
+        "healthyMaxKg": 82.5
+      }
+    },
+    {
+      "name": "edge: protein crowds out carbs, fat drops to 20%",
+      "profile": {
+        "sex": "female",
+        "age": 60,
+        "heightCm": 150,
+        "weightKg": 120,
+        "activity": "sedentary",
+        "goal": "lose",
+        "paceKgPerWeek": 1,
+        "goalWeightKg": 200
+      },
+      "expected": {
+        "bmr": 1676.5,
+        "tdee": 2011.8,
+        "calories": 1677,
+        "proteinG": 400,
+        "carbsG": 0,
+        "fatG": 37,
+        "waterMl": 4250,
+        "floorApplied": true,
+        "fatReduced": true,
+        "bmiCategory": "obese",
+        "healthyMinKg": 41.6,
+        "healthyMaxKg": 56
+      }
+    },
+    {
+      "name": "man, low floor (1500)",
+      "profile": {
+        "sex": "male",
+        "age": 70,
+        "heightCm": 160,
+        "weightKg": 55,
+        "activity": "sedentary",
+        "goal": "lose",
+        "paceKgPerWeek": 1
+      },
+      "expected": {
+        "bmr": 1205,
+        "tdee": 1446,
+        "calories": 1500,
+        "proteinG": 110,
+        "carbsG": 164,
+        "fatG": 45,
+        "waterMl": 2000,
+        "floorApplied": true,
+        "fatReduced": false,
+        "bmiCategory": "normal",
+        "healthyMinKg": 47.4,
+        "healthyMaxKg": 63.7
+      }
+    }
+  ]
+}

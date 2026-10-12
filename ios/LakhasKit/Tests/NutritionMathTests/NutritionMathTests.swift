@@ -1,14 +1,61 @@
+import Foundation
 import Testing
 @testable import NutritionMath
 
+/// shared/test-vectors/nutrition.json — the same cases the backend mirror is tested against.
+private struct Vectors: Decodable {
+    struct Profile: Decodable {
+        let sex: Sex
+        let age: Int
+        let heightCm: Double
+        let weightKg: Double
+        let activity: ActivityLevel
+        let goal: Goal
+        let paceKgPerWeek: Double
+        let goalWeightKg: Double?
+    }
+
+    struct Expected: Decodable {
+        let bmr: Double
+        let tdee: Double
+        let calories: Int
+        let proteinG: Int
+        let carbsG: Int
+        let fatG: Int
+        let waterMl: Int
+        let floorApplied: Bool
+        let fatReduced: Bool
+        let bmiCategory: BMICategory
+        let healthyMinKg: Double
+        let healthyMaxKg: Double
+    }
+
+    struct Case: Decodable {
+        let name: String
+        let profile: Profile
+        let expected: Expected
+    }
+
+    let cases: [Case]
+
+    static func load() throws -> [Case] {
+        let url = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent().deletingLastPathComponent()
+            .deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+            .appendingPathComponent("shared/test-vectors/nutrition.json")
+        return try JSONDecoder().decode(Vectors.self, from: Data(contentsOf: url)).cases
+    }
+}
+
+private func round2(_ value: Double) -> Double { (value * 100).rounded() / 100 }
+private func round1(_ value: Double) -> Double { (value * 10).rounded() / 10 }
+
 struct NutritionMathTests {
     @Test func bmrMale() {
-        // 10·80 + 6.25·180 − 5·30 + 5 = 1780
         #expect(NutritionMath.bmr(sex: .male, weightKg: 80, heightCm: 180, age: 30) == 1780)
     }
 
     @Test func bmrFemale() {
-        // 10·60 + 6.25·165 − 5·28 − 161 = 1330.25
         #expect(NutritionMath.bmr(sex: .female, weightKg: 60, heightCm: 165, age: 28) == 1330.25)
     }
 
@@ -20,6 +67,51 @@ struct NutritionMathTests {
     ])
     func activityFactors(level: ActivityLevel, factor: Double) {
         #expect(level.factor == factor)
-        #expect(NutritionMath.tdee(bmr: 1000, activity: level) == 1000 * factor)
+    }
+
+    @Test func goalAdjustmentIs250PerQuarterKilo() {
+        #expect(NutritionMath.goalAdjustment(goal: .lose, paceKgPerWeek: 0.75) == -750)
+        #expect(NutritionMath.goalAdjustment(goal: .gain, paceKgPerWeek: 0.5) == 500)
+        #expect(NutritionMath.goalAdjustment(goal: .maintain, paceKgPerWeek: 1) == 0)
+    }
+
+    @Test func pacesFollowADR011() {
+        #expect(Goal.lose.paces == [0.25, 0.5, 0.75, 1.0])
+        #expect(Goal.gain.paces == [0.25, 0.5])
+        #expect(Goal.maintain.paces == [0])
+    }
+
+    @Test func matchesSharedVectors() throws {
+        for vector in try Vectors.load() {
+            let p = vector.profile
+            let targets = NutritionMath.targets(for: BodyProfile(
+                sex: p.sex, age: p.age, heightCm: p.heightCm, weightKg: p.weightKg,
+                activity: p.activity, goal: p.goal, paceKgPerWeek: p.paceKgPerWeek, goalWeightKg: p.goalWeightKg
+            ))
+            let e = vector.expected
+            #expect(round2(targets.bmr) == e.bmr, "\(vector.name)")
+            #expect(round2(targets.tdee) == e.tdee, "\(vector.name)")
+            #expect(targets.calories == e.calories, "\(vector.name)")
+            #expect(targets.proteinG == e.proteinG, "\(vector.name)")
+            #expect(targets.carbsG == e.carbsG, "\(vector.name)")
+            #expect(targets.fatG == e.fatG, "\(vector.name)")
+            #expect(targets.waterMl == e.waterMl, "\(vector.name)")
+            #expect(targets.floorApplied == e.floorApplied, "\(vector.name)")
+            #expect(targets.fatReduced == e.fatReduced, "\(vector.name)")
+
+            let summary = NutritionMath.bodySummary(weightKg: p.weightKg, heightCm: p.heightCm)
+            #expect(summary.category == e.bmiCategory, "\(vector.name)")
+            #expect(round1(summary.healthyMinKg) == e.healthyMinKg, "\(vector.name)")
+            #expect(round1(summary.healthyMaxKg) == e.healthyMaxKg, "\(vector.name)")
+        }
+    }
+
+    @Test func carbsNeverNegative() {
+        let targets = NutritionMath.targets(for: BodyProfile(
+            sex: .female, age: 60, heightCm: 150, weightKg: 120,
+            activity: .sedentary, goal: .lose, paceKgPerWeek: 1, goalWeightKg: 200
+        ))
+        #expect(targets.carbsG == 0)
+        #expect(targets.fatReduced)
     }
 }
