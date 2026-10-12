@@ -89,13 +89,28 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.khaled.lakhas.tests
         GENERATE_INFOPLIST_FILE: YES
 
+  LakhasUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: LakhasUITests
+    dependencies:
+      - target: Lakhas
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.khaled.lakhas.uitests
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_TARGET_NAME: Lakhas
+
 schemes:
   Lakhas:
     build:
       targets:
         Lakhas: all
         LakhasTests: [test]
+        LakhasUITests: [test]
     test:
       config: Debug
       targets:
         - LakhasTests
+        - LakhasUITests

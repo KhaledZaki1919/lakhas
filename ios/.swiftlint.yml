@@ -3,6 +3,7 @@ included:
   - LakhasWidgets
   - LakhasShare
   - LakhasTests
+  - LakhasUITests
   - LakhasKit/Sources
   - LakhasKit/Tests
 excluded:

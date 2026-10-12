@@ -51,6 +51,7 @@ CI artifacts: `Lakhas-full` and `Lakhas-lite` unsigned IPAs on every push to `ma
 - Never hand-edit `.pbxproj`; change `project.yml` / `project.full.yml`. Generated `Info.plist`s and the `.xcodeproj` are gitignored.
 - No force unwraps or force casts (SwiftLint errors).
 - **Strings:** every user-facing string comes from a String Catalog (`Localizable.xcstrings` per target, `InfoPlist.xcstrings`) with both `ar` and `en`. Keys are `area.name` (`tab.today`, `probe.title`); prefixes are listed in `ios/scripts/check-strings.py`, so add new areas there. Values that aren't UI text use `Text(verbatim:)`.
+- **Accessibility identifiers** (for UI tests) start with `ax.` (`ax.onboarding.next`), so they never look like localization keys.
 - **Layout:** leading/trailing only; test RTL and LTR.
 - **Design:** use `Theme.Palette` / `Theme.Space` / `Theme.Radius` (LakhasKit) only, no literal colors or sizes. Tokens are in `docs/design.md`.
 - **Sideloading constraints (ADR-014):** never hardcode the bundle ID, team prefix or App Group at runtime. Use `AppGroupResolver.resolve()`; extensions never call the network and never share the Keychain. Extension code is compiled only with `LAKHAS_EXTENSIONS`.

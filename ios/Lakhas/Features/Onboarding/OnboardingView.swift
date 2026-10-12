@@ -54,7 +54,7 @@ struct OnboardingView: View {
             }
             .tint(Theme.Palette.ink)
             .accessibilityLabel(Text("common.back"))
-            .accessibilityIdentifier("onboarding.back")
+            .accessibilityIdentifier("ax.onboarding.back")
 
             ProgressView(value: Double(step.rawValue), total: Double(Step.summary.rawValue))
                 .tint(Theme.Palette.primary)
@@ -83,7 +83,7 @@ struct OnboardingView: View {
                 step = next
             }
         }
-        .accessibilityIdentifier(step == .summary ? "onboarding.finish" : "onboarding.next")
+        .accessibilityIdentifier(step == .summary ? "ax.onboarding.finish" : "ax.onboarding.next")
     }
 
     private var footerKey: LocalizedStringKey {
@@ -134,9 +134,9 @@ struct OnboardingView: View {
         VStack(alignment: .leading, spacing: Theme.Space.sm) {
             title("onboarding.sex.title", subtitle: "onboarding.sex.subtitle")
             OptionCard(titleKey: "sex.male", symbol: "figure.stand", isSelected: sex == .male) { sex = .male }
-                .accessibilityIdentifier("onboarding.option.male")
+                .accessibilityIdentifier("ax.onboarding.option.male")
             OptionCard(titleKey: "sex.female", symbol: "figure.stand.dress", isSelected: sex == .female) { sex = .female }
-                .accessibilityIdentifier("onboarding.option.female")
+                .accessibilityIdentifier("ax.onboarding.option.female")
         }
     }
 
@@ -180,7 +180,7 @@ struct OnboardingView: View {
             ForEach(ActivityLevel.allCases, id: \.self) { level in
                 OptionCard(titleKey: level.titleKey, subtitleKey: level.subtitleKey, symbol: level.symbol,
                            isSelected: activity == level) { activity = level }
-                    .accessibilityIdentifier("onboarding.option.\(level.rawValue)")
+                    .accessibilityIdentifier("ax.onboarding.option.\(level.rawValue)")
             }
         }
     }
@@ -193,7 +193,7 @@ struct OnboardingView: View {
                     goal = option
                     if !option.paces.contains(pace) { pace = option.paces.first ?? 0 }
                 }
-                .accessibilityIdentifier("onboarding.option.\(option.rawValue)")
+                .accessibilityIdentifier("ax.onboarding.option.\(option.rawValue)")
             }
             if let goal, goal != .maintain {
                 Text("onboarding.pace.title")
@@ -238,7 +238,7 @@ struct OnboardingView: View {
                 Text(verbatim: "\(format.number(targets.calories)) \(String(localized: "unit.kcal"))")
                     .font(.largeTitle.bold().monospacedDigit())
                     .foregroundStyle(Theme.Palette.primary)
-                    .accessibilityIdentifier("onboarding.summary.calories")
+                    .accessibilityIdentifier("ax.onboarding.summary.calories")
                 HStack {
                     summaryChip(.protein, grams: targets.proteinG)
                     summaryChip(.carbs, grams: targets.carbsG)
