@@ -26,11 +26,11 @@ describe("error envelope", () => {
     expect(body.error.message).toBe("Not found.");
   });
 
-  it("marks planned v1 routes as not implemented yet", async () => {
+  it("requires a device token on v1 routes", async () => {
     const res = await SELF.fetch("https://api.test/v1/quota");
-    expect(res.status).toBe(501);
+    expect(res.status).toBe(401);
     const body = (await res.json()) as ErrorEnvelope;
-    expect(body.error.code).toBe("not_implemented");
+    expect(body.error.code).toBe("unauthorized");
   });
 });
 

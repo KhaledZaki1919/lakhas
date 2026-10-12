@@ -8,6 +8,10 @@ export default tseslint.config(
   {
     rules: {
       "@typescript-eslint/no-non-null-assertion": "error",
+      "@typescript-eslint/no-empty-object-type": [
+        "error",
+        { allowInterfaces: "with-single-extends" },
+      ],
       "no-console": ["error", { allow: ["log", "error"] }],
     },
   },

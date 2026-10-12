@@ -31,7 +31,7 @@ npm test             # vitest inside the Workers runtime (@cloudflare/vitest-plu
 npm run typecheck    # tsc
 npm run lint         # eslint + prettier --check   (npm run format to fix)
 npm run build:dry    # wrangler deploy --dry-run
-npx wrangler types   # regenerate worker-configuration.d.ts after editing wrangler.toml
+npm run cf-typegen  # regenerate worker-configuration.d.ts after editing wrangler.toml (secrets are typed in src/env.d.ts)
 ```
 OpenAPI (from `shared/`): `npx @redocly/cli@2 lint openapi.yaml`
 

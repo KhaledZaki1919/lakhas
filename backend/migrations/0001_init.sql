@@ -4,8 +4,8 @@
 CREATE TABLE devices (
   token_id       TEXT PRIMARY KEY,
   label          TEXT NOT NULL,
-  secret_enc     BLOB,                 -- AES-GCM ciphertext under TOKEN_ENC_KEY; NULL once revoked/deleted
-  secret_iv      BLOB,
+  secret_enc     TEXT,                 -- base64url AES-GCM ciphertext under TOKEN_ENC_KEY; NULL once revoked
+  secret_iv      TEXT,                 -- base64url 96-bit IV
   status         TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'revoked')),
   created_at     INTEGER NOT NULL,
   activated_at   INTEGER,
