@@ -18,8 +18,8 @@ struct PinningLiveTests {
         let delegate = PinningDelegate(validator: PinValidator(host: "www.google.com", pins: pins))
         let session = URLSession(configuration: .ephemeral, delegate: delegate, delegateQueue: nil)
         defer { session.invalidateAndCancel() }
+        guard let url = URL(string: "https://www.google.com/generate_204") else { return .failure(URLError(.badURL)) }
         do {
-            let url = URL(string: "https://www.google.com/generate_204")!   // swiftlint:disable:this force_unwrapping
             let (_, response) = try await session.data(from: url)
             return .success((response as? HTTPURLResponse)?.statusCode ?? 0)
         } catch {

@@ -112,16 +112,7 @@ public final class APIClient: Sendable {
         let attempts = method == "GET" ? 2 : 1
         var lastError = APIError.transport
         for attempt in 1...attempts {
-            var request = URLRequest(url: url)
-            request.httpMethod = method
-            request.httpBody = body
-            request.setValue("application/json", forHTTPHeaderField: "Accept")
-            if body != nil { request.setValue("application/json", forHTTPHeaderField: "Content-Type") }
-            request.setValue(language(), forHTTPHeaderField: "X-App-Lang")
-            request.setValue(TimeZone.current.identifier, forHTTPHeaderField: "X-Timezone")
-            request.setValue(Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "0",
-                             forHTTPHeaderField: "X-App-Version")
-            signer.sign(&request)
+            let request = makeRequest(url: url, method: method, body: body)
 
             do {
                 let (data, response) = try await session.data(for: request)
@@ -138,6 +129,23 @@ public final class APIClient: Sendable {
             }
         }
         throw lastError
+    }
+}
+
+extension APIClient {
+    /// A fully signed request; called per attempt so each retry gets a fresh nonce.
+    fileprivate func makeRequest(url: URL, method: String, body: Data?) -> URLRequest {
+        var request = URLRequest(url: url)
+        request.httpMethod = method
+        request.httpBody = body
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+        if body != nil { request.setValue("application/json", forHTTPHeaderField: "Content-Type") }
+        request.setValue(language(), forHTTPHeaderField: "X-App-Lang")
+        request.setValue(TimeZone.current.identifier, forHTTPHeaderField: "X-Timezone")
+        request.setValue(Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "0",
+                         forHTTPHeaderField: "X-App-Version")
+        signer.sign(&request)
+        return request
     }
 }
 
