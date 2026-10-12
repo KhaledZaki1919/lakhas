@@ -26,6 +26,13 @@ fi
 codesign --force --sign - --timestamp=none \
   --entitlements "$CONFIG_DIR/Lakhas.entitlements" "$BUNDLE"
 
+# Without UILaunchScreen iOS runs the app letterboxed in legacy compatibility mode.
+if ! plutil -extract UILaunchScreen xml1 -o - "$BUNDLE/Info.plist" | grep -q "<dict>"; then
+  echo "error: UILaunchScreen is missing or empty in Info.plist" >&2
+  exit 1
+fi
+echo "UILaunchScreen: present"
+
 # Verify each signed bundle really carries the App Group entitlement.
 verify_entitlements() {
   local bundle="$1"

@@ -48,7 +48,10 @@ targets:
         CFBundleDisplayName: "لخّص"
         CFBundleDevelopmentRegion: ar
         CFBundleLocalizations: [ar, en]
-        UILaunchScreen: {}
+        # Must be non-empty: XcodeGen drops empty dictionaries, and without this key iOS
+        # runs the app letterboxed in legacy mode. CI verifies it (scripts/build-ipa.sh).
+        UILaunchScreen:
+          UIColorName: LaunchBackground
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
         UIApplicationSceneManifest:
           UIApplicationSupportsMultipleScenes: false
