@@ -26,6 +26,12 @@ Status: research findings + design, 2026-10-11. **Items marked "verify on device
 | **Camera, Photos, VisionKit barcode scanner** | Work (privacy usage strings only). | No change. |
 | **Background App Refresh** | Works. | Not required. |
 
+### First device test (2026-10-12, Lakhas-full, Sideloadly, free Apple ID)
+- **Worked:** installs and launches; Keychain works.
+- **Probe report:** "No signing profile", no App Group in use, storage not shared.
+- **Probe fix:** the probe now separates *missing* from *unreadable*, and decodes the profile's CMS envelope properly (some signers chunk the plist, which defeats a text search). It also reads the team prefix from the Keychain and lists the entitlements the profile grants.
+- **Likely outcome:** Sideloadly lists custom entitlements as a paid-program feature ([changelog](https://sideloadly.io/changelog.html)), so on a free Apple ID it most likely **drops the App Group**. Lakhas then runs in the "no usable group" row below: everything works except live widget data and the share extension's queue (it falls back to copying the link). To be confirmed by the next probe report.
+
 ## 3. Fallback matrix
 
 | Scenario | Widgets | Share extension | Everything else |

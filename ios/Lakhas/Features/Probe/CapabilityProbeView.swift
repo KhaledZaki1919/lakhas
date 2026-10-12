@@ -5,7 +5,7 @@ import WidgetKit
 #endif
 
 /// Shows what actually works on this sideloaded install (docs/sideloading.md §4):
-/// the signer's App Group, whether the widget shares our container, and the Keychain.
+/// the signer's profile and App Group, whether the widget shares our container, and the Keychain.
 struct CapabilityProbeView: View {
     @State private var report = ProbeReport.collect()
     @State private var keychainOK: Bool?
@@ -16,7 +16,9 @@ struct CapabilityProbeView: View {
                 LabeledContent("probe.variant", value: report.variant)
                 LabeledContent("probe.bundleID", value: report.bundleID)
                 LabeledContent("probe.team", value: report.team)
+                LabeledContent("probe.profileFile", value: report.profileFile)
                 LabeledContent("probe.profileGroups", value: report.profileGroups)
+                LabeledContent("probe.entitlements", value: report.entitlements)
             }
             Section("probe.section.storage") {
                 LabeledContent("probe.resolvedGroup", value: report.resolvedGroup)
@@ -63,14 +65,17 @@ struct ProbeReport {
     let variant: String
     let bundleID: String
     let team: String
+    let profileFile: String
     let profileGroups: String
+    let entitlements: String
     let resolvedGroup: String
     let storeShared: String
     let widgetSeen: String
 
     static func collect(bundle: Bundle = .main) -> ProbeReport {
         let none = String(localized: "probe.none")
-        let profile = ProvisioningProfile.load(from: bundle)
+        let status = ProvisioningProfile.inspect(bundle: bundle)
+        let profile = status.profile
         let location = AppGroupResolver.resolve(bundle: bundle)
         let widgetDate = HeartbeatStore(location: location).read(.widget)?.date
 
@@ -83,9 +88,12 @@ struct ProbeReport {
         return ProbeReport(
             variant: variant,
             bundleID: bundle.bundleIdentifier ?? none,
-            team: profile?.teamIdentifiers.first ?? none,
+            team: profile?.teamIdentifiers.first ?? keychainTeam() ?? none,
+            profileFile: describe(status),
             profileGroups: profile.map { $0.appGroups.isEmpty ? none : $0.appGroups.joined(separator: ", ") }
                 ?? String(localized: "probe.noProfile"),
+            entitlements: profile.map { $0.entitlementKeys.isEmpty ? none : $0.entitlementKeys.joined(separator: ", ") }
+                ?? none,
             resolvedGroup: location.appGroupID ?? none,
             storeShared: yesNo(location.isShared),
             widgetSeen: widgetDate.map { $0.formatted(date: .abbreviated, time: .shortened) }
@@ -97,13 +105,35 @@ struct ProbeReport {
         value ? String(localized: "common.yes") : String(localized: "common.no")
     }
 
+    private static func describe(_ status: ProvisioningProfile.Status) -> String {
+        switch status {
+        case .missing:
+            return String(localized: "probe.profile.missing")
+        case .unreadable(let byteCount):
+            return "\(String(localized: "probe.profile.unreadable")) (\(byteCount) B)"
+        case .parsed(let profile):
+            return [String(localized: "probe.profile.parsed"), profile.name]
+                .compactMap { $0 }
+                .joined(separator: " · ")
+        }
+    }
+
+    /// Team prefix of our default Keychain access group; works without a readable profile.
+    private static func keychainTeam() -> String? {
+        guard let group = KeychainStore(service: keychainService).defaultAccessGroup(),
+              let prefix = group.split(separator: ".").first else { return nil }
+        return "\(prefix) (\(String(localized: "probe.team.fromKeychain")))"
+    }
+
     /// Plain-text report for the share sheet (to send back during the sideloading test).
     var text: String {
         [
             "\(String(localized: "probe.variant")): \(variant)",
             "\(String(localized: "probe.bundleID")): \(bundleID)",
             "\(String(localized: "probe.team")): \(team)",
+            "\(String(localized: "probe.profileFile")): \(profileFile)",
             "\(String(localized: "probe.profileGroups")): \(profileGroups)",
+            "\(String(localized: "probe.entitlements")): \(entitlements)",
             "\(String(localized: "probe.resolvedGroup")): \(resolvedGroup)",
             "\(String(localized: "probe.storeShared")): \(storeShared)",
             "\(String(localized: "probe.widgetSeen")): \(widgetSeen)",

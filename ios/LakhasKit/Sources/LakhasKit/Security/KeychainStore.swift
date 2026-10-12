@@ -64,6 +64,22 @@ public struct KeychainStore: Sendable {
         }
     }
 
+    /// The access group iOS assigns to our items, e.g. `ABCDE12345.com.khaled.lakhas`.
+    /// Its first component is the signing team's App ID prefix, which works even when the
+    /// provisioning profile can't be read (capability probe).
+    public func defaultAccessGroup() -> String? {
+        let account = "probe-group-\(UUID().uuidString)"
+        var query = baseQuery(account: account)
+        query[kSecValueData as String] = Data("probe".utf8)
+        query[kSecAttrAccessible as String] = kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
+        query[kSecReturnAttributes as String] = true
+        var result: CFTypeRef?
+        let status = SecItemAdd(query as CFDictionary, &result)
+        defer { try? delete(account: account) }
+        guard status == errSecSuccess, let attributes = result as? [String: Any] else { return nil }
+        return attributes[kSecAttrAccessGroup as String] as? String
+    }
+
     private func baseQuery(account: String) -> [String: Any] {
         [
             kSecClass as String: kSecClassGenericPassword,

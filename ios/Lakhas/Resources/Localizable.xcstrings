@@ -86,6 +86,23 @@
         }
       }
     },
+    "probe.entitlements": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الصلاحيات في ملف التوقيع"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Entitlements in profile"
+          }
+        }
+      }
+    },
     "probe.keychain.result": {
       "extractionState": "manual",
       "localizations": {
@@ -150,6 +167,74 @@
           "stringUnit": {
             "state": "translated",
             "value": "None"
+          }
+        }
+      }
+    },
+    "probe.profile.missing": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "غير موجود في التطبيق"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not in the app bundle"
+          }
+        }
+      }
+    },
+    "probe.profile.parsed": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تمت قراءته"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Read"
+          }
+        }
+      }
+    },
+    "probe.profile.unreadable": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "موجود لكن تعذّرت قراءته"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Present but unreadable"
+          }
+        }
+      }
+    },
+    "probe.profileFile": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ملف التوقيع"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Signing profile"
           }
         }
       }
@@ -303,6 +388,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "Team"
+          }
+        }
+      }
+    },
+    "probe.team.fromKeychain": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "من سلسلة المفاتيح"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "from Keychain"
           }
         }
       }
