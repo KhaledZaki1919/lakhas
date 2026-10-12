@@ -1,0 +1,52 @@
+{
+  "description": "Request-signing test vectors (ADR-013). Body is UTF-8 text; signature is base64url HMAC-SHA256.",
+  "token": "lk1_Tk7f3c9a2b1d04e5_AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+  "tokenId": "Tk7f3c9a2b1d04e5",
+  "secretBase64url": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+  "cases": [
+    {
+      "name": "GET without body",
+      "method": "GET",
+      "pathAndQuery": "/v1/device",
+      "body": "",
+      "timestamp": "1760184000000",
+      "nonce": "AAECAwQFBgcICQoLDA0ODw",
+      "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "canonical": "LK1\nGET\n/v1/device\n1760184000000\nAAECAwQFBgcICQoLDA0ODw\ne3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "signature": "TFgnuefQEXIZ3iXEb41KppiNrfS1TUTU2zpKa4C9ibg"
+    },
+    {
+      "name": "GET with percent-encoded Arabic query",
+      "method": "GET",
+      "pathAndQuery": "/v1/foods/search?q=%D9%81%D9%88%D9%84&lang=ar",
+      "body": "",
+      "timestamp": "1760184001000",
+      "nonce": "EBESExQVFhcYGRobHB0eHw",
+      "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "canonical": "LK1\nGET\n/v1/foods/search?q=%D9%81%D9%88%D9%84&lang=ar\n1760184001000\nEBESExQVFhcYGRobHB0eHw\ne3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "signature": "aMN8tgoygFOZvafDpDgoz3HqhN2pFRHY-_mc150EX2Y"
+    },
+    {
+      "name": "POST JSON with Arabic text",
+      "method": "POST",
+      "pathAndQuery": "/v1/analyze/text",
+      "body": "{\"text\":\"نص فرخة مشوية مع رز وسلطة\",\"advanced\":false}",
+      "timestamp": "1760184002000",
+      "nonce": "ICEiIyQlJicoKSorLC0uLw",
+      "bodySha256": "242ff08088a12c6d50e1f842eb4855ba77a425407d4ff1e2025b9d4523ec54b4",
+      "canonical": "LK1\nPOST\n/v1/analyze/text\n1760184002000\nICEiIyQlJicoKSorLC0uLw\n242ff08088a12c6d50e1f842eb4855ba77a425407d4ff1e2025b9d4523ec54b4",
+      "signature": "3n-a-lg5eooDQMVRoYWIypC_OAKGftsWj_Jgtu64WnI"
+    },
+    {
+      "name": "DELETE without body",
+      "method": "DELETE",
+      "pathAndQuery": "/v1/device",
+      "body": "",
+      "timestamp": "1760184003000",
+      "nonce": "MDEyMzQ1Njc4OTo7PD0-Pw",
+      "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "canonical": "LK1\nDELETE\n/v1/device\n1760184003000\nMDEyMzQ1Njc4OTo7PD0-Pw\ne3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "signature": "Rjjf9UZT7EXVA74fYSiYmnfsPniC3L1it_DP1kItYe4"
+    }
+  ]
+}
