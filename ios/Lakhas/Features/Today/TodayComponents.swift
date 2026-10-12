@@ -81,7 +81,7 @@ struct DateStrip: View {
                             .font(.callout.weight(.semibold).monospacedDigit())
                             .foregroundStyle(isSelected ? Theme.Palette.onPrimary : Theme.Palette.ink)
                         Circle()
-                            .fill(logged.contains(DayKey.make(day)) ? (isSelected ? Theme.Palette.onPrimary : Theme.Palette.primary) : .clear)
+                            .fill(dotColor(logged: logged.contains(DayKey.make(day)), selected: isSelected))
                             .frame(width: 4, height: 4)
                     }
                     .frame(maxWidth: .infinity, minHeight: 52)
@@ -92,6 +92,13 @@ struct DateStrip: View {
                 .accessibilityAddTraits(isSelected ? .isSelected : [])
             }
         }
+    }
+}
+
+extension DateStrip {
+    fileprivate func dotColor(logged: Bool, selected: Bool) -> Color {
+        guard logged else { return .clear }
+        return selected ? Theme.Palette.onPrimary : Theme.Palette.primary
     }
 }
 
@@ -186,12 +193,12 @@ struct MealCard: View {
     }
 
     private var macroLine: String {
-        let t = meal.totals
-        let g = String(localized: "unit.g")
+        let totals = meal.totals
+        let grams = String(localized: "unit.g")
         return [
-            "\(String(localized: "macro.protein.short")) \(format.number(Int(t.protein.rounded())))\(g)",
-            "\(String(localized: "macro.carbs.short")) \(format.number(Int(t.carbs.rounded())))\(g)",
-            "\(String(localized: "macro.fat.short")) \(format.number(Int(t.fat.rounded())))\(g)",
+            "\(String(localized: "macro.protein.short")) \(format.number(Int(totals.protein.rounded())))\(grams)",
+            "\(String(localized: "macro.carbs.short")) \(format.number(Int(totals.carbs.rounded())))\(grams)",
+            "\(String(localized: "macro.fat.short")) \(format.number(Int(totals.fat.rounded())))\(grams)",
         ].joined(separator: " · ")
     }
 }
@@ -211,13 +218,13 @@ struct CelebrationView: View {
         } else {
             TimelineView(.animation) { timeline in
                 Canvas { context, size in
-                    let t = timeline.date.timeIntervalSince(start)
+                    let elapsed = timeline.date.timeIntervalSince(start)
                     let colors = [Theme.Palette.protein, Theme.Palette.carbs, Theme.Palette.fat, Theme.Palette.primary]
                     for index in 0..<60 {
                         let seed = Double(index)
                         let x = size.width * (0.1 + 0.8 * ((seed * 37).truncatingRemainder(dividingBy: 100) / 100))
-                        let y = -20 + t * (220 + (seed * 13).truncatingRemainder(dividingBy: 160))
-                        let rect = CGRect(x: x + sin(t * 3 + seed) * 18, y: y, width: 5, height: 9)
+                        let y = -20 + elapsed * (220 + (seed * 13).truncatingRemainder(dividingBy: 160))
+                        let rect = CGRect(x: x + sin(elapsed * 3 + seed) * 18, y: y, width: 5, height: 9)
                         context.fill(Path(ellipseIn: rect), with: .color(colors[index % colors.count]))
                     }
                 }

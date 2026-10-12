@@ -53,7 +53,10 @@ private struct DayContent: View {
         self.targets = targets
         _selectedDate = selectedDate
         self.onLog = onLog
-        _meals = Query(filter: #Predicate<Meal> { $0.dayKey == dayKey }, sort: [SortDescriptor(\Meal.sortIndex), SortDescriptor(\Meal.loggedAt)])
+        _meals = Query(
+            filter: #Predicate<Meal> { $0.dayKey == dayKey },
+            sort: [SortDescriptor(\Meal.sortIndex), SortDescriptor(\Meal.loggedAt)]
+        )
     }
 
     private var eaten: Macros { meals.reduce(.zero) { $0 + $1.totals } }

@@ -83,26 +83,27 @@ struct NutritionMathTests {
 
     @Test func matchesSharedVectors() throws {
         for vector in try Vectors.load() {
-            let p = vector.profile
+            let input = vector.profile
             let targets = NutritionMath.targets(for: BodyProfile(
-                sex: p.sex, age: p.age, heightCm: p.heightCm, weightKg: p.weightKg,
-                activity: p.activity, goal: p.goal, paceKgPerWeek: p.paceKgPerWeek, goalWeightKg: p.goalWeightKg
+                sex: input.sex, age: input.age, heightCm: input.heightCm, weightKg: input.weightKg,
+                activity: input.activity, goal: input.goal, paceKgPerWeek: input.paceKgPerWeek,
+                goalWeightKg: input.goalWeightKg
             ))
-            let e = vector.expected
-            #expect(round2(targets.bmr) == e.bmr, "\(vector.name)")
-            #expect(round2(targets.tdee) == e.tdee, "\(vector.name)")
-            #expect(targets.calories == e.calories, "\(vector.name)")
-            #expect(targets.proteinG == e.proteinG, "\(vector.name)")
-            #expect(targets.carbsG == e.carbsG, "\(vector.name)")
-            #expect(targets.fatG == e.fatG, "\(vector.name)")
-            #expect(targets.waterMl == e.waterMl, "\(vector.name)")
-            #expect(targets.floorApplied == e.floorApplied, "\(vector.name)")
-            #expect(targets.fatReduced == e.fatReduced, "\(vector.name)")
+            let expected = vector.expected
+            #expect(round2(targets.bmr) == expected.bmr, "\(vector.name)")
+            #expect(round2(targets.tdee) == expected.tdee, "\(vector.name)")
+            #expect(targets.calories == expected.calories, "\(vector.name)")
+            #expect(targets.proteinG == expected.proteinG, "\(vector.name)")
+            #expect(targets.carbsG == expected.carbsG, "\(vector.name)")
+            #expect(targets.fatG == expected.fatG, "\(vector.name)")
+            #expect(targets.waterMl == expected.waterMl, "\(vector.name)")
+            #expect(targets.floorApplied == expected.floorApplied, "\(vector.name)")
+            #expect(targets.fatReduced == expected.fatReduced, "\(vector.name)")
 
-            let summary = NutritionMath.bodySummary(weightKg: p.weightKg, heightCm: p.heightCm)
-            #expect(summary.category == e.bmiCategory, "\(vector.name)")
-            #expect(round1(summary.healthyMinKg) == e.healthyMinKg, "\(vector.name)")
-            #expect(round1(summary.healthyMaxKg) == e.healthyMaxKg, "\(vector.name)")
+            let summary = NutritionMath.bodySummary(weightKg: input.weightKg, heightCm: input.heightCm)
+            #expect(summary.category == expected.bmiCategory, "\(vector.name)")
+            #expect(round1(summary.healthyMinKg) == expected.healthyMinKg, "\(vector.name)")
+            #expect(round1(summary.healthyMaxKg) == expected.healthyMaxKg, "\(vector.name)")
         }
     }
 

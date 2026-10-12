@@ -7,7 +7,9 @@ import SwiftData
 public enum LakhasStore {
     public static let schema = Schema([UserProfile.self, GoalOverride.self, Meal.self, MealItem.self])
 
-    public static func makeContainer(location: StoreLocation = AppGroupResolver.resolve(), inMemory: Bool = false) throws -> ModelContainer {
+    public static func makeContainer(
+        location: StoreLocation = AppGroupResolver.resolve(), inMemory: Bool = false
+    ) throws -> ModelContainer {
         if inMemory {
             return try ModelContainer(for: schema, configurations: ModelConfiguration(isStoredInMemoryOnly: true))
         }

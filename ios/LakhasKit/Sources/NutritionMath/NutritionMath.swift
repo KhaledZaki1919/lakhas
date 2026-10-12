@@ -183,7 +183,7 @@ public enum NutritionMath {
         let floor = calorieFloor(sex: profile.sex, bmr: bmr)
         let calories = max(adjusted, floor)
 
-        let macros = macros(
+        let macros = macroSplit(
             calories: calories,
             proteinG: profile.goal.proteinPerKg * proteinReferenceWeight(profile)
         )
@@ -202,7 +202,14 @@ public enum NutritionMath {
 
     /// Fat 27% of calories; carbs get the rest. If carbs would go negative, fat drops toward
     /// 20% first; carbs never go below zero.
-    static func macros(calories: Double, proteinG: Double) -> (protein: Double, carbs: Double, fat: Double, fatReduced: Bool) {
+    struct MacroSplit: Equatable {
+        let protein: Double
+        let carbs: Double
+        let fat: Double
+        let fatReduced: Bool
+    }
+
+    static func macroSplit(calories: Double, proteinG: Double) -> MacroSplit {
         let proteinKcal = proteinG * 4
         var fatKcal = fatShare * calories
         var fatReduced = false
@@ -211,6 +218,6 @@ public enum NutritionMath {
             fatReduced = true
         }
         let carbsKcal = max(0, calories - proteinKcal - fatKcal)
-        return (proteinG, carbsKcal / 4, fatKcal / 9, fatReduced)
+        return MacroSplit(protein: proteinG, carbs: carbsKcal / 4, fat: fatKcal / 9, fatReduced: fatReduced)
     }
 }
