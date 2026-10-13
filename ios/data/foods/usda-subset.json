@@ -1,0 +1,2498 @@
+[
+ {
+  "id": "usda-rice-white-cooked",
+  "nameAr": "أرز أبيض مطبوخ",
+  "nameEn": "White rice, cooked",
+  "category": "grains",
+  "fdcId": 168878,
+  "usdaDescription": "Rice, white, long-grain, regular, enriched, cooked",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 130,
+   "protein": 2.69,
+   "carbs": 28.17,
+   "fat": 0.28
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-rice-brown-cooked",
+  "nameAr": "أرز بني مطبوخ",
+  "nameEn": "Brown rice, cooked",
+  "category": "grains",
+  "fdcId": 169704,
+  "usdaDescription": "Rice, brown, long-grain, cooked (Includes foods for USDA's Food Distribution Program)",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 123,
+   "protein": 2.74,
+   "carbs": 25.58,
+   "fat": 0.97
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-pita-white",
+  "nameAr": "خبز شامي أبيض",
+  "nameEn": "Pita bread, white",
+  "category": "bread",
+  "fdcId": 174915,
+  "usdaDescription": "Bread, pita, white, enriched",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 275,
+   "protein": 9.1,
+   "carbs": 55.7,
+   "fat": 1.2
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-pita-wholewheat",
+  "nameAr": "خبز شامي بر",
+  "nameEn": "Pita bread, whole wheat",
+  "category": "bread",
+  "fdcId": 174916,
+  "usdaDescription": "Bread, pita, whole-wheat",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 262,
+   "protein": 9.8,
+   "carbs": 55.89,
+   "fat": 1.71
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-bread-white",
+  "nameAr": "خبز توست أبيض",
+  "nameEn": "White sandwich bread",
+  "category": "bread",
+  "fdcId": 174924,
+  "usdaDescription": "Bread, white, commercially prepared (includes soft bread crumbs)",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 266,
+   "protein": 8.85,
+   "carbs": 49.42,
+   "fat": 3.33
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-bread-wholewheat",
+  "nameAr": "خبز توست بر",
+  "nameEn": "Whole-wheat sandwich bread",
+  "category": "bread",
+  "fdcId": 172688,
+  "usdaDescription": "Bread, whole-wheat, commercially prepared",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 252,
+   "protein": 12.45,
+   "carbs": 42.71,
+   "fat": 3.5
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-pasta-cooked",
+  "nameAr": "مكرونة مسلوقة",
+  "nameEn": "Pasta, cooked",
+  "category": "grains",
+  "fdcId": 169737,
+  "usdaDescription": "Pasta, cooked, enriched, without added salt",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 158,
+   "protein": 5.8,
+   "carbs": 30.86,
+   "fat": 0.93
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-noodles-egg-cooked",
+  "nameAr": "نودلز بالبيض مسلوقة",
+  "nameEn": "Egg noodles, cooked",
+  "category": "grains",
+  "fdcId": 168919,
+  "usdaDescription": "Noodles, egg, cooked, enriched, with added salt",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 138,
+   "protein": 4.54,
+   "carbs": 25.16,
+   "fat": 2.07
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-bulgur-cooked",
+  "nameAr": "برغل مطبوخ",
+  "nameEn": "Bulgur, cooked",
+  "category": "grains",
+  "fdcId": 170287,
+  "usdaDescription": "Bulgur, cooked",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 83,
+   "protein": 3.08,
+   "carbs": 18.58,
+   "fat": 0.24
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-couscous-cooked",
+  "nameAr": "كسكسي مطبوخ",
+  "nameEn": "Couscous, cooked",
+  "category": "grains",
+  "fdcId": 169700,
+  "usdaDescription": "Couscous, cooked",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 112,
+   "protein": 3.79,
+   "carbs": 23.22,
+   "fat": 0.16
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-oats-dry",
+  "nameAr": "شوفان",
+  "nameEn": "Oats, dry",
+  "category": "grains",
+  "fdcId": 173904,
+  "usdaDescription": "Cereals, oats, regular and quick, not fortified, dry",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 379,
+   "protein": 13.15,
+   "carbs": 67.7,
+   "fat": 6.52
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-semolina",
+  "nameAr": "سميد",
+  "nameEn": "Semolina",
+  "category": "grains",
+  "fdcId": 169715,
+  "usdaDescription": "Semolina, enriched",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 360,
+   "protein": 12.68,
+   "carbs": 72.83,
+   "fat": 1.05
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-flour-white",
+  "nameAr": "دقيق أبيض",
+  "nameEn": "White flour",
+  "category": "grains",
+  "fdcId": 168894,
+  "usdaDescription": "Wheat flour, white, all-purpose, enriched, bleached",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 364,
+   "protein": 10.33,
+   "carbs": 76.31,
+   "fat": 0.98
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-croissant",
+  "nameAr": "كرواسون",
+  "nameEn": "Croissant",
+  "category": "bread",
+  "fdcId": 174987,
+  "usdaDescription": "Croissants, butter",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 406,
+   "protein": 8.2,
+   "carbs": 45.8,
+   "fat": 21
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-corn-flakes",
+  "nameAr": "كورن فليكس",
+  "nameEn": "Corn flakes",
+  "category": "grains",
+  "fdcId": 174648,
+  "usdaDescription": "Cereals ready-to-eat, RALSTON Corn Flakes",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 384,
+   "protein": 5.9,
+   "carbs": 88.01,
+   "fat": 0.91
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-potato-boiled",
+  "nameAr": "بطاطس مسلوقة",
+  "nameEn": "Potatoes, boiled",
+  "category": "vegetables",
+  "fdcId": 170440,
+  "usdaDescription": "Potatoes, boiled, cooked without skin, flesh, without salt",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 86,
+   "protein": 1.71,
+   "carbs": 20.01,
+   "fat": 0.1
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-potato-baked",
+  "nameAr": "بطاطس مشوية",
+  "nameEn": "Potatoes, baked",
+  "category": "vegetables",
+  "fdcId": 170093,
+  "usdaDescription": "Potatoes, baked, flesh and skin, without salt",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 93,
+   "protein": 2.5,
+   "carbs": 21.15,
+   "fat": 0.13
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-french-fries",
+  "nameAr": "بطاطس محمرة",
+  "nameEn": "French fries",
+  "category": "fast_food",
+  "fdcId": 170698,
+  "usdaDescription": "Fast foods, potato, french fried in vegetable oil",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 312,
+   "protein": 3.43,
+   "carbs": 41.44,
+   "fat": 14.73
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-sweet-potato-baked",
+  "nameAr": "بطاطا مشوية",
+  "nameEn": "Sweet potato, baked",
+  "category": "vegetables",
+  "fdcId": 168483,
+  "usdaDescription": "Sweet potato, cooked, baked in skin, flesh, without salt",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 90,
+   "protein": 2.01,
+   "carbs": 20.71,
+   "fat": 0.15
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-egg-raw",
+  "nameAr": "بيض",
+  "nameEn": "Egg, whole",
+  "category": "eggs",
+  "fdcId": 171287,
+  "usdaDescription": "Egg, whole, raw, fresh",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 143,
+   "protein": 12.56,
+   "carbs": 0.72,
+   "fat": 9.51
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-egg-boiled",
+  "nameAr": "بيض مسلوق",
+  "nameEn": "Egg, hard-boiled",
+  "category": "eggs",
+  "fdcId": 173424,
+  "usdaDescription": "Egg, whole, cooked, hard-boiled",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 155,
+   "protein": 12.58,
+   "carbs": 1.12,
+   "fat": 10.61
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-egg-fried",
+  "nameAr": "بيض مقلي",
+  "nameEn": "Egg, fried",
+  "category": "eggs",
+  "fdcId": 173423,
+  "usdaDescription": "Egg, whole, cooked, fried",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 196,
+   "protein": 13.61,
+   "carbs": 0.83,
+   "fat": 14.84
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-egg-omelet",
+  "nameAr": "أومليت",
+  "nameEn": "Omelet",
+  "category": "eggs",
+  "fdcId": 172185,
+  "usdaDescription": "Egg, whole, cooked, omelet",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 154,
+   "protein": 10.57,
+   "carbs": 0.64,
+   "fat": 11.66
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-milk-whole",
+  "nameAr": "لبن كامل الدسم",
+  "nameEn": "Milk, whole",
+  "category": "dairy",
+  "fdcId": 171265,
+  "usdaDescription": "Milk, whole, 3.25% milkfat, with added vitamin D",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 61,
+   "protein": 3.15,
+   "carbs": 4.8,
+   "fat": 3.25
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-milk-lowfat",
+  "nameAr": "لبن قليل الدسم",
+  "nameEn": "Milk, low-fat (1%)",
+  "category": "dairy",
+  "fdcId": 170872,
+  "usdaDescription": "Milk, lowfat, fluid, 1% milkfat, with added vitamin A and vitamin D",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 42,
+   "protein": 3.37,
+   "carbs": 4.99,
+   "fat": 0.97
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-milk-skim",
+  "nameAr": "لبن خالي الدسم",
+  "nameEn": "Milk, skim",
+  "category": "dairy",
+  "fdcId": 171269,
+  "usdaDescription": "Milk, nonfat, fluid, with added vitamin A and vitamin D (fat free or skim)",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 34,
+   "protein": 3.37,
+   "carbs": 4.96,
+   "fat": 0.08
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-yogurt-plain",
+  "nameAr": "زبادي",
+  "nameEn": "Yogurt, plain, whole milk",
+  "category": "dairy",
+  "fdcId": 171284,
+  "usdaDescription": "Yogurt, plain, whole milk",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 61,
+   "protein": 3.47,
+   "carbs": 4.66,
+   "fat": 3.25
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-yogurt-greek",
+  "nameAr": "زبادي يوناني خالي الدسم",
+  "nameEn": "Greek yogurt, nonfat",
+  "category": "dairy",
+  "fdcId": 170894,
+  "usdaDescription": "Yogurt, Greek, plain, nonfat (Includes foods for USDA's Food Distribution Program)",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 59,
+   "protein": 10.19,
+   "carbs": 3.6,
+   "fat": 0.39
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-cheese-feta",
+  "nameAr": "جبنة فيتا",
+  "nameEn": "Feta cheese",
+  "category": "dairy",
+  "fdcId": 173420,
+  "usdaDescription": "Cheese, feta",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 265,
+   "protein": 14.21,
+   "carbs": 3.88,
+   "fat": 21.49
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-cheese-mozzarella",
+  "nameAr": "جبنة موتزاريلا",
+  "nameEn": "Mozzarella",
+  "category": "dairy",
+  "fdcId": 170845,
+  "usdaDescription": "Cheese, mozzarella, whole milk",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 299,
+   "protein": 22.17,
+   "carbs": 2.4,
+   "fat": 22.14
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-cheese-cheddar",
+  "nameAr": "جبنة شيدر",
+  "nameEn": "Cheddar",
+  "category": "dairy",
+  "fdcId": 173414,
+  "usdaDescription": "Cheese, cheddar (Includes foods for USDA's Food Distribution Program)",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 403,
+   "protein": 22.87,
+   "carbs": 3.37,
+   "fat": 33.31
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-cheese-cream",
+  "nameAr": "جبنة كريمي",
+  "nameEn": "Cream cheese",
+  "category": "dairy",
+  "fdcId": 173418,
+  "usdaDescription": "Cheese, cream",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 350,
+   "protein": 6.15,
+   "carbs": 5.52,
+   "fat": 34.44
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-cheese-cottage",
+  "nameAr": "جبنة قريش (كوتاج)",
+  "nameEn": "Cottage cheese, low-fat",
+  "category": "dairy",
+  "fdcId": 172182,
+  "usdaDescription": "Cheese, cottage, lowfat, 2% milkfat",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 81,
+   "protein": 10.45,
+   "carbs": 4.76,
+   "fat": 2.27
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-cheese-processed",
+  "nameAr": "جبنة مثلثات",
+  "nameEn": "Processed cheese",
+  "category": "dairy",
+  "fdcId": 170853,
+  "usdaDescription": "Cheese, pasteurized process, American, fortified with vitamin D",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 366,
+   "protein": 18.13,
+   "carbs": 4.78,
+   "fat": 30.71
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-butter",
+  "nameAr": "زبدة",
+  "nameEn": "Butter",
+  "category": "fats",
+  "fdcId": 173410,
+  "usdaDescription": "Butter, salted",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 717,
+   "protein": 0.85,
+   "carbs": 0.06,
+   "fat": 81.11
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-ghee",
+  "nameAr": "سمنة بلدي",
+  "nameEn": "Ghee",
+  "category": "fats",
+  "fdcId": 173412,
+  "usdaDescription": "Butter oil, anhydrous",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 876,
+   "protein": 0.28,
+   "carbs": 0,
+   "fat": 99.48
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-cream",
+  "nameAr": "قشطة",
+  "nameEn": "Heavy cream",
+  "category": "dairy",
+  "fdcId": 170859,
+  "usdaDescription": "Cream, fluid, heavy whipping",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 340,
+   "protein": 2.84,
+   "carbs": 2.84,
+   "fat": 36.08
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-ice-cream-vanilla",
+  "nameAr": "آيس كريم فانيليا",
+  "nameEn": "Vanilla ice cream",
+  "category": "sweets",
+  "fdcId": 167575,
+  "usdaDescription": "Ice creams, vanilla",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 207,
+   "protein": 3.5,
+   "carbs": 23.6,
+   "fat": 11
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-chicken-breast-roasted",
+  "nameAr": "صدر فراخ مشوي",
+  "nameEn": "Chicken breast, roasted",
+  "category": "poultry",
+  "fdcId": 171477,
+  "usdaDescription": "Chicken, broilers or fryers, breast, meat only, cooked, roasted",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 165,
+   "protein": 31.02,
+   "carbs": 0,
+   "fat": 3.57
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-chicken-thigh-roasted",
+  "nameAr": "ورك فراخ مشوي",
+  "nameEn": "Chicken thigh, roasted",
+  "category": "poultry",
+  "fdcId": 173625,
+  "usdaDescription": "Chicken, broilers or fryers, thigh, meat and skin, cooked, roasted",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 232,
+   "protein": 23.26,
+   "carbs": 0,
+   "fat": 14.71
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-chicken-drumstick-roasted",
+  "nameAr": "دبوس فراخ مشوي",
+  "nameEn": "Chicken drumstick, roasted",
+  "category": "poultry",
+  "fdcId": 173612,
+  "usdaDescription": "Chicken, broilers or fryers, drumstick, meat and skin, cooked, roasted",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 191,
+   "protein": 23.35,
+   "carbs": 0,
+   "fat": 10.15
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-chicken-wing-roasted",
+  "nameAr": "جناح فراخ مشوي",
+  "nameEn": "Chicken wing, roasted",
+  "category": "poultry",
+  "fdcId": 173630,
+  "usdaDescription": "Chicken, broilers or fryers, wing, meat and skin, cooked, roasted",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 254,
+   "protein": 23.79,
+   "carbs": 0,
+   "fat": 16.87
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-chicken-breast-fried",
+  "nameAr": "صدر فراخ مقلي",
+  "nameEn": "Chicken breast, fried (batter)",
+  "category": "poultry",
+  "fdcId": 171475,
+  "usdaDescription": "Chicken, broilers or fryers, breast, meat and skin, cooked, fried, batter",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 260,
+   "protein": 24.84,
+   "carbs": 8.99,
+   "fat": 13.2
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-turkey-roasted",
+  "nameAr": "رومي مشوي",
+  "nameEn": "Turkey, roasted",
+  "category": "poultry",
+  "fdcId": 171481,
+  "usdaDescription": "Turkey, whole, meat only, cooked, roasted",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 159,
+   "protein": 29.06,
+   "carbs": 0,
+   "fat": 3.84
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-beef-ground-cooked",
+  "nameAr": "لحم مفروم مطبوخ",
+  "nameEn": "Ground beef (80/20), cooked",
+  "category": "meat",
+  "fdcId": 171797,
+  "usdaDescription": "Beef, ground, 80% lean meat / 20% fat, patty, cooked, broiled",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 270,
+   "protein": 25.75,
+   "carbs": 0,
+   "fat": 17.78
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-beef-ground-lean-cooked",
+  "nameAr": "لحم مفروم قليل الدهن",
+  "nameEn": "Ground beef (90/10), cooked",
+  "category": "meat",
+  "fdcId": 174031,
+  "usdaDescription": "Beef, ground, 90% lean meat / 10% fat, patty, cooked, broiled",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 217,
+   "protein": 26.11,
+   "carbs": 0,
+   "fat": 11.75
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-beef-steak",
+  "nameAr": "ستيك لحم",
+  "nameEn": "Beef steak (top sirloin), broiled",
+  "category": "meat",
+  "fdcId": 168729,
+  "usdaDescription": "Beef, top sirloin, steak, separable lean and fat, trimmed to 1/8\" fat, choice, cooked, broiled",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 257,
+   "protein": 26.8,
+   "carbs": 0,
+   "fat": 15.75
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-lamb-cooked",
+  "nameAr": "لحم ضاني مطبوخ",
+  "nameEn": "Lamb, cooked",
+  "category": "meat",
+  "fdcId": 172480,
+  "usdaDescription": "Lamb, composite of trimmed retail cuts, separable lean and fat, trimmed to 1/4\" fat, choice, cooked",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 294,
+   "protein": 24.52,
+   "carbs": 0,
+   "fat": 20.94
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-veal-cooked",
+  "nameAr": "لحم بتلو",
+  "nameEn": "Veal, cooked",
+  "category": "meat",
+  "fdcId": 173816,
+  "usdaDescription": "Veal, composite of trimmed retail cuts, separable lean and fat, cooked",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 231,
+   "protein": 30.1,
+   "carbs": 0,
+   "fat": 11.39
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-beef-liver-fried",
+  "nameAr": "كبدة بقري",
+  "nameEn": "Beef liver, pan-fried",
+  "category": "meat",
+  "fdcId": 168627,
+  "usdaDescription": "Beef, variety meats and by-products, liver, cooked, pan-fried",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 175,
+   "protein": 26.52,
+   "carbs": 5.16,
+   "fat": 4.68
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-chicken-liver",
+  "nameAr": "كبدة فراخ",
+  "nameEn": "Chicken liver, cooked",
+  "category": "poultry",
+  "fdcId": 171061,
+  "usdaDescription": "Chicken, liver, all classes, cooked, simmered",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 167,
+   "protein": 24.46,
+   "carbs": 0.87,
+   "fat": 6.51
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-tilapia-cooked",
+  "nameAr": "سمك بلطي مشوي",
+  "nameEn": "Tilapia, cooked",
+  "category": "fish",
+  "fdcId": 175177,
+  "usdaDescription": "Fish, tilapia, cooked, dry heat",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 128,
+   "protein": 26.15,
+   "carbs": 0,
+   "fat": 2.65
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-sardine-canned",
+  "nameAr": "سردين معلب",
+  "nameEn": "Sardines, canned in oil",
+  "category": "fish",
+  "fdcId": 175139,
+  "usdaDescription": "Fish, sardine, Atlantic, canned in oil, drained solids with bone",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 208,
+   "protein": 24.62,
+   "carbs": 0,
+   "fat": 11.45
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-tuna-oil",
+  "nameAr": "تونة بالزيت",
+  "nameEn": "Tuna, canned in oil",
+  "category": "fish",
+  "fdcId": 173708,
+  "usdaDescription": "Fish, tuna, light, canned in oil, drained solids",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 198,
+   "protein": 29.13,
+   "carbs": 0,
+   "fat": 8.21
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-tuna-water",
+  "nameAr": "تونة بالماء",
+  "nameEn": "Tuna, canned in water",
+  "category": "fish",
+  "fdcId": 173709,
+  "usdaDescription": "Fish, tuna, light, canned in water, drained solids (Includes foods for USDA's Food Distribution Program)",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 86,
+   "protein": 19.44,
+   "carbs": 0,
+   "fat": 0.96
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-salmon-cooked",
+  "nameAr": "سلمون مشوي",
+  "nameEn": "Salmon, cooked",
+  "category": "fish",
+  "fdcId": 175168,
+  "usdaDescription": "Fish, salmon, Atlantic, farmed, cooked, dry heat",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 206,
+   "protein": 22.1,
+   "carbs": 0,
+   "fat": 12.35
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-mackerel-cooked",
+  "nameAr": "ماكريل مشوي",
+  "nameEn": "Mackerel, cooked",
+  "category": "fish",
+  "fdcId": 175120,
+  "usdaDescription": "Fish, mackerel, Atlantic, cooked, dry heat",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 262,
+   "protein": 23.85,
+   "carbs": 0,
+   "fat": 17.81
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-shrimp-cooked",
+  "nameAr": "جمبري مسلوق",
+  "nameEn": "Shrimp, cooked",
+  "category": "fish",
+  "fdcId": 171971,
+  "usdaDescription": "Crustaceans, shrimp, mixed species, cooked, moist heat (may contain additives to retain moisture)",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 119,
+   "protein": 22.78,
+   "carbs": 1.52,
+   "fat": 1.7
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-calamari-fried",
+  "nameAr": "كاليماري مقلي",
+  "nameEn": "Squid, fried",
+  "category": "fish",
+  "fdcId": 171982,
+  "usdaDescription": "Mollusks, squid, mixed species, cooked, fried",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 175,
+   "protein": 17.94,
+   "carbs": 7.79,
+   "fat": 7.48
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-luncheon-beef",
+  "nameAr": "لانشون بقري",
+  "nameEn": "Beef bologna",
+  "category": "meat",
+  "fdcId": 172012,
+  "usdaDescription": "Bologna, beef",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 299,
+   "protein": 10.91,
+   "carbs": 4.29,
+   "fat": 26.13
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-hot-dog",
+  "nameAr": "سوسيس",
+  "nameEn": "Beef frankfurter",
+  "category": "meat",
+  "fdcId": 173862,
+  "usdaDescription": "Frankfurter, beef, unheated",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 315,
+   "protein": 11.69,
+   "carbs": 2.97,
+   "fat": 28.1
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-pastrami",
+  "nameAr": "بسطرمة",
+  "nameEn": "Pastrami",
+  "category": "meat",
+  "fdcId": 170204,
+  "usdaDescription": "Beef, cured, pastrami",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 147,
+   "protein": 21.8,
+   "carbs": 0.36,
+   "fat": 5.82
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-turkey-breast-roasted",
+  "nameAr": "صدر رومي مشوي",
+  "nameEn": "Turkey breast, roasted",
+  "category": "poultry",
+  "fdcId": 174519,
+  "usdaDescription": "Turkey, breast, from whole bird, meat only, with added solution, roasted",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 127,
+   "protein": 26.97,
+   "carbs": 0,
+   "fat": 2.08
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-fava-cooked",
+  "nameAr": "فول مسلوق",
+  "nameEn": "Fava beans, cooked",
+  "category": "legumes",
+  "fdcId": 173753,
+  "usdaDescription": "Broadbeans (fava beans), mature seeds, cooked, boiled, without salt",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 110,
+   "protein": 7.6,
+   "carbs": 19.65,
+   "fat": 0.4
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-lentils-cooked",
+  "nameAr": "عدس مسلوق",
+  "nameEn": "Lentils, cooked",
+  "category": "legumes",
+  "fdcId": 172421,
+  "usdaDescription": "Lentils, mature seeds, cooked, boiled, without salt",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 116,
+   "protein": 9.02,
+   "carbs": 20.13,
+   "fat": 0.38
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-chickpeas-cooked",
+  "nameAr": "حمص مسلوق",
+  "nameEn": "Chickpeas, cooked",
+  "category": "legumes",
+  "fdcId": 173757,
+  "usdaDescription": "Chickpeas (garbanzo beans, bengal gram), mature seeds, cooked, boiled, without salt",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 164,
+   "protein": 8.86,
+   "carbs": 27.42,
+   "fat": 2.59
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-kidney-beans-cooked",
+  "nameAr": "فاصوليا حمراء مسلوقة",
+  "nameEn": "Kidney beans, cooked",
+  "category": "legumes",
+  "fdcId": 173740,
+  "usdaDescription": "Beans, kidney, all types, mature seeds, cooked, boiled, without salt",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 127,
+   "protein": 8.67,
+   "carbs": 22.8,
+   "fat": 0.5
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-white-beans-cooked",
+  "nameAr": "فاصوليا بيضاء مسلوقة",
+  "nameEn": "White beans, cooked",
+  "category": "legumes",
+  "fdcId": 175203,
+  "usdaDescription": "Beans, white, mature seeds, cooked, boiled, without salt",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 139,
+   "protein": 9.73,
+   "carbs": 25.09,
+   "fat": 0.35
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-peas-cooked",
+  "nameAr": "بسلة مسلوقة",
+  "nameEn": "Green peas, cooked",
+  "category": "vegetables",
+  "fdcId": 170017,
+  "usdaDescription": "Peas, green, frozen, cooked, boiled, drained, without salt",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 78,
+   "protein": 5.15,
+   "carbs": 14.26,
+   "fat": 0.27
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-tomato",
+  "nameAr": "طماطم",
+  "nameEn": "Tomato",
+  "category": "vegetables",
+  "fdcId": 170457,
+  "usdaDescription": "Tomatoes, red, ripe, raw, year round average",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 18,
+   "protein": 0.88,
+   "carbs": 3.89,
+   "fat": 0.2
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-cucumber",
+  "nameAr": "خيار",
+  "nameEn": "Cucumber",
+  "category": "vegetables",
+  "fdcId": 168409,
+  "usdaDescription": "Cucumber, with peel, raw",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 15,
+   "protein": 0.65,
+   "carbs": 3.63,
+   "fat": 0.11
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-lettuce",
+  "nameAr": "خس",
+  "nameEn": "Lettuce (romaine)",
+  "category": "vegetables",
+  "fdcId": 169247,
+  "usdaDescription": "Lettuce, cos or romaine, raw",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 17,
+   "protein": 1.23,
+   "carbs": 3.29,
+   "fat": 0.3
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-onion",
+  "nameAr": "بصل",
+  "nameEn": "Onion",
+  "category": "vegetables",
+  "fdcId": 170000,
+  "usdaDescription": "Onions, raw",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 40,
+   "protein": 1.1,
+   "carbs": 9.34,
+   "fat": 0.1
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-carrot",
+  "nameAr": "جزر",
+  "nameEn": "Carrot",
+  "category": "vegetables",
+  "fdcId": 170393,
+  "usdaDescription": "Carrots, raw",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 41,
+   "protein": 0.93,
+   "carbs": 9.58,
+   "fat": 0.24
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-zucchini",
+  "nameAr": "كوسة",
+  "nameEn": "Zucchini",
+  "category": "vegetables",
+  "fdcId": 169291,
+  "usdaDescription": "Squash, summer, zucchini, includes skin, raw",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 17,
+   "protein": 1.21,
+   "carbs": 3.11,
+   "fat": 0.32
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-eggplant",
+  "nameAr": "باذنجان",
+  "nameEn": "Eggplant",
+  "category": "vegetables",
+  "fdcId": 169228,
+  "usdaDescription": "Eggplant, raw",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 25,
+   "protein": 0.98,
+   "carbs": 5.88,
+   "fat": 0.18
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-okra",
+  "nameAr": "بامية",
+  "nameEn": "Okra",
+  "category": "vegetables",
+  "fdcId": 169260,
+  "usdaDescription": "Okra, raw",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 33,
+   "protein": 1.93,
+   "carbs": 7.45,
+   "fat": 0.19
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-spinach",
+  "nameAr": "سبانخ",
+  "nameEn": "Spinach",
+  "category": "vegetables",
+  "fdcId": 168462,
+  "usdaDescription": "Spinach, raw",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 23,
+   "protein": 2.86,
+   "carbs": 3.63,
+   "fat": 0.39
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-jute-cooked",
+  "nameAr": "ملوخية مسلوقة (ورق)",
+  "nameEn": "Jute leaves (molokhia), cooked",
+  "category": "vegetables",
+  "fdcId": 168420,
+  "usdaDescription": "Jute, potherb, cooked, boiled, drained, without salt",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 37,
+   "protein": 3.68,
+   "carbs": 7.29,
+   "fat": 0.2
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-pepper-green",
+  "nameAr": "فلفل أخضر",
+  "nameEn": "Green bell pepper",
+  "category": "vegetables",
+  "fdcId": 170427,
+  "usdaDescription": "Peppers, sweet, green, raw",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 20,
+   "protein": 0.86,
+   "carbs": 4.64,
+   "fat": 0.17
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-pepper-red",
+  "nameAr": "فلفل أحمر",
+  "nameEn": "Red bell pepper",
+  "category": "vegetables",
+  "fdcId": 170108,
+  "usdaDescription": "Peppers, sweet, red, raw",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 26,
+   "protein": 0.99,
+   "carbs": 6.03,
+   "fat": 0.3
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-cabbage",
+  "nameAr": "كرنب",
+  "nameEn": "Cabbage",
+  "category": "vegetables",
+  "fdcId": 169975,
+  "usdaDescription": "Cabbage, raw",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 25,
+   "protein": 1.28,
+   "carbs": 5.8,
+   "fat": 0.1
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-cauliflower",
+  "nameAr": "قرنبيط",
+  "nameEn": "Cauliflower",
+  "category": "vegetables",
+  "fdcId": 169986,
+  "usdaDescription": "Cauliflower, raw",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 25,
+   "protein": 1.92,
+   "carbs": 4.97,
+   "fat": 0.28
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-broccoli",
+  "nameAr": "بروكلي",
+  "nameEn": "Broccoli",
+  "category": "vegetables",
+  "fdcId": 170379,
+  "usdaDescription": "Broccoli, raw",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 34,
+   "protein": 2.82,
+   "carbs": 6.64,
+   "fat": 0.37
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-green-beans",
+  "nameAr": "فاصوليا خضراء",
+  "nameEn": "Green beans",
+  "category": "vegetables",
+  "fdcId": 169961,
+  "usdaDescription": "Beans, snap, green, raw",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 31,
+   "protein": 1.83,
+   "carbs": 6.97,
+   "fat": 0.22
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-corn",
+  "nameAr": "ذرة",
+  "nameEn": "Sweet corn",
+  "category": "vegetables",
+  "fdcId": 169998,
+  "usdaDescription": "Corn, sweet, yellow, raw",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 86,
+   "protein": 3.27,
+   "carbs": 18.7,
+   "fat": 1.35
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-garlic",
+  "nameAr": "ثوم",
+  "nameEn": "Garlic",
+  "category": "vegetables",
+  "fdcId": 169230,
+  "usdaDescription": "Garlic, raw",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 149,
+   "protein": 6.36,
+   "carbs": 33.06,
+   "fat": 0.5
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-parsley",
+  "nameAr": "بقدونس",
+  "nameEn": "Parsley",
+  "category": "vegetables",
+  "fdcId": 170416,
+  "usdaDescription": "Parsley, fresh",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 36,
+   "protein": 2.97,
+   "carbs": 6.33,
+   "fat": 0.79
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-beets",
+  "nameAr": "بنجر",
+  "nameEn": "Beets",
+  "category": "vegetables",
+  "fdcId": 169145,
+  "usdaDescription": "Beets, raw",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 43,
+   "protein": 1.61,
+   "carbs": 9.56,
+   "fat": 0.17
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-radish",
+  "nameAr": "فجل",
+  "nameEn": "Radish",
+  "category": "vegetables",
+  "fdcId": 169276,
+  "usdaDescription": "Radishes, raw",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 16,
+   "protein": 0.68,
+   "carbs": 3.4,
+   "fat": 0.1
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-mushroom",
+  "nameAr": "مشروم",
+  "nameEn": "Mushrooms",
+  "category": "vegetables",
+  "fdcId": 169251,
+  "usdaDescription": "Mushrooms, white, raw",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 22,
+   "protein": 3.09,
+   "carbs": 3.26,
+   "fat": 0.34
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-arugula",
+  "nameAr": "جرجير",
+  "nameEn": "Arugula",
+  "category": "vegetables",
+  "fdcId": 169387,
+  "usdaDescription": "Arugula, raw",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 25,
+   "protein": 2.58,
+   "carbs": 3.65,
+   "fat": 0.66
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-olives-green",
+  "nameAr": "زيتون أخضر",
+  "nameEn": "Green olives",
+  "category": "vegetables",
+  "fdcId": 169096,
+  "usdaDescription": "Olives, pickled, canned or bottled, green",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 145,
+   "protein": 1.03,
+   "carbs": 3.84,
+   "fat": 15.32
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-olives-black",
+  "nameAr": "زيتون أسود",
+  "nameEn": "Black olives",
+  "category": "vegetables",
+  "fdcId": 169094,
+  "usdaDescription": "Olives, ripe, canned (small-extra large)",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 116,
+   "protein": 0.84,
+   "carbs": 6.04,
+   "fat": 10.9
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-apple",
+  "nameAr": "تفاح",
+  "nameEn": "Apple",
+  "category": "fruits",
+  "fdcId": 171688,
+  "usdaDescription": "Apples, raw, with skin (Includes foods for USDA's Food Distribution Program)",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 52,
+   "protein": 0.26,
+   "carbs": 13.81,
+   "fat": 0.17
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-banana",
+  "nameAr": "موز",
+  "nameEn": "Banana",
+  "category": "fruits",
+  "fdcId": 173944,
+  "usdaDescription": "Bananas, raw",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 89,
+   "protein": 1.09,
+   "carbs": 22.84,
+   "fat": 0.33
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-orange",
+  "nameAr": "برتقال",
+  "nameEn": "Orange",
+  "category": "fruits",
+  "fdcId": 169097,
+  "usdaDescription": "Oranges, raw, all commercial varieties",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 47,
+   "protein": 0.94,
+   "carbs": 11.75,
+   "fat": 0.12
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-tangerine",
+  "nameAr": "يوسفي",
+  "nameEn": "Mandarin",
+  "category": "fruits",
+  "fdcId": 169105,
+  "usdaDescription": "Tangerines, (mandarin oranges), raw",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 53,
+   "protein": 0.81,
+   "carbs": 13.34,
+   "fat": 0.31
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-mango",
+  "nameAr": "مانجو",
+  "nameEn": "Mango",
+  "category": "fruits",
+  "fdcId": 169910,
+  "usdaDescription": "Mangos, raw",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 60,
+   "protein": 0.82,
+   "carbs": 14.98,
+   "fat": 0.38
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-guava",
+  "nameAr": "جوافة",
+  "nameEn": "Guava",
+  "category": "fruits",
+  "fdcId": 173044,
+  "usdaDescription": "Guavas, common, raw",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 68,
+   "protein": 2.55,
+   "carbs": 14.32,
+   "fat": 0.95
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-dates-medjool",
+  "nameAr": "بلح مجدول",
+  "nameEn": "Dates, Medjool",
+  "category": "fruits",
+  "fdcId": 168191,
+  "usdaDescription": "Dates, medjool",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 277,
+   "protein": 1.81,
+   "carbs": 74.97,
+   "fat": 0.15
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-dates-deglet",
+  "nameAr": "بلح (عجوة/نصف جاف)",
+  "nameEn": "Dates, Deglet Noor",
+  "category": "fruits",
+  "fdcId": 171726,
+  "usdaDescription": "Dates, deglet noor",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 282,
+   "protein": 2.45,
+   "carbs": 75.03,
+   "fat": 0.39
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-grapes",
+  "nameAr": "عنب",
+  "nameEn": "Grapes",
+  "category": "fruits",
+  "fdcId": 174683,
+  "usdaDescription": "Grapes, red or green (European type, such as Thompson seedless), raw",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 69,
+   "protein": 0.72,
+   "carbs": 18.1,
+   "fat": 0.16
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-watermelon",
+  "nameAr": "بطيخ",
+  "nameEn": "Watermelon",
+  "category": "fruits",
+  "fdcId": 167765,
+  "usdaDescription": "Watermelon, raw",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 30,
+   "protein": 0.61,
+   "carbs": 7.55,
+   "fat": 0.15
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-cantaloupe",
+  "nameAr": "كانتلوب",
+  "nameEn": "Cantaloupe",
+  "category": "fruits",
+  "fdcId": 169092,
+  "usdaDescription": "Melons, cantaloupe, raw",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 34,
+   "protein": 0.84,
+   "carbs": 8.16,
+   "fat": 0.19
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-strawberry",
+  "nameAr": "فراولة",
+  "nameEn": "Strawberries",
+  "category": "fruits",
+  "fdcId": 167762,
+  "usdaDescription": "Strawberries, raw",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 32,
+   "protein": 0.67,
+   "carbs": 7.68,
+   "fat": 0.3
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-figs",
+  "nameAr": "تين",
+  "nameEn": "Figs",
+  "category": "fruits",
+  "fdcId": 173021,
+  "usdaDescription": "Figs, raw",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 74,
+   "protein": 0.75,
+   "carbs": 19.18,
+   "fat": 0.3
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-pomegranate",
+  "nameAr": "رمان",
+  "nameEn": "Pomegranate",
+  "category": "fruits",
+  "fdcId": 169134,
+  "usdaDescription": "Pomegranates, raw",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 83,
+   "protein": 1.67,
+   "carbs": 18.7,
+   "fat": 1.17
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-apricot",
+  "nameAr": "مشمش",
+  "nameEn": "Apricot",
+  "category": "fruits",
+  "fdcId": 171697,
+  "usdaDescription": "Apricots, raw",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 48,
+   "protein": 1.4,
+   "carbs": 11.12,
+   "fat": 0.39
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-peach",
+  "nameAr": "خوخ",
+  "nameEn": "Peach",
+  "category": "fruits",
+  "fdcId": 169928,
+  "usdaDescription": "Peaches, yellow, raw",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 39,
+   "protein": 0.91,
+   "carbs": 9.54,
+   "fat": 0.25
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-pear",
+  "nameAr": "كمثرى",
+  "nameEn": "Pear",
+  "category": "fruits",
+  "fdcId": 169118,
+  "usdaDescription": "Pears, raw",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 57,
+   "protein": 0.36,
+   "carbs": 15.23,
+   "fat": 0.14
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-plum",
+  "nameAr": "برقوق",
+  "nameEn": "Plum",
+  "category": "fruits",
+  "fdcId": 169949,
+  "usdaDescription": "Plums, raw",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 46,
+   "protein": 0.7,
+   "carbs": 11.42,
+   "fat": 0.28
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-lemon",
+  "nameAr": "ليمون",
+  "nameEn": "Lemon",
+  "category": "fruits",
+  "fdcId": 167746,
+  "usdaDescription": "Lemons, raw, without peel",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 29,
+   "protein": 1.1,
+   "carbs": 9.32,
+   "fat": 0.3
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-kiwi",
+  "nameAr": "كيوي",
+  "nameEn": "Kiwi",
+  "category": "fruits",
+  "fdcId": 168153,
+  "usdaDescription": "Kiwifruit, green, raw",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 61,
+   "protein": 1.14,
+   "carbs": 14.66,
+   "fat": 0.52
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-pineapple",
+  "nameAr": "أناناس",
+  "nameEn": "Pineapple",
+  "category": "fruits",
+  "fdcId": 169124,
+  "usdaDescription": "Pineapple, raw, all varieties",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 50,
+   "protein": 0.54,
+   "carbs": 13.12,
+   "fat": 0.12
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-raisins",
+  "nameAr": "زبيب",
+  "nameEn": "Raisins",
+  "category": "fruits",
+  "fdcId": 168165,
+  "usdaDescription": "Raisins, dark, seedless (Includes foods for USDA's Food Distribution Program)",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 299,
+   "protein": 3.3,
+   "carbs": 79.32,
+   "fat": 0.25
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-figs-dried",
+  "nameAr": "تين مجفف",
+  "nameEn": "Dried figs",
+  "category": "fruits",
+  "fdcId": 174665,
+  "usdaDescription": "Figs, dried, uncooked",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 249,
+   "protein": 3.3,
+   "carbs": 63.87,
+   "fat": 0.93
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-apricots-dried",
+  "nameAr": "مشمش مجفف",
+  "nameEn": "Dried apricots",
+  "category": "fruits",
+  "fdcId": 173941,
+  "usdaDescription": "Apricots, dried, sulfured, uncooked",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 241,
+   "protein": 3.39,
+   "carbs": 62.64,
+   "fat": 0.51
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-coconut-dried",
+  "nameAr": "جوز هند مبشور",
+  "nameEn": "Desiccated coconut",
+  "category": "nuts",
+  "fdcId": 170170,
+  "usdaDescription": "Nuts, coconut meat, dried (desiccated), not sweetened",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 660,
+   "protein": 6.88,
+   "carbs": 23.65,
+   "fat": 64.53
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-almonds",
+  "nameAr": "لوز",
+  "nameEn": "Almonds",
+  "category": "nuts",
+  "fdcId": 170567,
+  "usdaDescription": "Nuts, almonds",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 579,
+   "protein": 21.15,
+   "carbs": 21.55,
+   "fat": 49.93
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-peanuts",
+  "nameAr": "فول سوداني",
+  "nameEn": "Peanuts, roasted",
+  "category": "nuts",
+  "fdcId": 173806,
+  "usdaDescription": "Peanuts, all types, dry-roasted, without salt",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 587,
+   "protein": 24.35,
+   "carbs": 21.26,
+   "fat": 49.66
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-walnuts",
+  "nameAr": "عين جمل",
+  "nameEn": "Walnuts",
+  "category": "nuts",
+  "fdcId": 170187,
+  "usdaDescription": "Nuts, walnuts, english",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 654,
+   "protein": 15.23,
+   "carbs": 13.71,
+   "fat": 65.21
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-pistachios",
+  "nameAr": "فستق",
+  "nameEn": "Pistachios",
+  "category": "nuts",
+  "fdcId": 170185,
+  "usdaDescription": "Nuts, pistachio nuts, dry roasted, without salt added",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 572,
+   "protein": 21.05,
+   "carbs": 28.28,
+   "fat": 45.82
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-cashews",
+  "nameAr": "كاجو",
+  "nameEn": "Cashews",
+  "category": "nuts",
+  "fdcId": 170162,
+  "usdaDescription": "Nuts, cashew nuts, raw",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 553,
+   "protein": 18.22,
+   "carbs": 30.19,
+   "fat": 43.85
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-hazelnuts",
+  "nameAr": "بندق",
+  "nameEn": "Hazelnuts",
+  "category": "nuts",
+  "fdcId": 170581,
+  "usdaDescription": "Nuts, hazelnuts or filberts",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 628,
+   "protein": 14.95,
+   "carbs": 16.7,
+   "fat": 60.75
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-sesame",
+  "nameAr": "سمسم",
+  "nameEn": "Sesame seeds",
+  "category": "nuts",
+  "fdcId": 170150,
+  "usdaDescription": "Seeds, sesame seeds, whole, dried",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 573,
+   "protein": 17.73,
+   "carbs": 23.45,
+   "fat": 49.67
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-tahini",
+  "nameAr": "طحينة",
+  "nameEn": "Tahini",
+  "category": "nuts",
+  "fdcId": 170189,
+  "usdaDescription": "Seeds, sesame butter, tahini, from roasted and toasted kernels (most common type)",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 595,
+   "protein": 17,
+   "carbs": 21.19,
+   "fat": 53.76
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-peanut-butter",
+  "nameAr": "زبدة فول سوداني",
+  "nameEn": "Peanut butter",
+  "category": "nuts",
+  "fdcId": 172470,
+  "usdaDescription": "Peanut butter, smooth style, without salt",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 598,
+   "protein": 22.21,
+   "carbs": 22.31,
+   "fat": 51.36
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-sunflower-seeds",
+  "nameAr": "لب أبيض (عباد الشمس)",
+  "nameEn": "Sunflower seeds",
+  "category": "nuts",
+  "fdcId": 170562,
+  "usdaDescription": "Seeds, sunflower seed kernels, dried",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 584,
+   "protein": 20.78,
+   "carbs": 20,
+   "fat": 51.46
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-pumpkin-seeds",
+  "nameAr": "لب سوري (قرع)",
+  "nameEn": "Pumpkin seeds",
+  "category": "nuts",
+  "fdcId": 170556,
+  "usdaDescription": "Seeds, pumpkin and squash seed kernels, dried",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 559,
+   "protein": 30.23,
+   "carbs": 10.71,
+   "fat": 49.05
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-olive-oil",
+  "nameAr": "زيت زيتون",
+  "nameEn": "Olive oil",
+  "category": "fats",
+  "fdcId": 171413,
+  "usdaDescription": "Oil, olive, salad or cooking",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 884,
+   "protein": 0,
+   "carbs": 0,
+   "fat": 100
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-sunflower-oil",
+  "nameAr": "زيت عباد الشمس",
+  "nameEn": "Sunflower oil",
+  "category": "fats",
+  "fdcId": 171025,
+  "usdaDescription": "Oil, sunflower, linoleic, (approx. 65%)",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 884,
+   "protein": 0,
+   "carbs": 0,
+   "fat": 100
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-corn-oil",
+  "nameAr": "زيت ذرة",
+  "nameEn": "Corn oil",
+  "category": "fats",
+  "fdcId": 171029,
+  "usdaDescription": "Oil, corn, industrial and retail, all purpose salad or cooking",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 900,
+   "protein": 0,
+   "carbs": 0,
+   "fat": 100
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-sugar",
+  "nameAr": "سكر",
+  "nameEn": "Sugar",
+  "category": "sweets",
+  "fdcId": 169655,
+  "usdaDescription": "Sugars, granulated",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 387,
+   "protein": 0,
+   "carbs": 99.98,
+   "fat": 0
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-honey",
+  "nameAr": "عسل نحل",
+  "nameEn": "Honey",
+  "category": "sweets",
+  "fdcId": 169640,
+  "usdaDescription": "Honey",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 304,
+   "protein": 0.3,
+   "carbs": 82.4,
+   "fat": 0
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-molasses",
+  "nameAr": "عسل أسود",
+  "nameEn": "Molasses",
+  "category": "sweets",
+  "fdcId": 168820,
+  "usdaDescription": "Molasses",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 290,
+   "protein": 0,
+   "carbs": 74.73,
+   "fat": 0.1
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-jam",
+  "nameAr": "مربى",
+  "nameEn": "Jam",
+  "category": "sweets",
+  "fdcId": 169641,
+  "usdaDescription": "Jams and preserves",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 278,
+   "protein": 0.37,
+   "carbs": 68.86,
+   "fat": 0.07
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-milk-chocolate",
+  "nameAr": "شوكولاتة باللبن",
+  "nameEn": "Milk chocolate",
+  "category": "sweets",
+  "fdcId": 167587,
+  "usdaDescription": "Candies, milk chocolate",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 535,
+   "protein": 7.65,
+   "carbs": 59.4,
+   "fat": 29.66
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-dark-chocolate",
+  "nameAr": "شوكولاتة داكنة",
+  "nameEn": "Dark chocolate (70–85%)",
+  "category": "sweets",
+  "fdcId": 170273,
+  "usdaDescription": "Chocolate, dark, 70-85% cacao solids",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 598,
+   "protein": 7.79,
+   "carbs": 45.9,
+   "fat": 42.63
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-biscuits-butter",
+  "nameAr": "بسكويت بالزبدة",
+  "nameEn": "Butter cookies",
+  "category": "sweets",
+  "fdcId": 174950,
+  "usdaDescription": "Cookies, butter, commercially prepared, enriched",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 467,
+   "protein": 6.1,
+   "carbs": 68.9,
+   "fat": 18.8
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-cake-pound",
+  "nameAr": "كيك",
+  "nameEn": "Pound cake",
+  "category": "sweets",
+  "fdcId": 172704,
+  "usdaDescription": "Cake, pound, commercially prepared, butter (includes fresh and frozen)",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 353,
+   "protein": 5,
+   "carbs": 53.64,
+   "fat": 13.96
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-donut",
+  "nameAr": "دونات",
+  "nameEn": "Doughnut",
+  "category": "sweets",
+  "fdcId": 174990,
+  "usdaDescription": "Doughnuts, cake-type, plain (includes unsugared, old-fashioned)",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 434,
+   "protein": 5.31,
+   "carbs": 47.06,
+   "fat": 24.93
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-ketchup",
+  "nameAr": "كاتشب",
+  "nameEn": "Ketchup",
+  "category": "condiments",
+  "fdcId": 168556,
+  "usdaDescription": "Catsup",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 101,
+   "protein": 1.04,
+   "carbs": 27.4,
+   "fat": 0.1
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-mayonnaise",
+  "nameAr": "مايونيز",
+  "nameEn": "Mayonnaise",
+  "category": "condiments",
+  "fdcId": 171009,
+  "usdaDescription": "Salad dressing, mayonnaise, regular",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 680,
+   "protein": 0.96,
+   "carbs": 0.57,
+   "fat": 74.85
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-mustard",
+  "nameAr": "مسطردة",
+  "nameEn": "Mustard",
+  "category": "condiments",
+  "fdcId": 172234,
+  "usdaDescription": "Mustard, prepared, yellow",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 60,
+   "protein": 3.74,
+   "carbs": 5.83,
+   "fat": 3.34
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-tomato-paste",
+  "nameAr": "صلصة طماطم (معجون)",
+  "nameEn": "Tomato paste",
+  "category": "condiments",
+  "fdcId": 170459,
+  "usdaDescription": "Tomato products, canned, paste, without salt added (Includes foods for USDA's Food Distribution Program)",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 82,
+   "protein": 4.32,
+   "carbs": 18.91,
+   "fat": 0.47
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-chips",
+  "nameAr": "شيبسي",
+  "nameEn": "Potato chips",
+  "category": "snacks",
+  "fdcId": 169677,
+  "usdaDescription": "Snacks, potato chips, plain, salted",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 532,
+   "protein": 6.39,
+   "carbs": 53.83,
+   "fat": 33.98
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-popcorn",
+  "nameAr": "فشار",
+  "nameEn": "Popcorn, air-popped",
+  "category": "snacks",
+  "fdcId": 167959,
+  "usdaDescription": "Snacks, popcorn, air-popped",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 387,
+   "protein": 12.94,
+   "carbs": 77.78,
+   "fat": 4.54
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-burger",
+  "nameAr": "برجر (ساندوتش)",
+  "nameEn": "Hamburger sandwich",
+  "category": "fast_food",
+  "fdcId": 170693,
+  "usdaDescription": "Fast foods, hamburger; single, regular patty; plain",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 297,
+   "protein": 16.52,
+   "carbs": 31.5,
+   "fat": 12.01
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-pizza-cheese",
+  "nameAr": "بيتزا جبنة",
+  "nameEn": "Cheese pizza",
+  "category": "fast_food",
+  "fdcId": 173292,
+  "usdaDescription": "Fast Food, Pizza Chain, 14\" pizza, cheese topping, regular crust",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 266,
+   "protein": 11.39,
+   "carbs": 33.33,
+   "fat": 9.69
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-chicken-nuggets",
+  "nameAr": "ناجتس",
+  "nameEn": "Chicken nuggets",
+  "category": "fast_food",
+  "fdcId": 173321,
+  "usdaDescription": "Fast foods, chicken tenders",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 271,
+   "protein": 19.22,
+   "carbs": 17.25,
+   "fat": 13.95
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-tea-brewed",
+  "nameAr": "شاي (بدون سكر)",
+  "nameEn": "Tea, brewed, unsweetened",
+  "category": "drinks",
+  "fdcId": 173227,
+  "usdaDescription": "Beverages, tea, black, brewed, prepared with tap water",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 1,
+   "protein": 0,
+   "carbs": 0.3,
+   "fat": 0
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-coffee-brewed",
+  "nameAr": "قهوة (بدون سكر)",
+  "nameEn": "Coffee, brewed, unsweetened",
+  "category": "drinks",
+  "fdcId": 171890,
+  "usdaDescription": "Beverages, coffee, brewed, prepared with tap water",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 1,
+   "protein": 0.12,
+   "carbs": 0,
+   "fat": 0.02
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-cola",
+  "nameAr": "مياه غازية (كولا)",
+  "nameEn": "Cola",
+  "category": "drinks",
+  "fdcId": 174852,
+  "usdaDescription": "Beverages, carbonated, cola, regular",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 42,
+   "protein": 0,
+   "carbs": 10.36,
+   "fat": 0.25
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-orange-juice",
+  "nameAr": "عصير برتقال فريش",
+  "nameEn": "Orange juice, fresh",
+  "category": "drinks",
+  "fdcId": 169098,
+  "usdaDescription": "Orange juice, raw (Includes foods for USDA's Food Distribution Program)",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 45,
+   "protein": 0.7,
+   "carbs": 10.4,
+   "fat": 0.2
+  },
+  "source": "usda"
+ },
+ {
+  "id": "usda-apple-juice",
+  "nameAr": "عصير تفاح",
+  "nameEn": "Apple juice",
+  "category": "drinks",
+  "fdcId": 173933,
+  "usdaDescription": "Apple juice, canned or bottled, unsweetened, without added ascorbic acid",
+  "nameArSource": "machine_translated",
+  "per100": {
+   "kcal": 46,
+   "protein": 0.1,
+   "carbs": 11.3,
+   "fat": 0.13
+  },
+  "source": "usda"
+ }
+]

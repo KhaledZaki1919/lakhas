@@ -206,3 +206,13 @@ Quotas become per-device daily **cost caps**, set to the old Pro limits: photo 1
 3. **OpenRouter structured output** depends on the underlying model. **Proposed:** request `response_format: json_schema`. If the model rejects it, fall back to "JSON only" prompting plus `Codable` validation and the one retry. Settings marks models with weak JSON support.
 4. **Price table.** Prices change. **Proposed:** a bundled table (per model, input/output per million tokens), user-editable per model, shown as "estimate", and updated with app releases. Unknown models show token counts without a cost.
 5. **Contributed products** stay on this device only; there's no sharing between users. **OK?**
+
+### ADR-021 — Bundled food DB as JSON with in-memory search
+**Status:** Accepted (2026-10-13). Amends ADR-009 (SQLite + FTS5).
+**Context:** The bundled DB holds about 300 foods (89 KB): a USDA SR Legacy subset with real values, plus a hand-curated table of Egyptian and Arab dishes. SQLite/FTS5 would add a build step and C-API code for no measurable gain at this size.
+**Decision:**
+- **Format:** `LakhasKit/Resources/FoodDB/foods.json`, loaded once into memory.
+- **Search:** normalized Arabic (diacritics and tatweel removed; أ/إ/آ → ا, ى → ي, ة → ه, ؤ → و, ئ → ي) and lowercased Latin text, with tolerant spelling ("كشرى" finds "كشري", "taameya" finds "طعمية"). Results are scored exact > prefix > word-prefix > contains, over names and aliases.
+- **Sources:** `ios/data/scripts/build-usda-subset.mjs` (USDA CSV → subset) and `build-food-db.mjs` (merge + validation) regenerate the file.
+- **Curated dishes:** protein, carbs and fat per 100 g as served, marked `curated_estimate`. kcal is computed from them (4/4/9) so every entry is internally consistent, and each dish carries common Egyptian portions (plate, sandwich, piece, loaf, cup).
+**Revisit if:** the DB grows past a few thousand entries.
