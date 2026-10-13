@@ -36,7 +36,7 @@ struct TodayHeader: View {
             .accessibilityLabel(Text("progress.title"))
             .accessibilityIdentifier("ax.today.progress")
             NavigationLink {
-                SettingsPlaceholderView()
+                SettingsView()
             } label: {
                 Image(systemName: "gearshape")
                     .font(.headline)
@@ -241,16 +241,46 @@ struct ProgressScreen: View {
     }
 }
 
-/// Phase 10 builds Settings; for now it links the sideloading probe.
-struct SettingsPlaceholderView: View {
+/// Settings (Phase 11 adds goals, language, units, reminders, backup).
+struct SettingsView: View {
+    @State private var settings = AISettings.load()
+    @State private var hasKey = false
+
     var body: some View {
         List {
-            NavigationLink {
-                CapabilityProbeView()
-            } label: {
-                Label("probe.title", systemImage: "stethoscope")
+            Section {
+                NavigationLink {
+                    AISettingsView()
+                } label: {
+                    LabeledContent {
+                        Text(hasKey ? LocalizedStringKey("settings.ai.ready") : LocalizedStringKey("settings.ai.noKey"))
+                    } label: {
+                        Label {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("ai.title")
+                                Text(verbatim: settings.provider.displayName)
+                                    .font(.caption)
+                                    .foregroundStyle(Theme.Palette.muted)
+                            }
+                        } icon: {
+                            Image(systemName: "sparkles")
+                        }
+                    }
+                }
+                .accessibilityIdentifier("ax.settings.ai")
+            }
+            Section {
+                NavigationLink {
+                    CapabilityProbeView()
+                } label: {
+                    Label("probe.title", systemImage: "stethoscope")
+                }
             }
         }
         .navigationTitle("settings.title")
+        .onAppear {
+            settings = AISettings.load()
+            hasKey = AIKeyStore().hasKey(for: settings.provider)
+        }
     }
 }

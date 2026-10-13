@@ -4,53 +4,35 @@ import SwiftUI
 
 @main
 struct LakhasApp: App {
-    @State private var model: AppModel
     private let container: ModelContainer?
 
     init() {
-        // UI tests launch with -uiTesting: in-memory store, no token, no server.
+        // UI tests launch with -uiTesting: in-memory store and default AI settings (no key).
         let uiTesting = ProcessInfo.processInfo.arguments.contains("-uiTesting")
-        let model = uiTesting
-            ? AppModel(tokenStore: TokenStore(keychain: KeychainStore(service: "lakhas.uitest")),
-                       defaults: UserDefaults(suiteName: "lakhas.uitest") ?? .standard)
-            : AppModel()
-        if uiTesting {
-            model.forgetToken()
-            model.continueOffline()
-        }
-        _model = State(initialValue: model)
+        if uiTesting { UserDefaults.standard.removeObject(forKey: AISettings.defaultsKey) }
         container = try? LakhasStore.makeContainer(inMemory: uiTesting)
     }
 
     var body: some Scene {
         WindowGroup {
-            Group {
-                if let container {
-                    RootGate().modelContainer(container)
-                } else {
-                    StoreErrorView()
-                }
+            if let container {
+                RootGate().modelContainer(container)
+            } else {
+                StoreErrorView()
             }
-            .environment(model)
         }
     }
 }
 
-/// Token first (ADR-013), then onboarding until a profile exists, then the app.
+/// Onboarding until a profile exists, then the app. No accounts, no tokens (ADR-020).
 struct RootGate: View {
-    @Environment(AppModel.self) private var model
     @Query private var profiles: [UserProfile]
 
     var body: some View {
-        switch model.phase {
-        case .needsToken:
-            TokenEntryView()
-        case .ready, .offline:
-            if profiles.isEmpty {
-                OnboardingView()
-            } else {
-                MainTabView()
-            }
+        if profiles.isEmpty {
+            OnboardingView()
+        } else {
+            MainTabView()
         }
     }
 }

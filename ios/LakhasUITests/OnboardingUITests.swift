@@ -1,7 +1,7 @@
 import XCTest
 
 /// UI tests (PROJECT_PROMPT.md §10): onboarding, then logging a meal on Today.
-/// `-uiTesting` gives an in-memory store and skips the device-token screen.
+/// `-uiTesting` gives an in-memory store and default AI settings (no key).
 final class OnboardingUITests: XCTestCase {
     override func setUp() {
         continueAfterFailure = false
@@ -36,6 +36,28 @@ final class OnboardingUITests: XCTestCase {
         next.tap()                                        // goal
     }
 
+    /// Summary → optional AI step (skipped) → Today.
+    @MainActor
+    private func finishAfterSummary(_ app: XCUIApplication) {
+        app.buttons["ax.onboarding.next"].tap()
+        XCTAssertTrue(app.buttons["ax.onboarding.aiSetup"].waitForExistence(timeout: 5))
+        app.buttons["ax.onboarding.finish"].tap()
+    }
+
+    @MainActor
+    func testPhotoLoggingWithoutAKeyShowsTheNoKeyScreen() throws {
+        let app = launch(language: "en")
+        completeOnboarding(app)
+        finishAfterSummary(app)
+
+        app.buttons["ax.tab.plus"].tap()
+        let photo = element(app, "ax.log.photo")
+        XCTAssertTrue(photo.waitForExistence(timeout: 5))
+        photo.tap()
+        XCTAssertTrue(element(app, "ax.nokey.title").waitForExistence(timeout: 5))
+        XCTAssertTrue(element(app, "ax.nokey.open").exists)
+    }
+
     @MainActor
     func testOnboardingShowsComputedTargetsAndOpensToday() throws {
         let app = launch(language: "en")
@@ -47,7 +69,7 @@ final class OnboardingUITests: XCTestCase {
         XCTAssertTrue(calories.waitForExistence(timeout: 5))
         XCTAssertTrue(calories.label.contains("2,007"), "summary showed \(calories.label)")
 
-        app.buttons["ax.onboarding.finish"].tap()
+        finishAfterSummary(app)
         XCTAssertTrue(element(app, "ax.today.ring").waitForExistence(timeout: 5))
         XCTAssertTrue(app.buttons["ax.tab.plus"].exists)
     }
@@ -60,7 +82,7 @@ final class OnboardingUITests: XCTestCase {
         XCTAssertTrue(calories.waitForExistence(timeout: 5))
         // Western digits by default in Arabic.
         XCTAssertTrue(calories.label.contains("2,007") || calories.label.contains("2٬007"), "summary showed \(calories.label)")
-        app.buttons["ax.onboarding.finish"].tap()
+        finishAfterSummary(app)
         XCTAssertTrue(element(app, "ax.today.ring").waitForExistence(timeout: 5))
     }
 
@@ -68,7 +90,7 @@ final class OnboardingUITests: XCTestCase {
     func testQuickAddLogsAMealOnToday() throws {
         let app = launch(language: "en")
         completeOnboarding(app)
-        app.buttons["ax.onboarding.finish"].tap()
+        finishAfterSummary(app)
 
         app.buttons["ax.tab.plus"].tap()
         let quickAdd = element(app, "ax.log.quickAdd")

@@ -10,7 +10,7 @@ import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 LANGS = ("ar", "en")
-KEY_PREFIXES = "tab|probe|common|share|widget|today|token|onboarding|settings|log|recipes|explore|workouts|progress|water|weight|error|bmi|activity|goal|sex|meal|macro|unit|quickadd"
+KEY_PREFIXES = "tab|probe|common|share|widget|today|token|onboarding|settings|log|recipes|explore|workouts|progress|water|weight|error|bmi|activity|goal|sex|meal|macro|unit|quickadd|ai|nokey"
 KEY_RE = re.compile(r'"((?:' + KEY_PREFIXES + r')\.[A-Za-z0-9_.]+)"')
 SKIP_DIRS = {"build", ".build", "DerivedData", "Lakhas.xcodeproj"}
 

@@ -137,6 +137,788 @@
         }
       }
     },
+    "ai.comingSoon.body": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مفتاحك جاهز. تحليل الصور والكتابة يصل في التحديث القادم."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your key is ready. Photo and text analysis arrive in the next update."
+          }
+        }
+      }
+    },
+    "ai.comingSoon.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "التحليل قادم قريبًا"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Analysis is coming soon"
+          }
+        }
+      }
+    },
+    "ai.error.badRequest": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "رفض المزوّد الطلب. جرّب نموذجًا آخر."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The provider rejected the request. Try another model."
+          }
+        }
+      }
+    },
+    "ai.error.credit": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لا يوجد رصيد كافٍ في حسابك لدى المزوّد. أضف رصيدًا ثم حاول."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your provider account is out of credit. Add credit and try again."
+          }
+        }
+      }
+    },
+    "ai.error.dailyLimit": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "وصلت للحد اليومي الذي حددته. يمكنك تغييره من الإعدادات ← الذكاء الاصطناعي."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You reached the daily limit you set. You can change it in Settings → AI."
+          }
+        }
+      }
+    },
+    "ai.error.invalidKey": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "المفتاح غير صحيح أو تم إلغاؤه. انسخه مرة أخرى من حساب المزوّد."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The key is wrong or was revoked. Copy it again from your provider account."
+          }
+        }
+      }
+    },
+    "ai.error.invalidOutput": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لم نتمكن من فهم رد النموذج. حاول مرة أخرى أو جرّب نموذجًا آخر."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "We couldn't read the model's reply. Try again or pick another model."
+          }
+        }
+      }
+    },
+    "ai.error.model": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هذا النموذج غير متاح لحسابك. اختر نموذجًا آخر."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This model isn't available to your account. Pick another one."
+          }
+        }
+      }
+    },
+    "ai.error.network": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تعذّر الاتصال. تحقق من الإنترنت وحاول مرة أخرى."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't connect. Check your internet and try again."
+          }
+        }
+      }
+    },
+    "ai.error.noKey": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أضف مفتاح API أولًا من الإعدادات ← الذكاء الاصطناعي."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add an API key first in Settings → AI."
+          }
+        }
+      }
+    },
+    "ai.error.rateLimited": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "طلبات كثيرة في وقت قصير. انتظر قليلًا ثم حاول."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Too many requests. Wait a moment and try again."
+          }
+        }
+      }
+    },
+    "ai.error.refused": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "رفض النموذج هذا الطلب. جرّب صورة أو وصفًا آخر."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The model declined this request. Try another photo or description."
+          }
+        }
+      }
+    },
+    "ai.error.truncated": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الرد كان طويلًا جدًا. حاول مرة أخرى."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The reply was too long. Try again."
+          }
+        }
+      }
+    },
+    "ai.error.unavailable": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "خدمة المزوّد مشغولة أو متوقفة الآن. حاول بعد قليل."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The provider is busy or down right now. Try again shortly."
+          }
+        }
+      }
+    },
+    "ai.highAccuracy": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "دقة عالية لتحليل الصور"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "High accuracy for photos"
+          }
+        }
+      }
+    },
+    "ai.highAccuracy.footer": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "عند التفعيل، يُحلَّل تصوير الوجبات بنموذج أقوى (أدق وأغلى). الكتابة والتصحيح يبقيان على النموذج الأساسي الأرخص."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "When on, meal photos use a stronger model (more accurate, more expensive). Text entry and corrections stay on the cheaper standard model."
+          }
+        }
+      }
+    },
+    "ai.key.delete": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حذف المفتاح"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete key"
+          }
+        }
+      }
+    },
+    "ai.key.footer": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "يُحفظ المفتاح في سلسلة مفاتيح هذا الجهاز فقط. لا يُزامن ولا يدخل في النسخ الاحتياطية أو ملفات التصدير."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your key is stored only in this iPhone's Keychain. It isn't synced or included in backups or exports."
+          }
+        }
+      }
+    },
+    "ai.key.get": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "احصل على مفتاح"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Get a key"
+          }
+        }
+      }
+    },
+    "ai.key.placeholder": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الصق مفتاحك هنا"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Paste your key here"
+          }
+        }
+      }
+    },
+    "ai.key.save": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حفظ واختبار"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save and test"
+          }
+        }
+      }
+    },
+    "ai.key.saved": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "المفتاح المحفوظ"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Saved key"
+          }
+        }
+      }
+    },
+    "ai.key.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مفتاح API"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "API key"
+          }
+        }
+      }
+    },
+    "ai.limit.footer": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اختياري: يوقف تحليلات الذكاء الاصطناعي بعد هذا العدد حتى الغد."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Optional: pauses AI analysis after this many requests until tomorrow."
+          }
+        }
+      }
+    },
+    "ai.limit.toggle": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حد يومي"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Daily limit"
+          }
+        }
+      }
+    },
+    "ai.limit.value %@": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ طلب يوميًا"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ requests a day"
+          }
+        }
+      }
+    },
+    "ai.model.accurate": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نموذج الدقة العالية"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "High-accuracy model"
+          }
+        }
+      }
+    },
+    "ai.model.builtInFooter": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أضف مفتاحك لعرض القائمة الكاملة من المزوّد."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add your key to see the provider's full list."
+          }
+        }
+      }
+    },
+    "ai.model.custom": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "معرّف نموذج مخصص"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Custom model ID"
+          }
+        }
+      }
+    },
+    "ai.model.customFooter": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اكتب معرّف أي نموذج يدعم الصور لدى مزوّدك."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Type the ID of any vision-capable model your provider offers."
+          }
+        }
+      }
+    },
+    "ai.model.recommended": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مُوصى به"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recommended"
+          }
+        }
+      }
+    },
+    "ai.model.recommendedMissing": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "النموذج المُوصى به غير موجود في قائمة حسابك. اختر نموذجًا آخر يدعم الصور."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The recommended model isn't in your account's list. Pick another vision-capable model."
+          }
+        }
+      }
+    },
+    "ai.model.standard": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "النموذج الأساسي"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Standard model"
+          }
+        }
+      }
+    },
+    "ai.model.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "النماذج"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Models"
+          }
+        }
+      }
+    },
+    "ai.privacy %@": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الصور والنصوص التي تحللها تُرسل مباشرة إلى %@ باستخدام مفتاحك. لا يوجد خادم لنا في المنتصف، ويُحاسبك المزوّد مباشرة."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Photos and text you analyze go directly to %@ with your key. There's no server of ours in between, and the provider bills you directly."
+          }
+        }
+      }
+    },
+    "ai.provider": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "المزوّد"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Provider"
+          }
+        }
+      }
+    },
+    "ai.test": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اختبار الاتصال"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Test connection"
+          }
+        }
+      }
+    },
+    "ai.test.passed %@": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "يعمل! النموذج: %@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "It works! Model: %@"
+          }
+        }
+      }
+    },
+    "ai.test.passedCost %@ %@": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "يعمل! النموذج: %1$@ · تكلفة الاختبار ≈ %2$@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "It works! Model: %1$@ · test cost ≈ %2$@"
+          }
+        }
+      }
+    },
+    "ai.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الذكاء الاصطناعي"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AI"
+          }
+        }
+      }
+    },
+    "ai.usage.footer": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "التكلفة تقديرية بناءً على عدد التوكنز وأسعار معروفة. الفاتورة الفعلية من مزوّدك."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Costs are estimates from token counts and known prices. Your provider's bill is the real amount."
+          }
+        }
+      }
+    },
+    "ai.usage.month": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هذا الشهر"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This month"
+          }
+        }
+      }
+    },
+    "ai.usage.noPrice": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لا يوجد سعر لهذا النموذج"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No price for this model"
+          }
+        }
+      }
+    },
+    "ai.usage.requests %@": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ طلب"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ requests"
+          }
+        }
+      }
+    },
+    "ai.usage.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الاستخدام والتكلفة"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Usage & cost"
+          }
+        }
+      }
+    },
+    "ai.usage.today": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اليوم"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Today"
+          }
+        }
+      }
+    },
     "bmi.normal": {
       "extractionState": "manual",
       "localizations": {
@@ -307,6 +1089,23 @@
         }
       }
     },
+    "common.done": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تم"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Done"
+          }
+        }
+      }
+    },
     "common.no": {
       "extractionState": "manual",
       "localizations": {
@@ -388,6 +1187,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "Undo"
+          }
+        }
+      }
+    },
+    "common.use": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "استخدم"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Use"
           }
         }
       }
@@ -477,40 +1293,6 @@
         }
       }
     },
-    "log.comingPhase4": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "قريبًا"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Soon"
-          }
-        }
-      }
-    },
-    "log.comingPhase5": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "قريبًا"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Soon"
-          }
-        }
-      }
-    },
     "log.comingSoon": {
       "extractionState": "manual",
       "localizations": {
@@ -524,6 +1306,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "Soon"
+          }
+        }
+      }
+    },
+    "log.needsKey": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "التحليل بالصورة والكتابة يحتاج مفتاح API خاص بك."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Photo and text analysis need your own API key."
           }
         }
       }
@@ -953,6 +1752,142 @@
         }
       }
     },
+    "nokey.body": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لخّص يستخدم مزوّد الذكاء الاصطناعي الذي تختاره، بمفتاحك الخاص. تدفع للمزوّد مباشرة حسب استخدامك، ولا تمر بياناتك عبر أي خادم لنا."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lakhas uses the AI provider you choose, with your own key. You pay the provider directly for what you use, and your data never passes through a server of ours."
+          }
+        }
+      }
+    },
+    "nokey.cost": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تحليل صورة واحدة يكلّف عادة جزءًا صغيرًا من السنت مع النماذج الاقتصادية. ستظهر التكلفة التقديرية بعد كل تحليل."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Analyzing one photo usually costs a small fraction of a cent with economical models. You'll see an estimate after each analysis."
+          }
+        }
+      }
+    },
+    "nokey.open": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "فتح إعدادات الذكاء الاصطناعي"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open AI settings"
+          }
+        }
+      }
+    },
+    "nokey.step1": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اختر مزوّدًا وأنشئ حسابًا لديه."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pick a provider and create an account there."
+          }
+        }
+      }
+    },
+    "nokey.step2": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أنشئ مفتاح API وانسخه."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Create an API key and copy it."
+          }
+        }
+      }
+    },
+    "nokey.step3": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الصقه في الإعدادات ← الذكاء الاصطناعي واضغط «اختبار الاتصال»."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Paste it in Settings → AI and tap Test connection."
+          }
+        }
+      }
+    },
+    "nokey.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أضف مفتاحك لتفعيل التحليل الذكي"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add your key to turn on AI analysis"
+          }
+        }
+      }
+    },
+    "nokey.withoutKey": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "بدون مفتاح، يمكنك تسجيل وجباتك يدويًا واستخدام باقي التطبيق كالمعتاد."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Without a key, you can still log meals manually and use the rest of the app."
+          }
+        }
+      }
+    },
     "onboarding.activity.title": {
       "extractionState": "manual",
       "localizations": {
@@ -983,6 +1918,74 @@
           "stringUnit": {
             "state": "translated",
             "value": "How old are you?"
+          }
+        }
+      }
+    },
+    "onboarding.ai.body": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لتحليل صور وجباتك، أضف مفتاح API من مزوّد تختاره: Claude أو OpenAI أو Gemini أو OpenRouter. تدفع له مباشرة، وبياناتك لا تمر بنا."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "To analyze meal photos, add an API key from a provider you choose: Claude, OpenAI, Gemini or OpenRouter. You pay them directly, and your data doesn't go through us."
+          }
+        }
+      }
+    },
+    "onboarding.ai.later": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "يمكنك فعل ذلك لاحقًا من الإعدادات ← الذكاء الاصطناعي. التسجيل اليدوي يعمل بدون مفتاح."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You can do this later in Settings → AI. Manual logging works without a key."
+          }
+        }
+      }
+    },
+    "onboarding.ai.setup": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إعداد الآن"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Set up now"
+          }
+        }
+      }
+    },
+    "onboarding.ai.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "التحليل بالذكاء الاصطناعي (اختياري)"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AI analysis (optional)"
           }
         }
       }
@@ -1293,6 +2296,40 @@
         }
       }
     },
+    "probe.aiKey": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "المفتاح محفوظ"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Key saved"
+          }
+        }
+      }
+    },
+    "probe.aiProvider": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "المزوّد"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Provider"
+          }
+        }
+      }
+    },
     "probe.bundleID": {
       "extractionState": "manual",
       "localizations": {
@@ -1514,6 +2551,23 @@
         }
       }
     },
+    "probe.section.ai": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الذكاء الاصطناعي"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AI"
+          }
+        }
+      }
+    },
     "probe.section.build": {
       "extractionState": "manual",
       "localizations": {
@@ -1548,23 +2602,6 @@
         }
       }
     },
-    "probe.section.server": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "الخادم والرمز"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Server & token"
-          }
-        }
-      }
-    },
     "probe.section.storage": {
       "extractionState": "manual",
       "localizations": {
@@ -1578,40 +2615,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Storage & widgets"
-          }
-        }
-      }
-    },
-    "probe.server": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "الخادم"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Server"
-          }
-        }
-      }
-    },
-    "probe.server.notConfigured": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "غير مضبوط"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Not configured"
           }
         }
       }
@@ -1697,57 +2700,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Sideloading status"
-          }
-        }
-      }
-    },
-    "probe.token": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "رمز الجهاز"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Device token"
-          }
-        }
-      }
-    },
-    "probe.token.enter": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "إدخال رمز الجهاز"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Enter device token"
-          }
-        }
-      }
-    },
-    "probe.token.replace": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "استبدال رمز الجهاز"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Replace device token"
           }
         }
       }
@@ -1918,6 +2870,40 @@
           "stringUnit": {
             "state": "translated",
             "value": "Meal name"
+          }
+        }
+      }
+    },
+    "settings.ai.noKey": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "بدون مفتاح"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No key"
+          }
+        }
+      }
+    },
+    "settings.ai.ready": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جاهز"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ready"
           }
         }
       }
@@ -2173,261 +3159,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Today"
-          }
-        }
-      }
-    },
-    "token.activate": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "تفعيل"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Activate"
-          }
-        }
-      }
-    },
-    "token.continueOffline": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "المتابعة بدون رمز"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Continue without a token"
-          }
-        }
-      }
-    },
-    "token.error.clock": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "وقت الجهاز غير مضبوط. فعّل الضبط التلقائي للوقت ثم حاول مرة أخرى."
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Your device clock is off. Turn on automatic time, then try again."
-          }
-        }
-      }
-    },
-    "token.error.format": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "هذا لا يبدو رمز جهاز صحيحًا. انسخ الرمز كاملًا من لوحة التحكم."
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "That doesn't look like a device token. Copy the whole token from the admin panel."
-          }
-        }
-      }
-    },
-    "token.error.generic": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "حدث خطأ غير متوقع. حاول مرة أخرى."
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Something went wrong. Try again."
-          }
-        }
-      }
-    },
-    "token.error.invalid": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "هذا الرمز غير صالح أو تم إلغاؤه. أنشئ رمزًا جديدًا من لوحة التحكم."
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "This token isn't valid or was revoked. Create a new one in the admin panel."
-          }
-        }
-      }
-    },
-    "token.error.network": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "تعذّر الوصول إلى الخادم. تحقق من الاتصال وحاول مرة أخرى."
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Couldn't reach the server. Check your connection and try again."
-          }
-        }
-      }
-    },
-    "token.error.notConfigured": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "لم يُضبط عنوان الخادم في هذه النسخة."
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "This build has no server address."
-          }
-        }
-      }
-    },
-    "token.error.rateLimited": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "محاولات كثيرة. انتظر دقيقة ثم حاول مرة أخرى."
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Too many attempts. Wait a minute and try again."
-          }
-        }
-      }
-    },
-    "token.placeholder": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "رمز الجهاز (يبدأ بـ lk1_)"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Device token (starts with lk1_)"
-          }
-        }
-      }
-    },
-    "token.scan": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "امسح QR"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Scan QR"
-          }
-        }
-      }
-    },
-    "token.serverNotConfigured": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "لم يُضبط عنوان الخادم في هذه النسخة بعد. يمكنك المتابعة بدون خادم الآن."
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "This build has no server address yet. You can continue without the server for now."
-          }
-        }
-      }
-    },
-    "token.skipNote": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "يمكنك تسجيل وجباتك يدويًا بدون رمز. التحليل بالذكاء الاصطناعي والباركود يحتاجان الرمز، ويمكنك إضافته لاحقًا من الإعدادات."
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "You can log meals manually without a token. AI analysis and barcode lookup need one; you can add it later in Settings."
-          }
-        }
-      }
-    },
-    "token.subtitle": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "الصق رمز الجهاز من لوحة التحكم أو امسح رمز QR. ستحتاجه مرة واحدة فقط."
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Paste the device token from the admin panel or scan its QR code. You only need to do this once."
-          }
-        }
-      }
-    },
-    "token.title": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "فعّل هذا الجهاز"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Activate this device"
           }
         }
       }

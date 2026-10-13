@@ -6,7 +6,7 @@ import SwiftUI
 /// summary with BMI category, healthy range and computed targets, then saves the profile.
 struct OnboardingView: View {
     enum Step: Int, CaseIterable {
-        case welcome, sex, age, height, weight, activity, goal, summary
+        case welcome, sex, age, height, weight, activity, goal, summary, ai
     }
 
     @Environment(\.modelContext) private var context
@@ -18,6 +18,7 @@ struct OnboardingView: View {
     @State private var activity: ActivityLevel?
     @State private var goal: Goal?
     @State private var pace = 0.5
+    @State private var showAISetup = false
 
     private let format = AppFormat.current
 
@@ -39,6 +40,16 @@ struct OnboardingView: View {
             .padding(Theme.Space.screenMargin)
             .animation(.snappy, value: step)
         }
+        .sheet(isPresented: $showAISetup) {
+            NavigationStack {
+                AISettingsView()
+                    .toolbar {
+                        ToolbarItem(placement: .confirmationAction) {
+                            Button("common.done") { showAISetup = false }
+                        }
+                    }
+            }
+        }
     }
 
     // MARK: Layout
@@ -56,7 +67,7 @@ struct OnboardingView: View {
             .accessibilityLabel(Text("common.back"))
             .accessibilityIdentifier("ax.onboarding.back")
 
-            ProgressView(value: Double(step.rawValue), total: Double(Step.summary.rawValue))
+            ProgressView(value: Double(step.rawValue), total: Double(Step.ai.rawValue))
                 .tint(Theme.Palette.primary)
         }
     }
@@ -72,24 +83,25 @@ struct OnboardingView: View {
         case .activity: activityStep
         case .goal: goalStep
         case .summary: OnboardingSummaryView(profile: draftProfile, format: format)
+        case .ai: aiStep
         }
     }
 
     private var footer: some View {
         PrimaryButton(titleKey: footerKey, isEnabled: canContinue) {
-            if step == .summary {
+            if step == .ai {
                 finish()
             } else if let next = Step(rawValue: step.rawValue + 1) {
                 step = next
             }
         }
-        .accessibilityIdentifier(step == .summary ? "ax.onboarding.finish" : "ax.onboarding.next")
+        .accessibilityIdentifier(step == .ai ? "ax.onboarding.finish" : "ax.onboarding.next")
     }
 
     private var footerKey: LocalizedStringKey {
         switch step {
         case .welcome: "onboarding.start"
-        case .summary: "onboarding.finish"
+        case .ai: "onboarding.finish"
         default: "common.continue"
         }
     }
@@ -128,6 +140,27 @@ struct OnboardingView: View {
             }
         }
         .padding(.bottom, Theme.Space.sm)
+    }
+
+    /// Optional: bring your own AI key now or later in Settings → AI (ADR-020).
+    private var aiStep: some View {
+        VStack(alignment: .leading, spacing: Theme.Space.md) {
+            title("onboarding.ai.title", subtitle: "onboarding.ai.body")
+            Button {
+                showAISetup = true
+            } label: {
+                Label("onboarding.ai.setup", systemImage: "key.horizontal")
+                    .font(.headline)
+                    .frame(maxWidth: .infinity, minHeight: 50)
+            }
+            .buttonStyle(.bordered)
+            .buttonBorderShape(.capsule)
+            .tint(Theme.Palette.primary)
+            .accessibilityIdentifier("ax.onboarding.aiSetup")
+            Text("onboarding.ai.later")
+                .font(.footnote)
+                .foregroundStyle(Theme.Palette.muted)
+        }
     }
 
     private var sexStep: some View {

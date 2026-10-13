@@ -7,22 +7,14 @@ import WidgetKit
 /// Shows what actually works on this sideloaded install (docs/sideloading.md §4):
 /// the signer's profile and App Group, whether the widget shares our container, and the Keychain.
 struct CapabilityProbeView: View {
-    @Environment(AppModel.self) private var model
     @State private var report = ProbeReport.collect()
     @State private var keychainOK: Bool?
 
     var body: some View {
         List {
-            Section("probe.section.server") {
-                LabeledContent("probe.server", value: model.configuration?.baseURL.host
-                    .flatMap { model.isServerConfigured ? $0 : nil } ?? String(localized: "probe.server.notConfigured"))
-                LabeledContent("probe.token", value: model.token.map { "\($0.tokenId.prefix(4))…" }
-                    ?? String(localized: "probe.none"))
-                if model.token != nil {
-                    Button("probe.token.replace", role: .destructive) { model.forgetToken() }
-                } else {
-                    Button("probe.token.enter") { model.forgetToken() }
-                }
+            Section("probe.section.ai") {
+                LabeledContent("probe.aiProvider", value: AISettings.load().provider.displayName)
+                LabeledContent("probe.aiKey", value: ProbeReport.yesNo(AIKeyStore().hasKey(for: AISettings.load().provider)))
             }
             Section("probe.section.build") {
                 LabeledContent("probe.variant", value: report.variant)

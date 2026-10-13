@@ -7,15 +7,18 @@ import SwiftUI
 struct LogSheet: View {
     let request: LogRequest
     @Environment(\.dismiss) private var dismiss
+    @State private var hasKey = AIKeyStore().hasKey(for: AISettings.load().provider)
 
     var body: some View {
         NavigationStack {
             List {
                 Section {
-                    method("log.photo", symbol: "camera", phaseKey: "log.comingPhase4")
-                    method("log.text", symbol: "text.bubble", phaseKey: "log.comingPhase4")
-                    method("log.barcode", symbol: "barcode.viewfinder", phaseKey: "log.comingPhase5")
+                    aiMethod("log.photo", symbol: "camera", identifier: "ax.log.photo")
+                    aiMethod("log.text", symbol: "text.bubble", identifier: "ax.log.text")
+                    method("log.barcode", symbol: "barcode.viewfinder", phaseKey: "log.comingSoon")
                     method("log.saved", symbol: "bookmark", phaseKey: "log.comingSoon")
+                } footer: {
+                    if !hasKey { Text("log.needsKey") }
                 }
                 Section {
                     NavigationLink {
@@ -35,9 +38,26 @@ struct LogSheet: View {
                     Button("common.cancel") { dismiss() }
                 }
             }
+            .onAppear { hasKey = AIKeyStore().hasKey(for: AISettings.load().provider) }
         }
         .presentationDetents([.medium, .large])
         .tint(Theme.Palette.primary)
+    }
+
+    /// Photo / text analysis need the user's own key (ADR-020).
+    private func aiMethod(_ key: LocalizedStringKey, symbol: String, identifier: String) -> some View {
+        NavigationLink {
+            if hasKey { AIComingSoonView() } else { NoKeyView() }
+        } label: {
+            HStack {
+                Label(key, systemImage: symbol)
+                Spacer()
+                if !hasKey {
+                    Image(systemName: "key.horizontal").font(.caption).foregroundStyle(Theme.Palette.muted)
+                }
+            }
+        }
+        .accessibilityIdentifier(identifier)
     }
 
     private func method(_ key: LocalizedStringKey, symbol: String, phaseKey: LocalizedStringKey) -> some View {
