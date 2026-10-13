@@ -94,7 +94,7 @@ public final class MealAnalyzer {
     }
 
     /// Model matches at or above this confidence take the DB's per-100 g values (§7.2).
-    public static let dbOverrideConfidence = 0.6
+    public nonisolated static let dbOverrideConfidence = 0.6
 
     private let service: AIService
     private let database: FoodDatabase
@@ -171,7 +171,7 @@ public final class MealAnalyzer {
 
     /// DB values replace the model's per-100 g when the match is confident; otherwise the
     /// model's values stand. Leftovers are subtracted from the served grams.
-    public static func postProcess(_ analysis: MealAnalysis, database: FoodDatabase) -> [DraftItem] {
+    public nonisolated static func postProcess(_ analysis: MealAnalysis, database: FoodDatabase) -> [DraftItem] {
         analysis.items.map { item in
             let match = item.foodDbId.flatMap(database.food(id:))
             let useDB = match != nil && item.confidence >= dbOverrideConfidence
