@@ -137,40 +137,6 @@
         }
       }
     },
-    "ai.comingSoon.body": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "مفتاحك جاهز. تحليل الصور والكتابة يصل في التحديث القادم."
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Your key is ready. Photo and text analysis arrive in the next update."
-          }
-        }
-      }
-    },
-    "ai.comingSoon.title": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "التحليل قادم قريبًا"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Analysis is coming soon"
-          }
-        }
-      }
-    },
     "ai.error.badRequest": {
       "extractionState": "manual",
       "localizations": {
@@ -1344,6 +1310,23 @@
         }
       }
     },
+    "log.plate": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "كوّن طبقك من القائمة"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Build a plate from the list"
+          }
+        }
+      }
+    },
     "log.quickAdd": {
       "extractionState": "manual",
       "localizations": {
@@ -2296,6 +2279,193 @@
         }
       }
     },
+    "photo.analyze": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حلّل"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Analyze"
+          }
+        }
+      }
+    },
+    "photo.analyzing": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جارٍ التحليل…"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Analyzing…"
+          }
+        }
+      }
+    },
+    "photo.camera": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الكاميرا"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Camera"
+          }
+        }
+      }
+    },
+    "photo.leftoverPhoto": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "صورة ما تبقّى"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Photo of what's left"
+          }
+        }
+      }
+    },
+    "photo.leftovers": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تبقّى شيء في الطبق؟"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Food left on the plate?"
+          }
+        }
+      }
+    },
+    "photo.leftovers.footer": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "صوّر الطبق بعد الأكل، وسنطرح ما لم تأكله."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Photograph the plate after eating and we'll subtract what you didn't eat."
+          }
+        }
+      }
+    },
+    "photo.library": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "من الصور"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "From photos"
+          }
+        }
+      }
+    },
+    "photo.meal": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "صورة الوجبة"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Meal photo"
+          }
+        }
+      }
+    },
+    "photo.note": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ملاحظة اختيارية (مثل: بدون زيت)"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Optional note (e.g. no oil)"
+          }
+        }
+      }
+    },
+    "photo.privacy": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تُصغَّر الصورة وتُحذف بيانات الموقع منها قبل إرسالها مباشرة إلى مزوّد الذكاء الاصطناعي الذي اخترته. تُحفظ نسخة صغيرة على هذا الجهاز فقط."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The photo is downscaled and its location data removed before it goes directly to the AI provider you chose. A small copy stays on this iPhone only."
+          }
+        }
+      }
+    },
+    "photo.sample": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "صورة تجريبية"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sample photo"
+          }
+        }
+      }
+    },
     "probe.aiKey": {
       "extractionState": "manual",
       "localizations": {
@@ -2874,6 +3044,380 @@
         }
       }
     },
+    "review.addItem": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إضافة صنف"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add item"
+          }
+        }
+      }
+    },
+    "review.checkAmount": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تأكد من الكمية"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Check the amount"
+          }
+        }
+      }
+    },
+    "review.correct.button": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تطبيق التصحيح"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apply correction"
+          }
+        }
+      }
+    },
+    "review.correct.placeholder": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مثل: الرز كان نص الكمية ومفيش زيت"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "e.g. the rice was half that, no oil"
+          }
+        }
+      }
+    },
+    "review.correct.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "صحّح بالذكاء الاصطناعي"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Correct with AI"
+          }
+        }
+      }
+    },
+    "review.cost %@ %@": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "التكلفة التقديرية ≈ %1$@ · %2$@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Estimated cost ≈ %1$@ · %2$@"
+          }
+        }
+      }
+    },
+    "review.cost.cached": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نفس الطلب اليوم: استُخدمت النتيجة السابقة بدون تكلفة."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Same request today: reused the earlier result at no cost."
+          }
+        }
+      }
+    },
+    "review.cost.unknown %@": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لا يوجد سعر لـ %@ — أضفه من الإعدادات ← الذكاء الاصطناعي."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No price for %@ — add one in Settings → AI."
+          }
+        }
+      }
+    },
+    "review.empty": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لم نجد أصنافًا. أضف صنفًا من القائمة."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No items found. Add one from the list."
+          }
+        }
+      }
+    },
+    "review.grams": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الجرامات"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Grams"
+          }
+        }
+      }
+    },
+    "review.items": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الأصناف"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Items"
+          }
+        }
+      }
+    },
+    "review.leftover %@ %@": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "في الطبق %1$@ جم، تبقّى %2$@ جم"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Served %1$@ g, left %2$@ g"
+          }
+        }
+      }
+    },
+    "review.source.ai": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تقدير الذكاء الاصطناعي"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AI estimate"
+          }
+        }
+      }
+    },
+    "review.source.db": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "من قاعدة البيانات"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Database"
+          }
+        }
+      }
+    },
+    "review.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "راجع الوجبة"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Review meal"
+          }
+        }
+      }
+    },
+    "review.total": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الإجمالي"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Total"
+          }
+        }
+      }
+    },
+    "search.add": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إضافة"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add"
+          }
+        }
+      }
+    },
+    "search.estimate": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تقدير"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "estimate"
+          }
+        }
+      }
+    },
+    "search.per100 %@": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ سعرة لكل ١٠٠ جم"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ kcal per 100 g"
+          }
+        }
+      }
+    },
+    "search.portions": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "الحصص المعتادة"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Usual portions"
+          }
+        }
+      }
+    },
+    "search.prompt": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ابحث: كشري، فول، طعمية…"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Search: koshary, foul, ta'ameya…"
+          }
+        }
+      }
+    },
+    "search.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اختر صنفًا"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose a food"
+          }
+        }
+      }
+    },
     "settings.ai.noKey": {
       "extractionState": "manual",
       "localizations": {
@@ -3023,6 +3567,40 @@
           "stringUnit": {
             "state": "translated",
             "value": "Workouts"
+          }
+        }
+      }
+    },
+    "textlog.footer": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "يمكنك الكتابة بالعامية أو الفصحى أو الإنجليزية."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You can write in Egyptian Arabic, standard Arabic or English."
+          }
+        }
+      }
+    },
+    "textlog.placeholder": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اكتب ما أكلته، مثل: طبق كشري وسط وكوباية شاي"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Describe what you ate, e.g. a medium plate of koshary and a cup of tea"
           }
         }
       }

@@ -47,7 +47,8 @@ public enum PriceTable {
     }
 
     public static func cost(of usage: AIUsage, at price: ModelPrice) -> Double {
-        (Double(usage.inputTokens) * price.inputPerMillion + Double(usage.outputTokens) * price.outputPerMillion) / 1_000_000
+        let input = Double(usage.inputTokens) + Double(usage.cacheReadTokens) * 0.1 + Double(usage.cacheWriteTokens) * 1.25
+        return (input * price.inputPerMillion + Double(usage.outputTokens) * price.outputPerMillion) / 1_000_000
     }
 
     public static func estimatedCost(of usage: AIUsage?, model: String, overrides: [String: ModelPrice] = [:]) -> Double? {

@@ -77,14 +77,3 @@ struct NoKeyView: View {
         }
     }
 }
-
-/// Phase 5 replaces this with the real photo/text analysis screens.
-struct AIComingSoonView: View {
-    var body: some View {
-        ContentUnavailableView {
-            Label("ai.comingSoon.title", systemImage: "sparkles")
-        } description: {
-            Text("ai.comingSoon.body")
-        }
-    }
-}

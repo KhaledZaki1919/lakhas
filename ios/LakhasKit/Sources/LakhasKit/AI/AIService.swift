@@ -19,9 +19,12 @@ public final class AIService {
         self.session = session
     }
 
+    /// UI tests only: when set, requests go to this provider and no key is required.
+    public nonisolated(unsafe) static var overrideProvider: AIProvider?
+
     public var settings: AISettings { AISettings.load(from: defaults) }
 
-    public var hasKey: Bool { keyStore.hasKey(for: settings.provider) }
+    public var hasKey: Bool { Self.overrideProvider != nil || keyStore.hasKey(for: settings.provider) }
 
     /// Requests made today (connection tests excluded).
     public func requestsToday(now: Date = .now) -> Int {
@@ -41,12 +44,18 @@ public final class AIService {
         _ type: Value.Type, request: AIRequest, feature: AIFeature
     ) async throws -> StructuredResult<Value> {
         let settings = settings
-        guard let key = keyStore.key(for: settings.provider) else { throw AIError.noKey }
+        let provider: AIProvider
+        if let override = Self.overrideProvider {
+            provider = override
+        } else {
+            guard let key = keyStore.key(for: settings.provider) else { throw AIError.noKey }
+            provider = settings.provider.makeProvider(apiKey: key, session: session)
+        }
         if feature != .connectionTest, let limit = settings.dailyLimit, requestsToday() >= limit {
             throw AIError.dailyLimitReached
         }
         let ai = StructuredAI(
-            provider: settings.provider.makeProvider(apiKey: key, session: session),
+            provider: provider,
             model: settings.model(for: feature),
             onUsage: { [weak self] event in
                 Task { @MainActor in self?.record(event) }

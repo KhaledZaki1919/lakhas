@@ -158,13 +158,7 @@ struct MealCard: View {
 
     var body: some View {
         HStack(spacing: Theme.Space.sm) {
-            Image(systemName: "fork.knife")
-                .font(.headline)
-                .foregroundStyle(Theme.Palette.primary)
-                .frame(width: 44, height: 44)
-                .background(Theme.Palette.surfaceSunken, in: Circle())
-                .overlay(Circle().stroke(Theme.Palette.line, lineWidth: 1))
-                .accessibilityHidden(true)
+            MealThumbnail(fileName: meal.photoFileName)
             VStack(alignment: .leading, spacing: 2) {
                 Text(verbatim: meal.displayName(language: format.language))
                     .font(.headline)
@@ -200,6 +194,29 @@ struct MealCard: View {
             "\(String(localized: "macro.carbs.short")) \(format.number(Int(totals.carbs.rounded())))\(grams)",
             "\(String(localized: "macro.fat.short")) \(format.number(Int(totals.fat.rounded())))\(grams)",
         ].joined(separator: " · ")
+    }
+}
+
+/// The photo the user took (device only), otherwise a styled placeholder plate (ADR-020).
+struct MealThumbnail: View {
+    let fileName: String?
+
+    var body: some View {
+        Group {
+            if let fileName, let image = UIImage(contentsOfFile: MealPhotoStore().url(for: fileName).path) {
+                Image(uiImage: image).resizable().scaledToFill()
+            } else {
+                Image(systemName: "fork.knife")
+                    .font(.headline)
+                    .foregroundStyle(Theme.Palette.primary)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(Theme.Palette.surfaceSunken)
+            }
+        }
+        .frame(width: 44, height: 44)
+        .clipShape(Circle())
+        .overlay(Circle().stroke(Theme.Palette.line, lineWidth: 1))
+        .accessibilityHidden(true)
     }
 }
 

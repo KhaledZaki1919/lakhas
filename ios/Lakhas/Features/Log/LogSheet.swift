@@ -7,14 +7,28 @@ import SwiftUI
 struct LogSheet: View {
     let request: LogRequest
     @Environment(\.dismiss) private var dismiss
-    @State private var hasKey = AIKeyStore().hasKey(for: AISettings.load().provider)
+    @State private var hasKey = LogSheet.keyAvailable()
+
+    static func keyAvailable() -> Bool {
+        AIService.overrideProvider != nil || AIKeyStore().hasKey(for: AISettings.load().provider)
+    }
 
     var body: some View {
         NavigationStack {
             List {
                 Section {
-                    aiMethod("log.photo", symbol: "camera", identifier: "ax.log.photo")
-                    aiMethod("log.text", symbol: "text.bubble", identifier: "ax.log.text")
+                    aiMethod("log.photo", symbol: "camera", identifier: "ax.log.photo") {
+                        PhotoLogView(request: request) { dismiss() }
+                    }
+                    aiMethod("log.text", symbol: "text.bubble", identifier: "ax.log.text") {
+                        TextLogView(request: request) { dismiss() }
+                    }
+                    NavigationLink {
+                        PlateBuilderView(request: request) { dismiss() }
+                    } label: {
+                        Label("log.plate", systemImage: "fork.knife")
+                    }
+                    .accessibilityIdentifier("ax.log.plate")
                     method("log.barcode", symbol: "barcode.viewfinder", phaseKey: "log.comingSoon")
                     method("log.saved", symbol: "bookmark", phaseKey: "log.comingSoon")
                 } footer: {
@@ -38,16 +52,18 @@ struct LogSheet: View {
                     Button("common.cancel") { dismiss() }
                 }
             }
-            .onAppear { hasKey = AIKeyStore().hasKey(for: AISettings.load().provider) }
+            .onAppear { hasKey = LogSheet.keyAvailable() }
         }
         .presentationDetents([.medium, .large])
         .tint(Theme.Palette.primary)
     }
 
     /// Photo / text analysis need the user's own key (ADR-020).
-    private func aiMethod(_ key: LocalizedStringKey, symbol: String, identifier: String) -> some View {
+    private func aiMethod<Destination: View>(
+        _ key: LocalizedStringKey, symbol: String, identifier: String, @ViewBuilder destination: @escaping () -> Destination
+    ) -> some View {
         NavigationLink {
-            if hasKey { AIComingSoonView() } else { NoKeyView() }
+            if hasKey { destination() } else { NoKeyView() }
         } label: {
             HStack {
                 Label(key, systemImage: symbol)

@@ -32,7 +32,8 @@ public struct AnthropicProvider: AIProvider {
         var body: [String: JSONValue] = [
             "model": .string(model),
             "max_tokens": .int(request.maxOutputTokens),
-            "system": .string(request.system),
+            // The long, static system prompt is marked cacheable (prompt caching).
+            "system": [["type": "text", "text": .string(request.system), "cache_control": ["type": "ephemeral"]]],
             "messages": [["role": "user", "content": .array(content)]],
         ]
         var outputConfig: [String: JSONValue] = [:]
@@ -58,6 +59,8 @@ public struct AnthropicProvider: AIProvider {
         struct Usage: Decodable {
             let inputTokens: Int
             let outputTokens: Int
+            let cacheReadInputTokens: Int?
+            let cacheCreationInputTokens: Int?
         }
 
         let content: [Block]
@@ -75,7 +78,10 @@ public struct AnthropicProvider: AIProvider {
         if text.isEmpty { throw response.stopReason == "max_tokens" ? AIError.truncated : AIError.invalidOutput("empty reply") }
         return AIResponse(
             text: text,
-            usage: response.usage.map { AIUsage(inputTokens: $0.inputTokens, outputTokens: $0.outputTokens) },
+            usage: response.usage.map {
+                AIUsage(inputTokens: $0.inputTokens, outputTokens: $0.outputTokens,
+                        cacheReadTokens: $0.cacheReadInputTokens ?? 0, cacheWriteTokens: $0.cacheCreationInputTokens ?? 0)
+            },
             model: response.model ?? model
         )
     }

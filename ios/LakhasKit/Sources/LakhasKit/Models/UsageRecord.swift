@@ -23,7 +23,7 @@ public final class UsageRecord {
         providerRaw = event.provider.rawValue
         model = event.model
         featureRaw = event.feature.rawValue
-        inputTokens = event.usage?.inputTokens ?? 0
+        inputTokens = event.usage?.totalInputTokens ?? 0
         outputTokens = event.usage?.outputTokens ?? 0
         success = event.success
         self.estimatedCost = estimatedCost

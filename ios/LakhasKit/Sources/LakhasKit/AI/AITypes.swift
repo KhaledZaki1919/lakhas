@@ -113,13 +113,22 @@ public struct AIRequest: Sendable, Equatable {
 }
 
 public struct AIUsage: Sendable, Equatable, Codable {
+    /// Uncached input tokens.
     public let inputTokens: Int
     public let outputTokens: Int
+    /// Prompt tokens served from the provider's cache (billed at ~10% of input).
+    public let cacheReadTokens: Int
+    /// Prompt tokens written to the cache (billed at ~125% of input).
+    public let cacheWriteTokens: Int
 
-    public init(inputTokens: Int, outputTokens: Int) {
+    public init(inputTokens: Int, outputTokens: Int, cacheReadTokens: Int = 0, cacheWriteTokens: Int = 0) {
         self.inputTokens = inputTokens
         self.outputTokens = outputTokens
+        self.cacheReadTokens = cacheReadTokens
+        self.cacheWriteTokens = cacheWriteTokens
     }
+
+    public var totalInputTokens: Int { inputTokens + cacheReadTokens + cacheWriteTokens }
 }
 
 public struct AIResponse: Sendable, Equatable {

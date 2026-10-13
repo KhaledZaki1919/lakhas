@@ -12,7 +12,7 @@ let package = Package(
     ],
     targets: [
         .target(name: "NutritionMath"),
-        .target(name: "LakhasKit", dependencies: ["NutritionMath"]),
+        .target(name: "LakhasKit", dependencies: ["NutritionMath"], resources: [.process("Resources")]),
         .testTarget(name: "NutritionMathTests", dependencies: ["NutritionMath"]),
         .testTarget(name: "LakhasKitTests", dependencies: ["LakhasKit"]),
     ],

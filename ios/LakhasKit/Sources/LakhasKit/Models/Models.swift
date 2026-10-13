@@ -112,6 +112,8 @@ public final class Meal {
     public var sourceRaw: String
     public var sortIndex: Int
     public var title: String?
+    /// File name in `MealPhotoStore` (device only), if the user took a photo.
+    public var photoFileName: String?
     @Relationship(deleteRule: .cascade, inverse: \MealItem.meal) public var items: [MealItem] = []
 
     public init(id: UUID = UUID(), loggedAt: Date = .now, mealType: MealType, source: LogSource,

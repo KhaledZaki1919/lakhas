@@ -31,7 +31,9 @@ struct AIProviderTests {
 
         let body = try #require(StubProtocol.lastJSON())
         #expect(body["max_tokens"] as? Int == 800)
-        #expect(body["system"] as? String == "You analyze meals.")
+        let system = try #require((body["system"] as? [[String: Any]])?.first)
+        #expect(system["text"] as? String == "You analyze meals.")
+        #expect((system["cache_control"] as? [String: Any])?["type"] as? String == "ephemeral")
         let output = try #require(body["output_config"] as? [String: Any])
         let format = try #require(output["format"] as? [String: Any])
         #expect(format["type"] as? String == "json_schema")
