@@ -17,6 +17,7 @@ struct AIProviderTests {
     // MARK: Anthropic
 
     @Test func anthropicBuildsAStructuredVisionRequest() async throws {
+        // swiftlint:disable:next line_length
         StubProtocol.reset([(200, #"{"content":[{"type":"text","text":"{\"ok\":true}"}],"usage":{"input_tokens":1500,"output_tokens":40},"stop_reason":"end_turn","model":"claude-haiku-5-5"}"#)])
         let provider = AnthropicProvider(apiKey: "sk-ant-test", session: StubProtocol.session())
         let response = try await provider.complete(request, model: "claude-haiku-5-5", structured: true)
@@ -57,6 +58,7 @@ struct AIProviderTests {
     // MARK: OpenAI / OpenRouter
 
     @Test func openAIUsesStrictJSONSchemaAndDataURLImages() async throws {
+        // swiftlint:disable:next line_length
         StubProtocol.reset([(200, #"{"choices":[{"message":{"content":"{\"ok\":true}"},"finish_reason":"stop"}],"usage":{"prompt_tokens":900,"completion_tokens":20},"model":"gpt-5-mini"}"#)])
         let provider = OpenAICompatibleProvider(kind: .openai, apiKey: "sk-test", session: StubProtocol.session())
         let response = try await provider.complete(request, model: "gpt-5-mini", structured: true)
@@ -92,6 +94,7 @@ struct AIProviderTests {
     // MARK: Gemini
 
     @Test func geminiUsesJSONModeAndInlineImages() async throws {
+        // swiftlint:disable:next line_length
         StubProtocol.reset([(200, #"{"candidates":[{"content":{"parts":[{"text":"{\"ok\":true}"}]},"finishReason":"STOP"}],"usageMetadata":{"promptTokenCount":700,"candidatesTokenCount":15,"thoughtsTokenCount":100}}"#)])
         let provider = GeminiProvider(apiKey: "AIza-test", session: StubProtocol.session())
         let response = try await provider.complete(request, model: "gemini-flash-latest", structured: false)

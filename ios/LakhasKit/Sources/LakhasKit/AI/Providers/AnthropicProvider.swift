@@ -56,26 +56,26 @@ public struct AnthropicProvider: AIProvider {
         }
 
         struct Usage: Decodable {
-            let input_tokens: Int
-            let output_tokens: Int
+            let inputTokens: Int
+            let outputTokens: Int
         }
 
         let content: [Block]
         let usage: Usage?
-        let stop_reason: String?
+        let stopReason: String?
         let model: String?
     }
 
     static func parse(_ data: Data, model: String) throws -> AIResponse {
-        guard let response = try? JSONDecoder().decode(MessagesResponse.self, from: data) else {
+        guard let response = try? AIHTTP.snakeCaseDecoder.decode(MessagesResponse.self, from: data) else {
             throw AIError.invalidOutput("unreadable response")
         }
-        if response.stop_reason == "refusal" { throw AIError.refused }
+        if response.stopReason == "refusal" { throw AIError.refused }
         let text = response.content.filter { $0.type == "text" }.compactMap(\.text).joined()
-        if text.isEmpty { throw response.stop_reason == "max_tokens" ? AIError.truncated : AIError.invalidOutput("empty reply") }
+        if text.isEmpty { throw response.stopReason == "max_tokens" ? AIError.truncated : AIError.invalidOutput("empty reply") }
         return AIResponse(
             text: text,
-            usage: response.usage.map { AIUsage(inputTokens: $0.input_tokens, outputTokens: $0.output_tokens) },
+            usage: response.usage.map { AIUsage(inputTokens: $0.inputTokens, outputTokens: $0.outputTokens) },
             model: response.model ?? model
         )
     }

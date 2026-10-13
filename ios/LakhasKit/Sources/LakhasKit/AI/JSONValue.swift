@@ -52,7 +52,7 @@ public enum JSONValue: Sendable, Equatable, Codable {
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.sortedKeys, .withoutEscapingSlashes]
         guard let data = try? encoder.encode(self) else { return "{}" }
-        return String(decoding: data, as: UTF8.self)
+        return String(bytes: data, encoding: .utf8) ?? "{}"
     }
 }
 

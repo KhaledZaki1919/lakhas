@@ -56,7 +56,9 @@ public final class AIService {
     }
 
     /// Settings → AI "Test connection" with the given provider/key/model (before saving them).
-    public func testConnection(provider: AIProviderKind, key: String, model: String) async -> Result<StructuredResult<ConnectionTest.Reply>, AIError> {
+    public func testConnection(
+        provider: AIProviderKind, key: String, model: String
+    ) async -> Result<StructuredResult<ConnectionTest.Reply>, AIError> {
         let ai = StructuredAI(
             provider: provider.makeProvider(apiKey: key, session: session),
             model: model,

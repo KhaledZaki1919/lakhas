@@ -2,6 +2,13 @@ import Foundation
 
 /// Shared HTTP plumbing and error mapping for the providers.
 enum AIHTTP {
+    /// Provider responses use snake_case keys; models use camelCase properties.
+    static var snakeCaseDecoder: JSONDecoder {
+        let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
+        return decoder
+    }
+
     static func jsonRequest(url: URL, headers: [String: String], body: JSONValue, timeout: TimeInterval = 90) throws -> URLRequest {
         var request = URLRequest(url: url, timeoutInterval: timeout)
         request.httpMethod = "POST"
@@ -48,7 +55,8 @@ enum AIHTTP {
         case 400:
             if lower.contains("api key") && (lower.contains("invalid") || lower.contains("not valid")) { return .invalidKey }
             if mentionsBilling { return .insufficientCredit }
-            if lower.contains("model") && ["not found", "does not exist", "invalid model", "not a valid model"].contains(where: { lower.contains($0) }) {
+            let missingModel = ["not found", "does not exist", "invalid model", "not a valid model"]
+            if lower.contains("model") && missingModel.contains(where: { lower.contains($0) }) {
                 return .modelNotFound
             }
             return .badRequest(message)

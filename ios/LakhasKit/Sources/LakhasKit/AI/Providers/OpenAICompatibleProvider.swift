@@ -62,12 +62,12 @@ public struct OpenAICompatibleProvider: AIProvider {
             }
 
             let message: Message
-            let finish_reason: String?
+            let finishReason: String?
         }
 
         struct Usage: Decodable {
-            let prompt_tokens: Int
-            let completion_tokens: Int
+            let promptTokens: Int
+            let completionTokens: Int
         }
 
         let choices: [Choice]
@@ -76,16 +76,16 @@ public struct OpenAICompatibleProvider: AIProvider {
     }
 
     static func parse(_ data: Data, model: String) throws -> AIResponse {
-        guard let response = try? JSONDecoder().decode(ChatResponse.self, from: data),
+        guard let response = try? AIHTTP.snakeCaseDecoder.decode(ChatResponse.self, from: data),
               let choice = response.choices.first else {
             throw AIError.invalidOutput("unreadable response")
         }
         if let refusal = choice.message.refusal, !refusal.isEmpty { throw AIError.refused }
         let text = choice.message.content ?? ""
-        if text.isEmpty { throw choice.finish_reason == "length" ? AIError.truncated : AIError.invalidOutput("empty reply") }
+        if text.isEmpty { throw choice.finishReason == "length" ? AIError.truncated : AIError.invalidOutput("empty reply") }
         return AIResponse(
             text: text,
-            usage: response.usage.map { AIUsage(inputTokens: $0.prompt_tokens, outputTokens: $0.completion_tokens) },
+            usage: response.usage.map { AIUsage(inputTokens: $0.promptTokens, outputTokens: $0.completionTokens) },
             model: response.model ?? model
         )
     }

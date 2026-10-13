@@ -29,4 +29,4 @@ identifier_name:
   min_length: 2
   excluded: [id, x, y]
 nesting:
-  type_level: 2
+  type_level: 3
