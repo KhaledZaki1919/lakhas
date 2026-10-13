@@ -128,3 +128,66 @@ Quotas become per-device daily **cost caps**, set to the old Pro limits: photo 1
   3. unsigned IPAs.
 - **SwiftLint** runs as a separate, non-blocking job.
 - **Reading failures:** Claude reads them with `gh run view --log-failed` and fixes all errors from a run in one commit.
+
+### ADR-020 — Bring Your Own Key: AI runs on the device, no server
+**Status:** Proposed (2026-10-13), awaiting approval. Nothing is deleted until it's accepted.
+**Context:** The user wants zero operating cost and no developer key, ever. Each user pays their own AI provider directly.
+**Decision:**
+- **AI calls:**
+  - The app calls the AI provider **directly from the device** using the user's own API key. Providers: Anthropic Claude, OpenAI, Google Gemini, OpenRouter.
+  - **No server**, no proxy, no developer key, and no fallback of any kind. Without a key, AI features show a "get a key" screen.
+- **Settings → AI:**
+  - The user picks a provider, then a model from a list (fetched from the provider's models endpoint when a key is set, otherwise a short built-in list) or types a custom model ID.
+  - The user enters an API key and can tap **Test connection**. Each provider has a recommended default model for food photos.
+  - Keys live only in the Keychain (`kSecAttrAccessibleWhenUnlockedThisDeviceOnly`, no iCloud, no backup). They are never logged and never sent anywhere except the chosen provider.
+- **Provider abstraction in LakhasKit:**
+  - One protocol, `AIProvider`, handles vision + text requests that return a JSON object for a given schema.
+  - Each provider is implemented with plain `URLSession` (no third-party SDKs). Each uses its native structured-output feature where available:
+    - Anthropic `output_config.format`;
+    - OpenAI `response_format: json_schema`;
+    - Gemini `responseSchema`;
+    - OpenRouter `response_format`, where the model supports it.
+  - Every response is decoded with `Codable` and validated. On invalid JSON there's one retry with the decode error appended, then a clean error.
+  - **Prompts move into the app** as versioned resources. User-supplied text stays wrapped as data.
+- **Data that was server-side moves into the app bundle:**
+  - the food DB (USDA subset + Arabic dishes, SQLite);
+  - the Explore dishes (JSON);
+  - the exercise library (JSON + images).
+- **Barcode** lookups go directly to Open Food Facts. Products the user contributes are stored **locally only**; there's no shared review queue.
+- **Recipe link import** fetches the public page on the device:
+  - **YouTube:** oEmbed + page metadata (`og:description`).
+  - **TikTok:** public oEmbed.
+  - **Instagram:** best effort from page metadata. It's usually login-walled, so the app falls back to screenshot import.
+- **Server quotas are replaced** by an optional **local daily usage counter**, and each request shows an **estimated cost**. Token usage comes from the provider response, multiplied by a bundled, editable price table (prices are marked as estimates).
+- **Removed from the plan:**
+  - the Cloudflare deployment, device tokens and HMAC signing;
+  - the admin panel and server quotas;
+  - the token screen, Explore voting and the shared product review.
+- **Kept:** EXIF stripping and downscaling before upload, Data Protection, the Keychain for secrets, no analytics, ATS (HTTPS only).
+- **Backend code:** stays in `/backend` and `/shared` but is **frozen**. Its CI workflow becomes manual-only, and nothing in the app references it.
+
+**Supersedes:**
+- ADR-003 (server config table → local settings);
+- ADR-004 (D1 caps → local counter);
+- ADR-007 (admin panel);
+- ADR-008 (server SVG rasterization, see open question 2);
+- ADR-013 (device tokens + HMAC);
+- ADR-015 (server cost caps).
+
+**Amends:**
+- ADR-002: structured outputs now run per provider, in the app;
+- ADR-005: pinning, see open question 1;
+- ADR-009: the bundled DB becomes the *only* DB;
+- ADR-018: Instagram oEmbed with a Meta token is dropped.
+
+**Consequences:**
+- Running cost is zero.
+- Quality and price depend on the model each user chooses.
+- A user's photos and text go to the provider they picked, which the privacy notes must say.
+- Without a key, the app still works for manual logging, the plate-builder, Explore, workouts, water and weight.
+**Open questions (answer before Phase 4):**
+1. **Certificate pinning.** Our pins only made sense for our own server. Pinning four third-party AI endpoints is fragile: they change CAs without notice, and a stale pin breaks AI until a new IPA is installed. **Proposed:** drop custom pinning and rely on ATS + system trust. Delete `CertificatePinning.swift`, its tests and the Info.plist pins.
+2. **Illustrations.** Generating SVGs with the user's key costs them money, and rendering SVG on iOS needs an offscreen web view. **Proposed:** no AI illustrations, use a styled placeholder (dish-category symbol on a tinted plate). Revisit later if wanted.
+3. **OpenRouter structured output** depends on the underlying model. **Proposed:** request `response_format: json_schema`. If the model rejects it, fall back to "JSON only" prompting plus `Codable` validation and the one retry. Settings marks models with weak JSON support.
+4. **Price table.** Prices change. **Proposed:** a bundled table (per model, input/output per million tokens), user-editable per model, shown as "estimate", and updated with app releases. Unknown models show token counts without a cost.
+5. **Contributed products** stay on this device only; there's no sharing between users. **OK?**
