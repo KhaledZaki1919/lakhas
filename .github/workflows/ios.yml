@@ -46,8 +46,13 @@ jobs:
           # Keep compiling other files after the first error so one run shows them all.
           defaults write com.apple.dt.Xcode IDEBuildingContinueBuildingAfterErrors -bool YES
           status=0
-          xcodebuild build-for-testing             -project Lakhas.xcodeproj -scheme Lakhas             -destination 'generic/platform=iOS Simulator'             -derivedDataPath build/DerivedData             CODE_SIGNING_ALLOWED=NO             > build/xcodebuild.log 2>&1 || status=$?
-          grep -E "** (TEST )?BUILD (SUCCEEDED|FAILED) **" build/xcodebuild.log || tail -n 40 build/xcodebuild.log
+          xcodebuild build-for-testing \
+            -project Lakhas.xcodeproj -scheme Lakhas \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath build/DerivedData \
+            CODE_SIGNING_ALLOWED=NO \
+            > build/xcodebuild.log 2>&1 || status=$?
+          grep -E '\*\* (TEST )?BUILD (SUCCEEDED|FAILED) \*\*' build/xcodebuild.log || tail -n 40 build/xcodebuild.log
           if [ "$status" -ne 0 ]; then
             echo "::group::All compiler errors (de-duplicated)"
             grep -E "error:" build/xcodebuild.log | sort -u
