@@ -42,21 +42,17 @@ jobs:
 
       - name: Build app, extensions and test bundles (no tests)
         run: |
-          set -o pipefail
           mkdir -p build
-          xcodebuild build-for-testing \
-            -project Lakhas.xcodeproj -scheme Lakhas \
-            -destination 'generic/platform=iOS Simulator' \
-            -derivedDataPath build/DerivedData \
-            -continue-building-after-errors \
-            CODE_SIGNING_ALLOWED=NO \
-            2>&1 | tee build/xcodebuild.log | grep -E "error:|warning: .*deprecated|\*\* BUILD" || true
-          # Fail with every compiler error listed, de-duplicated.
-          if grep -q "\*\* TEST BUILD FAILED \*\*\|\*\* BUILD FAILED \*\*" build/xcodebuild.log; then
-            echo "::group::All compiler errors"
-            grep -E "^/.*: error:" build/xcodebuild.log | sort -u
+          # Keep compiling other files after the first error so one run shows them all.
+          defaults write com.apple.dt.Xcode IDEBuildingContinueBuildingAfterErrors -bool YES
+          status=0
+          xcodebuild build-for-testing             -project Lakhas.xcodeproj -scheme Lakhas             -destination 'generic/platform=iOS Simulator'             -derivedDataPath build/DerivedData             CODE_SIGNING_ALLOWED=NO             > build/xcodebuild.log 2>&1 || status=$?
+          grep -E "** (TEST )?BUILD (SUCCEEDED|FAILED) **" build/xcodebuild.log || tail -n 40 build/xcodebuild.log
+          if [ "$status" -ne 0 ]; then
+            echo "::group::All compiler errors (de-duplicated)"
+            grep -E "error:" build/xcodebuild.log | sort -u
             echo "::endgroup::"
-            exit 1
+            exit "$status"
           fi
 
       - name: Upload build log
