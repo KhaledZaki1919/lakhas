@@ -7,7 +7,7 @@ import SwiftData
 public enum LakhasStore {
     /// Computed: `Schema` is not Sendable, so it cannot be a stored static under Swift 6.
     public static var schema: Schema {
-        Schema([UserProfile.self, GoalOverride.self, Meal.self, MealItem.self])
+        Schema([UserProfile.self, GoalOverride.self, Meal.self, MealItem.self, UsageRecord.self])
     }
 
     public static func makeContainer(
