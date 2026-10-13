@@ -16,6 +16,7 @@ public enum LakhasStore {
         if inMemory {
             return try ModelContainer(for: schema, configurations: ModelConfiguration(isStoredInMemoryOnly: true))
         }
+        FileProtection.excludeFromBackup(location.directory)
         let url = location.directory.appendingPathComponent("Lakhas.store")
         let container = try ModelContainer(for: schema, configurations: ModelConfiguration(url: url))
         for suffix in ["", "-wal", "-shm"] {

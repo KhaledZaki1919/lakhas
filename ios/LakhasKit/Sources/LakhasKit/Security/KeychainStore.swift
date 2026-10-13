@@ -8,18 +8,35 @@ public enum KeychainError: Error, Equatable, Sendable {
 
 /// Generic-password items in the app's default access group only. No explicit access group
 /// and no Keychain sharing: the team prefix changes with the signer (ADR-014).
+/// "ThisDeviceOnly" items are never synced to iCloud Keychain or included in backups.
 public struct KeychainStore: Sendable {
-    public let service: String
+    public enum Accessibility: Sendable {
+        /// Readable after the first unlock (background work, widgets).
+        case afterFirstUnlockThisDeviceOnly
+        /// Readable only while the device is unlocked (API keys, ADR-020).
+        case whenUnlockedThisDeviceOnly
 
-    public init(service: String) {
+        var value: CFString {
+            switch self {
+            case .afterFirstUnlockThisDeviceOnly: kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
+            case .whenUnlockedThisDeviceOnly: kSecAttrAccessibleWhenUnlockedThisDeviceOnly
+            }
+        }
+    }
+
+    public let service: String
+    public let accessibility: Accessibility
+
+    public init(service: String, accessibility: Accessibility = .afterFirstUnlockThisDeviceOnly) {
         self.service = service
+        self.accessibility = accessibility
     }
 
     public func save(_ data: Data, account: String) throws {
         try delete(account: account)
         var query = baseQuery(account: account)
         query[kSecValueData as String] = data
-        query[kSecAttrAccessible as String] = kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
+        query[kSecAttrAccessible as String] = accessibility.value
         let status = SecItemAdd(query as CFDictionary, nil)
         guard status == errSecSuccess else { throw KeychainError.status(status) }
     }

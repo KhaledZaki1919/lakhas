@@ -9,11 +9,6 @@ struct AppConfigurationTests {
         #expect(group == "group.com.khaled.lakhas")
     }
 
-    @Test func infoPlistDeclaresHTTPSBaseURL() throws {
-        let value = try #require(Bundle.main.object(forInfoDictionaryKey: "LakhasAPIBaseURL") as? String)
-        #expect(URL(string: value)?.scheme == "https")
-    }
-
     @Test func resolvedStoreIsWritable() {
         let location = AppGroupResolver.resolve()
         #expect(FileManager.default.isWritableFile(atPath: location.directory.path))

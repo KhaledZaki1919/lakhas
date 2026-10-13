@@ -24,7 +24,6 @@ settings:
     DEVELOPMENT_TEAM: ""
     LOCALIZATION_PREFERS_STRING_CATALOGS: YES
     SWIFT_EMIT_LOC_STRINGS: YES
-    LAKHAS_API_BASE_URL: "https://api.lakhas.invalid"
 
 packages:
   LakhasKit:
@@ -60,17 +59,6 @@ targets:
         ITSAppUsesNonExemptEncryption: false
         NSCameraUsageDescription: "نحتاج الكاميرا لتصوير وجباتك ومسح الباركود."
         LakhasAppGroup: group.com.khaled.lakhas
-        LakhasAPIBaseURL: $(LAKHAS_API_BASE_URL)
-        # SPKI SHA-256 pins of the CA roots Cloudflare may use for our edge certificate
-        # (ADR-005). Rotation: docs/runbooks/pinning.md.
-        LakhasPinnedSPKI:
-          - C5+lpZ7tcVwmwQIMcRtPbsQtWLABXhQzejna0wHFr8M=   # ISRG Root X1 (Let's Encrypt)
-          - diGVwiVYbubAI3RW4hB9xU8e/CH2GnkuvVFZE8zmgzI=   # ISRG Root X2 (Let's Encrypt)
-          - hxqRlPTu1bMS/0DITB1SSu0vd4u/8l8TjPgfaAp63Gc=   # GTS Root R1 (Google Trust Services)
-          - Vfd95BwDeSQo+NUYxVEEIlvkOlWY2SalKK1lPhzOx78=   # GTS Root R2
-          - QXnt2YHvdHR3tJYmQIr0Paosp6t/nggsEGD4QJZ3Q0g=   # GTS Root R3
-          - mEflZT5enoR1FuXLgYYGqnVEoZvmf9c2bVBpiOjYQ0c=   # GTS Root R4
-          - K89VOmb1cJAN3TK6bf4ezAbJGC1mLcG2Dh97dnwr3VQ=   # SSL.com TLS RSA Root CA 2022
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.khaled.lakhas

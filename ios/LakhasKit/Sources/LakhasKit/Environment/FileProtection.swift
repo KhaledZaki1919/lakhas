@@ -1,6 +1,7 @@
 import Foundation
 
-/// Applies iOS Data Protection per file, which needs no entitlement (ADR-014).
+/// Applies iOS Data Protection per file, which needs no entitlement (ADR-014), and excludes
+/// the file from iCloud/iTunes device backups (ADR-020: data stays on this device).
 /// `completeUntilFirstUserAuthentication` keeps files readable by widgets and background
 /// work after the first unlock (PROJECT_PROMPT.md §3.4).
 public enum FileProtection {
@@ -11,6 +12,15 @@ public enum FileProtection {
             ofItemAtPath: url.path
         )
         #endif
+        excludeFromBackup(url)
+    }
+
+    /// Marks a file or directory so it isn't copied into device backups.
+    public static func excludeFromBackup(_ url: URL) {
+        var target = url
+        var values = URLResourceValues()
+        values.isExcludedFromBackup = true
+        try? target.setResourceValues(values)
     }
 
     /// Writes atomically, then applies the protection class.
