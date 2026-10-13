@@ -8,18 +8,22 @@ Short ADRs. Status values: **Accepted**, **Proposed** (awaiting approval), **Sup
 **Status:** Accepted. Layout: `/ios /backend /shared /admin /docs`.
 
 ### ADR-002 — Native structured outputs instead of forced `tool_choice`
+**→ Amended by ADR-020: structured outputs per provider, in the app.**
 **Status:** Accepted (2026-10-11).
 **Context:** The original brief asked every AI call to force a single tool call through `tool_choice`. On current models, `claude-sonnet-5-5` (our `MODEL_ADVANCED`) and `claude-opus-5-5` reject `tool_choice` `any`/`tool` with HTTP 400.
 **Decision:** Use structured outputs, `client.messages.parse({ output_config: { format: zodOutputFormat(Schema) } })`, for all AI calls on both models. The zod schema is the single source; it also generates `/shared/schemas/*.json`. Keep server-side zod validation + one retry as defense in depth, and check `stop_reason` (refusal / max_tokens) before parsing.
 
 ### ADR-003 — Model names and limits in a `config` table
+**→ Superseded by ADR-020 (settings are local).**
 **Status:** Accepted. D1 `config` table, KV-cached for 60s, editable in admin. Defaults: `MODEL_STANDARD = claude-haiku-5-5`, `MODEL_ADVANCED = claude-sonnet-5-5`.
 
 ### ADR-004 — Cost-cap counters in D1, not KV
+**→ Superseded by ADR-020 (local usage counter, optional daily limit).**
 **Status:** Accepted (wording amended by ADR-015: "quotas" are now single-tier cost caps).
 **Decision:** `cap_events` table with PK `(device_id, day_key, cap_type, input_hash)`. Reserve with a conditional `INSERT … SELECT … WHERE count < limit`, commit on success, delete on failure. D1 serializes writes, so this is race-free. KV holds only the AI result cache (same-day retries) and the config cache. Per-IP burst limiting uses the Workers Rate Limiting binding.
 
 ### ADR-005 — Certificate pinning strategy
+**→ Superseded by ADR-020 (no certificate pinning; ATS + system trust).**
 **Status:** Accepted (2026-10-11).
 **Decision:** Pin SPKI hashes of the CA chain Cloudflare uses for our edge certificate (primary + backup CAs), checked in a `URLSessionDelegate`. A rotation runbook goes in `/docs/runbooks/pinning.md`. Pins are delivered in the app build; a pin change ships as a new IPA.
 **Update (2026-10-12):** the API uses the free `*.workers.dev` subdomain (no custom domain). Its chain ends in GTS Root R4, which is pinned, so no change was needed.
@@ -28,13 +32,16 @@ Short ADRs. Status values: **Accepted**, **Proposed** (awaiting approval), **Sup
 **Status:** Superseded by ADR-013. App Attest needs the paid Developer Program and isn't available to sideloaded free-team apps.
 
 ### ADR-007 — Admin protected by Cloudflare Access
+**→ Withdrawn by ADR-020 (no admin panel).**
 **Status:** Accepted (2026-10-11). Access policy on `/admin/*`, plus the Worker verifies the `Cf-Access-Jwt-Assertion` JWT (defense in depth).
 
 ### ADR-008 — SVG illustrations rasterized server-side
+**→ Withdrawn by ADR-020 (no AI illustrations).**
 **Status:** Proposed.
 **Decision:** Sanitize the SVG with an allow-list parser, then rasterize it to a 512×512 PNG with `resvg-wasm` in the Worker. Store both in R2; iOS displays the PNG.
 
 ### ADR-009 — Offline food DB as bundled SQLite, not SwiftData
+**→ Amended by ADR-020: the bundled DB is the only food DB.**
 **Status:** Proposed. Static reference data with FTS5 search, opened read-only with the SQLite C API, and generated from the D1 seed at build time.
 
 ### ADR-010 — Logs snapshot names and nutrition values
@@ -64,6 +71,7 @@ Short ADRs. Status values: **Accepted**, **Proposed** (awaiting approval), **Sup
 **Consequences:** Free-team apps expire after 7 days and need a Sideloadly refresh. Data survives a refresh as long as the bundle ID and Apple ID stay the same (see ADR-016 for the backup).
 
 ### ADR-013 — Device access tokens with HMAC request signing (replaces App Attest)
+**→ Superseded by ADR-020 (no device tokens or request signing).**
 **Status:** Accepted (2026-10-11).
 **Decision:**
 - **Token creation:** the admin creates a token per device: `lk1_<tokenId>_<secret>`, where `secret` is 32 random bytes in base64url. It's shown once, as text and a QR code. D1 stores `token_id`, a label, and the secret **encrypted with AES-GCM** under the Worker secret `TOKEN_ENC_KEY`. A D1 leak alone doesn't expose secrets.
@@ -89,6 +97,7 @@ Short ADRs. Status values: **Accepted**, **Proposed** (awaiting approval), **Sup
 - **Share-extension fallback:** in-app "Paste link" (`PasteButton`, no clipboard prompt) and PhotosPicker for screenshots.
 
 ### ADR-015 — Single tier; monetization removed
+**→ Superseded by ADR-020 (no server caps).**
 **Status:** Accepted (2026-10-11).
 **Decision:** The following are removed, and all former Pro features are enabled for everyone:
 - StoreKit, the paywall, and App Store Server Notifications;
@@ -110,6 +119,7 @@ Quotas become per-device daily **cost caps**, set to the old Pro limits: photo 1
 - **Light-mode carbs color** changed from `#C98A1B` to `#A86F0E` to meet the 3:1 minimum for graphics.
 
 ### ADR-018 — Remaining Phase 0 questions resolved
+**→ Amended by ADR-020: no Meta token; Instagram import is best effort with a screenshot fallback.**
 **Status:** Accepted (2026-10-11).
 - **Build machine:** Windows + GitHub Actions; a Mac only later, optionally (ADR-012).
 - **Instagram import:** official oEmbed with a Meta app token; screenshot import is the fallback UX when a link can't be read.
@@ -130,7 +140,12 @@ Quotas become per-device daily **cost caps**, set to the old Pro limits: photo 1
 - **Reading failures:** Claude reads them with `gh run view --log-failed` and fixes all errors from a run in one commit.
 
 ### ADR-020 — Bring Your Own Key: AI runs on the device, no server
-**Status:** Proposed (2026-10-13), awaiting approval. Nothing is deleted until it's accepted.
+**Status:** Accepted (2026-10-13), with these changes from the approval:
+- **No certificate pinning** (open question 1).
+- **No AI illustrations.** A dish or product shows the user's own photo when one was taken (stored only on the device), otherwise a styled placeholder (open question 2).
+- **"High accuracy" toggle** in Settings → AI: photo analysis uses the provider's stronger model (e.g. Claude Sonnet 5.5), while text entry stays on the cheaper default.
+- **All data stays on this device:** no cloud sync, and the store and photos are excluded from iCloud/iTunes device backups. The only way data leaves the phone is a backup file the user exports on purpose.
+- Open questions 3–5 accepted as proposed.
 **Context:** The user wants zero operating cost and no developer key, ever. Each user pays their own AI provider directly.
 **Decision:**
 - **AI calls:**

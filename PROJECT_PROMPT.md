@@ -1,6 +1,6 @@
 # Project Brief for Claude Code — AI Calorie & Macro Tracker (iOS)
 
-> **Revision 3 — Bring Your Own Key (ADR-020), pending approval.** The app has no server. AI runs on the device against the provider the user picks, with the user's own API key.
+> **Revision 3 — Bring Your Own Key (ADR-020, accepted 2026-10-13).** The app has no server. AI runs on the device against the provider the user picks, with the user's own API key.
 >
 > **App name:** لخّص (display name on the home screen: `لخّص`; Latin name for code and repos: **Lakhas**)
 > **App languages:** Arabic (default, RTL) and English (LTR) — exactly these two. All UI text, notifications, widgets, errors and AI responses shown to the user follow the selected language.
@@ -95,7 +95,7 @@ CLAUDE.md   — conventions for future sessions
 These are requirements, not suggestions.
 
 1. **No secrets in the app binary.** The IPA contains no keys. The user's provider key is entered at runtime and stored only in the **Keychain** (`kSecAttrAccessibleWhenUnlockedThisDeviceOnly`: not synced, not in backups). It's shown masked, and the user can delete it.
-2. **Transport:** HTTPS/TLS 1.2+ only (ATS on, no exceptions). Requests go only to the chosen AI provider, Open Food Facts, and the public recipe page the user shares. (Certificate pinning: see open question 1 in ADR-020.)
+2. **Transport:** HTTPS/TLS 1.2+ only (ATS on, no exceptions), with system certificate trust and no custom pinning. Requests go only to the chosen AI provider, Open Food Facts, and the public recipe page the user shares.
 3. **Where data goes:** photos and text sent for analysis go **directly to the provider the user picked**, under that provider's terms. Settings → AI and the privacy notes say so plainly.
 4. **Local data at rest:** the SwiftData store and cached images use iOS Data Protection (`NSFileProtectionCompleteUntilFirstUserAuthentication` minimum, set per file, so widgets and background work still function). Anything sensitive goes in the Keychain, never `UserDefaults`.
 5. **Photo hygiene:** strip EXIF/GPS metadata and downscale (max ~1568px long edge, JPEG ~0.8) on device **before** any upload.
@@ -105,6 +105,7 @@ These are requirements, not suggestions.
    - Page text and captions are passed to the model as data.
 7. **No analytics SDKs, no ads, no tracking.** The privacy manifest (`PrivacyInfo.xcprivacy`) must be accurate.
 8. **Delete my data:** wipes the local store, the cached images and the stored API key. There is nothing on any server to delete.
+9. **Device only:** no cloud sync; the store and photos are excluded from iCloud/iTunes device backups. Data leaves the phone only in a backup file the user exports on purpose.
 
 ---
 
@@ -195,6 +196,7 @@ These are requirements, not suggestions.
   - provider and model (list, or a custom ID);
   - API key (masked; replace/delete) and **Test connection**;
   - recommended model per provider;
+  - **High accuracy** toggle: photo analysis uses the provider's stronger model (e.g. Claude Sonnet 5.5); text entry stays on the cheaper default;
   - **usage today/this month**: number of requests and estimated cost;
   - an optional **daily usage limit** (local, off by default).
 - Custom calorie/macro targets ("My Goals"), overriding the computed ones, including an optional goal weight.
@@ -204,8 +206,8 @@ These are requirements, not suggestions.
 - **Sideloading status:** shows whether widgets and the share extension are active in this build (ADR-014).
 - Privacy notes (including where AI requests go), Open Food Facts attribution, Delete my data.
 
-### 4.9 Illustrations
-See ADR-020 open question 2. Proposed: no AI-generated illustrations. Recipes and products without a photo show a styled placeholder (dish-category symbol on a tinted plate).
+### 4.9 Images
+No AI-generated images. A meal, recipe or product shows the photo the user took (stored only on this device, with file protection, excluded from device backups). Otherwise it shows a styled placeholder (dish-category symbol on a tinted plate).
 
 ### 4.10 Widgets (WidgetKit, only in builds with `LAKHAS_EXTENSIONS`)
 - Calories remaining (small/medium).

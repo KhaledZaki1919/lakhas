@@ -9,7 +9,7 @@ Status: research findings + design, 2026-10-11. **Items marked "verify on device
 | Signed apps **expire after 7 days** | Refresh weekly with Sideloadly (it can auto-refresh over USB/Wi-Fi while the PC is running). Data survives a refresh when the bundle ID and Apple ID stay the same. |
 | **About 3 sideloaded apps** per device at a time | Lakhas uses 1 of them. Sources disagree on whether extensions count toward this; verify on device. |
 | **10 App IDs**, each valid for about a week | The app + widget + share extension = **3 App IDs** per install. Re-installing the same bundle IDs inside the window reuses them. The lite variant uses 1. |
-| No push, iCloud, App Attest, Sign in with Apple, In-App Purchase, Associated Domains | All already removed or replaced (ADR-013, ADR-015, ADR-016). |
+| No push, iCloud, App Attest, Sign in with Apple, In-App Purchase, Associated Domains | Not needed: there is no server, and data stays on the device (ADR-020). |
 | Entitlements are re-issued by the signer | App Group IDs may be **rewritten** (e.g. with the team ID added). See §2. |
 
 ## 2. Capability by capability

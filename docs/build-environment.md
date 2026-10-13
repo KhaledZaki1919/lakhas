@@ -1,3 +1,5 @@
+> **Update (ADR-019, ADR-020):** there is no backend. CI is compile → tests → IPAs, with SwiftLint non-blocking; see CLAUDE.md for the current commands.
+
 # Build environment
 
 Status: **Accepted (ADR-012)** · 2026-10-11
@@ -8,7 +10,6 @@ Development happens on **Windows 11**. iOS builds run on **GitHub Actions macOS 
 
 | Step | Where |
 |---|---|
-| Backend: Worker, D1/R2/KV, tests, `wrangler deploy --dry-run` | Windows (Node.js LTS) + `backend.yml` on Ubuntu runners |
 | OpenAPI, prompts, seeds, admin UI, docs | Windows |
 | Swift / SwiftUI code, `project.yml` | written on Windows |
 | `xcodegen`, `xcodebuild`, Simulator unit tests, SwiftLint | `ios.yml` on macOS runners |
@@ -32,14 +33,7 @@ Development happens on **Windows 11**. iOS builds run on **GitHub Actions macOS 
   3. `scripts/build-ipa.sh`: ad-hoc signs the extensions, then the app, with their entitlements (`codesign --force --sign -`), and zips `Payload/Lakhas.app`
   4. uploads `Lakhas-full.ipa` / `Lakhas-lite.ipa` as artifacts (kept 30 days)
 
-**`.github/workflows/backend.yml`** runs on changes under `backend/` or `shared/`:
-1. `npm ci`
-2. lint
-3. typecheck
-4. `npm test`
-5. `wrangler deploy --dry-run`
-
-Deploying to Cloudflare is a separate manual workflow, added once the account exists.
+**`.github/workflows/backend.yml`** is frozen (ADR-020) and runs only when triggered manually.
 
 **Cost:** GitHub bills macOS runner minutes for private repos at a 10× multiplier against the free allowance. A full iOS run is roughly 10–20 minutes. To save minutes, `ipa` runs only on `main`, not on PRs.
 

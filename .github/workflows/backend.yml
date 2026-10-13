@@ -1,11 +1,7 @@
 name: Backend
 
+# FROZEN (ADR-020): the backend is not used; run manually only.
 on:
-  push:
-    branches: [main]
-    paths: ["backend/**", "shared/**", ".github/workflows/backend.yml"]
-  pull_request:
-    paths: ["backend/**", "shared/**", ".github/workflows/backend.yml"]
   workflow_dispatch:
 
 concurrency:
@@ -39,5 +35,5 @@ jobs:
       - run: npm run build:dry
 
       - name: Lint OpenAPI contract
-        working-directory: shared
+        working-directory: shared/frozen
         run: npx --yes @redocly/cli@2 lint openapi.yaml
