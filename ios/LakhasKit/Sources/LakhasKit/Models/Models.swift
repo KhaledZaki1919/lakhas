@@ -134,11 +134,23 @@ public final class Meal {
 
     public var totals: Macros { items.reduce(.zero) { $0 + $1.totals } }
 
+    /// SwiftData doesn't keep to-many order, so items carry an explicit `sortIndex`.
+    public var orderedItems: [MealItem] { items.sorted { $0.sortIndex < $1.sortIndex } }
+
+    /// Appends items in order (sets their `sortIndex`).
+    public func append(_ newItems: [MealItem]) {
+        let start = (items.map(\.sortIndex).max() ?? -1) + 1
+        for (offset, item) in newItems.enumerated() {
+            item.sortIndex = start + offset
+            items.append(item)
+        }
+    }
+
     /// Display name in the given language: the title, else the item names joined.
     public func displayName(language: String) -> String {
         if let title, !title.isEmpty { return title }
         let separator = language == "ar" ? "، " : ", "
-        return items.map { $0.name(language: language) }.joined(separator: separator)
+        return orderedItems.map { $0.name(language: language) }.joined(separator: separator)
     }
 }
 
@@ -156,6 +168,8 @@ public final class MealItem {
     public var foodDbId: String?
     public var barcode: String?
     public var confidence: Double?
+    /// Position within the meal (to-many relationships are unordered in SwiftData).
+    public var sortIndex: Int = 0
     public var meal: Meal?
 
     public init(id: UUID = UUID(), nameAr: String, nameEn: String, grams: Double, per100: Macros,

@@ -15,5 +15,7 @@ let package = Package(
         .target(name: "LakhasKit", dependencies: ["NutritionMath"]),
         .testTarget(name: "NutritionMathTests", dependencies: ["NutritionMath"]),
         .testTarget(name: "LakhasKitTests", dependencies: ["LakhasKit"], resources: [.copy("Fixtures")]),
-    ]
+    ],
+    // Swift 5 language mode, minimal concurrency checking (ADR-019).
+    swiftLanguageModes: [.v5]
 )

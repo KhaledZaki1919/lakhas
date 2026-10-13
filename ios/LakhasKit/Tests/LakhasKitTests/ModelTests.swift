@@ -21,10 +21,12 @@ struct ModelTests {
         let context = ModelContext(try LakhasStore.makeContainer(inMemory: true))
         let meal = Meal(mealType: .lunch, source: .manual)
         context.insert(meal)
-        meal.items.append(MealItem(nameAr: "كشري", nameEn: "Koshary", grams: 450,
-                                   per100: Macros(kcal: 155, protein: 4.9, carbs: 24.9, fat: 4), valueSource: .ai))
-        meal.items.append(MealItem(nameAr: "سلطة", nameEn: "Salad", grams: 100,
-                                   per100: Macros(kcal: 20, protein: 1, carbs: 4, fat: 0), valueSource: .ai))
+        meal.append([
+            MealItem(nameAr: "كشري", nameEn: "Koshary", grams: 450,
+                     per100: Macros(kcal: 155, protein: 4.9, carbs: 24.9, fat: 4), valueSource: .ai),
+            MealItem(nameAr: "سلطة", nameEn: "Salad", grams: 100,
+                     per100: Macros(kcal: 20, protein: 1, carbs: 4, fat: 0), valueSource: .ai),
+        ])
         try context.save()
         #expect(abs(meal.totals.kcal - 717.5) < 0.0001)
         #expect(meal.displayName(language: "en") == "Koshary, Salad")

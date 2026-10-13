@@ -43,11 +43,12 @@ swift test --package-path LakhasKit
 python3 scripts/check-strings.py            # fails on missing ar/en translations or unknown keys
 swiftlint lint
 ```
+CI (`ios.yml`): compile-only job first (full `xcodebuild.log` artifact) → tests → IPAs; SwiftLint is a separate non-blocking job. Read failures with the GitHub CLI: `gh run list`, `gh run view <id> --log-failed` (gh is at `C:Program FilesGitHub CLIgh.exe`; it can use the Git Credential Manager login via `GH_TOKEN`). Collect all errors from a run and fix them in one commit. Never start background CI watchers (low-memory PC); check once per push.
 CI artifacts: `Lakhas-full` and `Lakhas-lite` unsigned IPAs on every push to `main` → install with Sideloadly (`docs/sideloading.md` §5).
 
 ## Conventions
 **Swift / iOS**
-- Swift 6 language mode, iOS 17+, SwiftUI, SwiftData. No third-party UI libraries.
+- Swift 5 language mode (minimal concurrency checking, ADR-019), iOS 17+, SwiftUI, SwiftData. No third-party UI libraries.
 - Never hand-edit `.pbxproj`; change `project.yml` / `project.full.yml`. Generated `Info.plist`s and the `.xcodeproj` are gitignored.
 - No force unwraps or force casts (SwiftLint errors).
 - **Strings:** every user-facing string comes from a String Catalog (`Localizable.xcstrings` per target, `InfoPlist.xcstrings`) with both `ar` and `en`. Keys are `area.name` (`tab.today`, `probe.title`); prefixes are listed in `ios/scripts/check-strings.py`, so add new areas there. Values that aren't UI text use `Text(verbatim:)`.

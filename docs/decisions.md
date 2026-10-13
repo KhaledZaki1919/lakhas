@@ -116,3 +116,15 @@ Quotas become per-device daily **cost caps**, set to the old Pro limits: photo 1
 - **Water target:** follows §6 exactly (weight + activity, no height).
 - **Explore votes:** the client shows the vote button only after logging the dish; the server enforces one vote per device per dish.
 - **Recipe language:** titles and ingredient names in both languages; steps in the language active at import.
+
+### ADR-019 — Swift 5 language mode; CI compile-first, lint non-blocking
+**Status:** Accepted (2026-10-13).
+**Context:** Swift 6 strict concurrency produced most CI failures and adds nothing a single-user app needs. SwiftLint failures stopped the pipeline before compilation, which hid compiler errors.
+**Decision:**
+- **Language mode:** the app, extensions and LakhasKit build in Swift 5 language mode (`SWIFT_VERSION: 5.0`, `swiftLanguageModes: [.v5]`) with minimal concurrency checking. The Swift 6 compiler and toolchain are unchanged.
+- **CI order:**
+  1. a fast **compile-only** job (`xcodebuild build-for-testing -continue-building-after-errors`), which lists every compiler error and uploads the full log as an artifact;
+  2. tests;
+  3. unsigned IPAs.
+- **SwiftLint** runs as a separate, non-blocking job.
+- **Reading failures:** Claude reads them with `gh run view --log-failed` and fixes all errors from a run in one commit.

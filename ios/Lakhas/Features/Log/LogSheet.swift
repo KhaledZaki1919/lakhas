@@ -125,11 +125,11 @@ struct QuickAddView: View {
         let trimmed = name.trimmingCharacters(in: .whitespaces)
         let meal = Meal(loggedAt: request.date, mealType: mealType, source: .manual, title: trimmed)
         context.insert(meal)
-        meal.items = [MealItem(
+        meal.append([MealItem(
             nameAr: trimmed, nameEn: trimmed, grams: 100,
             per100: Macros(kcal: kcal ?? 0, protein: protein ?? 0, carbs: carbs ?? 0, fat: fat ?? 0),
             valueSource: .user
-        )]
+        )])
         try? context.save()
         saved += 1
         onDone()

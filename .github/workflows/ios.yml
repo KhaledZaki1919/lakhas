@@ -1,12 +1,13 @@
-# iOS CI (ADR-012): tests on every push/PR; unsigned IPAs for Sideloadly on main.
+# iOS CI (ADR-012). Order: fast compile-only build (all errors, full log as artifact) →
+# tests → unsigned IPAs. SwiftLint runs in parallel and never blocks the build (ADR-019).
 name: iOS
 
 on:
   push:
     branches: [main]
-    paths: ["ios/**", ".github/workflows/ios.yml"]
+    paths: ["ios/**", "shared/test-vectors/**", ".github/workflows/ios.yml"]
   pull_request:
-    paths: ["ios/**", ".github/workflows/ios.yml"]
+    paths: ["ios/**", "shared/test-vectors/**", ".github/workflows/ios.yml"]
   workflow_dispatch:
 
 concurrency:
@@ -18,10 +19,10 @@ defaults:
     working-directory: ios
 
 jobs:
-  test:
-    name: Lint & test
+  build:
+    name: Compile (Simulator)
     runs-on: macos-15
-    timeout-minutes: 45
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
 
@@ -30,16 +31,64 @@ jobs:
           xcodebuild -version
           swift --version
 
-      - name: Install XcodeGen and SwiftLint
-        run: |
-          brew install xcodegen
-          command -v swiftlint || brew install swiftlint
+      - name: Install XcodeGen
+        run: brew install xcodegen
 
       - name: Localization check
         run: python3 scripts/check-strings.py
 
+      - name: Generate project (full)
+        run: xcodegen generate --spec project.full.yml
+
+      - name: Build app, extensions and test bundles (no tests)
+        run: |
+          set -o pipefail
+          mkdir -p build
+          xcodebuild build-for-testing \
+            -project Lakhas.xcodeproj -scheme Lakhas \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath build/DerivedData \
+            -continue-building-after-errors \
+            CODE_SIGNING_ALLOWED=NO \
+            2>&1 | tee build/xcodebuild.log | grep -E "error:|warning: .*deprecated|\*\* BUILD" || true
+          # Fail with every compiler error listed, de-duplicated.
+          if grep -q "\*\* TEST BUILD FAILED \*\*\|\*\* BUILD FAILED \*\*" build/xcodebuild.log; then
+            echo "::group::All compiler errors"
+            grep -E "^/.*: error:" build/xcodebuild.log | sort -u
+            echo "::endgroup::"
+            exit 1
+          fi
+
+      - name: Upload build log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xcodebuild-log
+          path: ios/build/xcodebuild.log
+          retention-days: 7
+
+  lint:
+    name: SwiftLint (non-blocking)
+    runs-on: macos-15
+    timeout-minutes: 10
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
       - name: SwiftLint
-        run: swiftlint lint --quiet
+        run: |
+          command -v swiftlint || brew install swiftlint
+          swiftlint lint --quiet
+
+  test:
+    name: Tests
+    needs: build
+    runs-on: macos-15
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
 
       - name: LakhasKit tests
         run: swift test --package-path LakhasKit
@@ -47,7 +96,7 @@ jobs:
       - name: Generate project (full)
         run: xcodegen generate --spec project.full.yml
 
-      - name: App tests (Simulator)
+      - name: App and UI tests (Simulator)
         run: |
           UDID=$(xcrun simctl list devices available -j | python3 scripts/pick-simulator.py)
           xcodebuild test \
@@ -57,7 +106,9 @@ jobs:
             -quiet
 
       - name: Test summary
+        if: always()
         run: |
+          [ -d build/TestResults.xcresult ] || exit 0
           xcrun xcresulttool get test-results summary --path build/TestResults.xcresult --compact > build/summary.json
           python3 - <<'PY'
           import json

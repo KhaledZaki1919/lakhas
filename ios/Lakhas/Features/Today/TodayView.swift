@@ -204,7 +204,7 @@ private struct DayContent: View {
     private func logAgainToday(_ meal: Meal) {
         let copy = Meal(mealType: meal.mealType, source: meal.source, title: meal.title)
         context.insert(copy)
-        copy.items = meal.items.map { $0.copy() }
+        copy.append(meal.orderedItems.map { $0.copy() })
         save()
     }
 
@@ -285,7 +285,7 @@ private struct DeletedMeal {
         source = meal.source
         sortIndex = meal.sortIndex
         title = meal.title
-        items = meal.items.map {
+        items = meal.orderedItems.map {
             Item(nameAr: $0.nameAr, nameEn: $0.nameEn, grams: $0.grams, per100: $0.per100,
                  valueSource: $0.valueSourceRaw, foodDbId: $0.foodDbId, barcode: $0.barcode, confidence: $0.confidence)
         }
@@ -295,11 +295,11 @@ private struct DeletedMeal {
         let meal = Meal(id: mealID, loggedAt: loggedAt, mealType: mealType, source: source,
                         sortIndex: sortIndex, title: title)
         context.insert(meal)
-        meal.items = items.map {
+        meal.append(items.map {
             MealItem(nameAr: $0.nameAr, nameEn: $0.nameEn, grams: $0.grams, per100: $0.per100,
                      valueSource: ValueSource(rawValue: $0.valueSource) ?? .user,
                      foodDbId: $0.foodDbId, barcode: $0.barcode, confidence: $0.confidence)
-        }
+        })
     }
 }
 
