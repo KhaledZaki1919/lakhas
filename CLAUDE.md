@@ -43,7 +43,7 @@ swift test --package-path LakhasKit
 python3 scripts/check-strings.py            # fails on missing ar/en translations or unknown keys
 swiftlint lint
 ```
-CI (`ios.yml`): compile-only job first (full `xcodebuild.log` artifact) → tests → IPAs; SwiftLint is a separate non-blocking job. Read failures with the GitHub CLI: `gh run list`, `gh run view <id> --log-failed` (gh is at `C:Program FilesGitHub CLIgh.exe`; it can use the Git Credential Manager login via `GH_TOKEN`). Collect all errors from a run and fix them in one commit. Never start background CI watchers (low-memory PC); check once per push.
+CI (`ios.yml`): compile-only job first (full `xcodebuild.log` artifact) → tests → IPAs; SwiftLint is a separate non-blocking job. Read failures with the GitHub CLI: `gh run list`, `gh run view <id> --log-failed` (gh is at `C:\Program Files\GitHub CLI\gh.exe`; it can use the Git Credential Manager login via `GH_TOKEN`). Collect all errors from a run and fix them in one commit. Never start background CI watchers (low-memory PC); check once per push.
 CI artifacts: `Lakhas-full` and `Lakhas-lite` unsigned IPAs on every push to `main` → install with Sideloadly (`docs/sideloading.md` §5).
 
 ## Conventions
