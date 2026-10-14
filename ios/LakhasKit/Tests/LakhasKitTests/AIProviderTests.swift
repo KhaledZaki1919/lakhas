@@ -130,7 +130,7 @@ struct AIProviderTests {
 
     @Test func retryDelayOnlyForShortWaits() {
         // swiftlint:disable:next line_length
-        let body = { (delay: String) in Data(#"{"error":{"status":"RESOURCE_EXHAUSTED","details":[{"@type":"type.googleapis.com/google.rpc.RetryInfo","retryDelay":"#(delay)"}]}}"#.utf8) }
+        let body = { (delay: String) in Data((#"{"error":{"status":"RESOURCE_EXHAUSTED","details":[{"@type":"type.googleapis.com/google.rpc.RetryInfo","retryDelay":""# + delay + #""}]}}"#).utf8) }
         #expect(AIHTTP.retryDelay(status: 429, body: body("17s")) == 17.5)
         #expect(AIHTTP.retryDelay(status: 429, body: body("3600s")) == nil)
         #expect(AIHTTP.retryDelay(status: 429, body: Data(#"{"error":{"message":"Rate limit reached"}}"#.utf8)) == nil)
