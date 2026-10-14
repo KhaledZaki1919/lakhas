@@ -24,25 +24,57 @@ enum AIHTTP {
         return request
     }
 
-    static func send(_ request: URLRequest, session: URLSession) async throws -> Data {
-        let data: Data
-        let response: URLResponse
-        do {
-            (data, response) = try await session.data(for: request)
-        } catch {
-            throw AIError.network
+    /// With `retryTransient`, an overloaded server (5xx) or a rate limit that asks for a short
+    /// wait (Gemini's free tier) is retried once after the delay.
+    static func send(_ request: URLRequest, session: URLSession, retryTransient: Bool = false) async throws -> Data {
+        var attempt = 0
+        while true {
+            let data: Data
+            let response: URLResponse
+            do {
+                (data, response) = try await session.data(for: request)
+            } catch {
+                throw AIError.network
+            }
+            guard let http = response as? HTTPURLResponse else { throw AIError.network }
+            if (200..<300).contains(http.statusCode) { return data }
+            let error = mapError(status: http.statusCode, body: data)
+            guard retryTransient, attempt == 0, let delay = retryDelay(status: http.statusCode, body: data) else { throw error }
+            attempt += 1
+            try await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
         }
-        guard let http = response as? HTTPURLResponse else { throw AIError.network }
-        guard (200..<300).contains(http.statusCode) else {
-            throw mapError(status: http.statusCode, body: data)
+    }
+
+    /// Seconds to wait before one retry, or nil when retrying soon wouldn't help.
+    static func retryDelay(status: Int, body: Data, maxWait: TimeInterval = 20) -> TimeInterval? {
+        switch status {
+        case 500...599:
+            return 2
+        case 429:
+            // Gemini: {"error":{"details":[{"@type":"…RetryInfo","retryDelay":"17s"}]}}
+            guard let json = try? JSONDecoder().decode(JSONValue.self, from: body),
+                  case .array(let details)? = json["error"]?["details"] else { return nil }
+            for detail in details {
+                if case .string(let text)? = detail["retryDelay"],
+                   let seconds = TimeInterval(text.trimmingCharacters(in: CharacterSet(charactersIn: "s"))) {
+                    return seconds <= maxWait ? seconds + 0.5 : nil
+                }
+            }
+            return nil
+        default:
+            return nil
         }
-        return data
     }
 
     static func mapError(status: Int, body: Data) -> AIError {
         let message = errorMessage(body) ?? ""
         let lower = message.lowercased()
         let mentionsBilling = ["credit", "billing", "quota", "insufficient", "balance", "payment"].contains { lower.contains($0) }
+        // Gemini says "exceeded your current quota" for free-tier per-minute and daily limits too;
+        // that's a rate limit, not missing credit.
+        if case .string("RESOURCE_EXHAUSTED")? = (try? JSONDecoder().decode(JSONValue.self, from: body))?["error"]?["status"] {
+            return .rateLimited
+        }
         switch status {
         case 401, 403:
             return .invalidKey

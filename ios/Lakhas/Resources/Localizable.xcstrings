@@ -279,13 +279,13 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "طلبات كثيرة في وقت قصير. انتظر قليلًا ثم حاول."
+            "value": "طلبات كثيرة في وقت قصير أو نفدت الحصة المجانية. انتظر قليلًا (أو حتى الغد) ثم حاول."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Too many requests. Wait a moment and try again."
+            "value": "Too many requests, or the free quota is used up. Wait a moment (or until tomorrow) and try again."
           }
         }
       }

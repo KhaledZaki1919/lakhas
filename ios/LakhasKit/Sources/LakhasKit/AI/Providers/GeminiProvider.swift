@@ -20,7 +20,14 @@ public struct GeminiProvider: AIProvider {
         model.hasPrefix("models/") ? model : "models/\(model)"
     }
 
-    func body(for request: AIRequest) -> JSONValue {
+    /// Thinking models (2.5 and later) count thoughts against `maxOutputTokens`, so they get extra
+    /// room or a long think can cut the JSON off. Older models reject limits above 8192.
+    static func outputTokenLimit(_ request: AIRequest, model: String) -> Int {
+        let legacy = ["gemini-1.", "gemini-2.0"].contains { model.contains($0) }
+        return legacy ? request.maxOutputTokens : request.maxOutputTokens + 8192
+    }
+
+    func body(for request: AIRequest, model: String) -> JSONValue {
         var parts: [JSONValue] = request.images.map { jpeg in
             ["inlineData": ["mimeType": "image/jpeg", "data": .string(jpeg.base64EncodedString())]]
         }
@@ -28,14 +35,14 @@ public struct GeminiProvider: AIProvider {
         return [
             "systemInstruction": ["parts": [["text": .string(request.system)]]],
             "contents": [["role": "user", "parts": .array(parts)]],
-            "generationConfig": ["responseMimeType": "application/json", "maxOutputTokens": .int(request.maxOutputTokens)],
+            "generationConfig": ["responseMimeType": "application/json", "maxOutputTokens": .int(Self.outputTokenLimit(request, model: model))],
         ]
     }
 
     public func complete(_ request: AIRequest, model: String, structured: Bool) async throws -> AIResponse {
         guard let url = URL(string: "\(baseURL)/\(Self.modelPath(model)):generateContent") else { throw AIError.modelNotFound }
-        let urlRequest = try AIHTTP.jsonRequest(url: url, headers: headers, body: body(for: request))
-        let data = try await AIHTTP.send(urlRequest, session: session)
+        let urlRequest = try AIHTTP.jsonRequest(url: url, headers: headers, body: body(for: request, model: model))
+        let data = try await AIHTTP.send(urlRequest, session: session, retryTransient: true)
         return try Self.parse(data, model: model)
     }
 

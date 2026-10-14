@@ -109,8 +109,33 @@ struct AIProviderTests {
         let body = try #require(StubProtocol.lastJSON())
         let config = try #require(body["generationConfig"] as? [String: Any])
         #expect(config["responseMimeType"] as? String == "application/json")
+        #expect(config["maxOutputTokens"] as? Int == 800 + 8192)   // room for thinking
         let parts = try #require(((body["contents"] as? [[String: Any]])?.first?["parts"]) as? [[String: Any]])
         #expect((parts.first?["inlineData"] as? [String: Any])?["mimeType"] as? String == "image/jpeg")
+    }
+
+    @Test func geminiLegacyModelsKeepTheRequestedLimit() {
+        #expect(GeminiProvider.outputTokenLimit(request, model: "gemini-2.0-flash") == 800)
+    }
+
+    @Test func geminiRetriesOnceAfterAShortRateLimit() async throws {
+        // swiftlint:disable:next line_length
+        let limited = #"{"error":{"code":429,"message":"You exceeded your current quota, please check your plan and billing details.","status":"RESOURCE_EXHAUSTED","details":[{"@type":"type.googleapis.com/google.rpc.RetryInfo","retryDelay":"0s"}]}}"#
+        StubProtocol.reset([(429, limited), (200, #"{"candidates":[{"content":{"parts":[{"text":"{}"}]},"finishReason":"STOP"}]}"#)])
+        let provider = GeminiProvider(apiKey: "k", session: StubProtocol.session())
+        let response = try await provider.complete(request, model: "gemini-flash-latest", structured: false)
+        #expect(response.text == "{}")
+        #expect(StubProtocol.recorded.count == 2)
+    }
+
+    @Test func retryDelayOnlyForShortWaits() {
+        // swiftlint:disable:next line_length
+        let body = { (delay: String) in Data(#"{"error":{"status":"RESOURCE_EXHAUSTED","details":[{"@type":"type.googleapis.com/google.rpc.RetryInfo","retryDelay":"#(delay)"}]}}"#.utf8) }
+        #expect(AIHTTP.retryDelay(status: 429, body: body("17s")) == 17.5)
+        #expect(AIHTTP.retryDelay(status: 429, body: body("3600s")) == nil)
+        #expect(AIHTTP.retryDelay(status: 429, body: Data(#"{"error":{"message":"Rate limit reached"}}"#.utf8)) == nil)
+        #expect(AIHTTP.retryDelay(status: 503, body: Data()) == 2)
+        #expect(AIHTTP.retryDelay(status: 400, body: Data()) == nil)
     }
 
     // MARK: Errors
@@ -121,6 +146,7 @@ struct AIProviderTests {
         (400, #"{"error":{"message":"Your credit balance is too low"}}"#, .insufficientCredit),
         (429, #"{"error":{"message":"You exceeded your current quota"}}"#, .insufficientCredit),
         (429, #"{"error":{"message":"Rate limit reached"}}"#, .rateLimited),
+        (429, #"{"error":{"message":"You exceeded your current quota","status":"RESOURCE_EXHAUSTED"}}"#, .rateLimited),
         (404, #"{"error":{"message":"model: nope"}}"#, .modelNotFound),
         (529, #"{"error":{"message":"Overloaded"}}"#, .providerUnavailable),
     ])
