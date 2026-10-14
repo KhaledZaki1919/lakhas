@@ -54,10 +54,14 @@ final class OnboardingUITests: XCTestCase {
         app.buttons["ax.photo.analyze"].tap()
         XCTAssertTrue(element(app, "ax.review.item").waitForExistence(timeout: 10))
 
-        let correction = app.textFields["ax.review.correction"]
+        // A vertical-axis TextField is exposed as a text view, so match by identifier only.
+        let correction = element(app, "ax.review.correction")
+        XCTAssertTrue(correction.waitForExistence(timeout: 5))
         correction.tap()
         correction.typeText("it was a smaller plate")
-        app.buttons["ax.review.correct"].tap()
+        let correct = app.buttons["ax.review.correct"]
+        if !correct.isHittable { app.swipeUp() }        // keyboard and totals bar can cover it
+        correct.tap()
         // corrected to 300 g → 468 kcal
         let total = element(app, "ax.review.total")
         let predicate = NSPredicate(format: "label CONTAINS %@", "468")
