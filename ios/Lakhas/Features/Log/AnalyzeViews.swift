@@ -52,22 +52,21 @@ struct PhotoLogView: View {
                 TextField("photo.note", text: $note, axis: .vertical)
                     .lineLimit(1...3)
             }
-            Section {
-                Button {
-                    Task { await analyze() }
-                } label: {
-                    HStack {
-                        Text("photo.analyze").font(.headline)
-                        Spacer()
-                        if isAnalyzing { ProgressView() }
-                    }
-                }
-                .disabled(mealPhoto == nil || isAnalyzing || (withLeftovers && leftoverPhoto == nil))
-                .accessibilityIdentifier("ax.photo.analyze")
+        }
+        // Pinned so it stays reachable once a photo preview fills the screen.
+        .safeAreaInset(edge: .bottom) {
+            VStack(spacing: Theme.Space.xs) {
                 if let error {
                     Text(error.messageKey).font(.footnote).foregroundStyle(Theme.Palette.accent)
                 }
+                PrimaryButton(titleKey: "photo.analyze",
+                              isEnabled: mealPhoto != nil && !isAnalyzing && !(withLeftovers && leftoverPhoto == nil)) {
+                    Task { await analyze() }
+                }
+                .accessibilityIdentifier("ax.photo.analyze")
             }
+            .padding(Theme.Space.md)
+            .background(Theme.Palette.surface)
         }
         .navigationTitle("log.photo")
         .onChange(of: picker) { _, item in load(item) { mealPhoto = $0 } }

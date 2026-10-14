@@ -56,7 +56,7 @@ final class OnboardingUITests: XCTestCase {
 
         // A vertical-axis TextField is exposed as a text view, so match by identifier only.
         let correction = element(app, "ax.review.correction")
-        XCTAssertTrue(correction.waitForExistence(timeout: 5))
+        scrollTo(correction, in: app)
         correction.tap()
         correction.typeText("it was a smaller plate")
         let correct = app.buttons["ax.review.correct"]
@@ -89,6 +89,13 @@ final class OnboardingUITests: XCTestCase {
         XCTAssertTrue(element(app, "ax.review.item").waitForExistence(timeout: 5))
         app.buttons["ax.review.save"].tap()
         XCTAssertTrue(element(app, "ax.today.meal").waitForExistence(timeout: 5))
+    }
+
+    /// Lists load rows lazily, so rows below the fold only exist after scrolling.
+    @MainActor
+    private func scrollTo(_ target: XCUIElement, in app: XCUIApplication) {
+        for _ in 0..<4 where !target.exists { app.swipeUp() }
+        XCTAssertTrue(target.waitForExistence(timeout: 5))
     }
 
     @MainActor
