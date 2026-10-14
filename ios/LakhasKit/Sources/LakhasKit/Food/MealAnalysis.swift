@@ -79,10 +79,12 @@ public struct DraftItem: Identifiable, Equatable, Sendable {
     /// Set when a leftover photo was analyzed.
     public var servedGrams: Double?
     public var leftoverGrams: Double?
+    /// Set for packaged products (barcode flow).
+    public var barcode: String?
 
     public init(id: UUID = UUID(), nameAr: String, nameEn: String, grams: Double, per100: Macros,
                 valueSource: ValueSource, foodDbId: String? = nil, confidence: Double? = nil,
-                servedGrams: Double? = nil, leftoverGrams: Double? = nil) {
+                servedGrams: Double? = nil, leftoverGrams: Double? = nil, barcode: String? = nil) {
         self.id = id
         self.nameAr = nameAr
         self.nameEn = nameEn
@@ -93,6 +95,7 @@ public struct DraftItem: Identifiable, Equatable, Sendable {
         self.confidence = confidence
         self.servedGrams = servedGrams
         self.leftoverGrams = leftoverGrams
+        self.barcode = barcode
     }
 
     public init(food: FoodEntry, grams: Double) {
@@ -113,7 +116,7 @@ public struct DraftItem: Identifiable, Equatable, Sendable {
 
     public func makeMealItem() -> MealItem {
         MealItem(nameAr: nameAr, nameEn: nameEn, grams: grams, per100: per100,
-                 valueSource: valueSource, foodDbId: foodDbId, confidence: confidence)
+                 valueSource: valueSource, foodDbId: foodDbId, barcode: barcode, confidence: confidence)
     }
 
     /// For the correction prompt: the analysis shape of this line.

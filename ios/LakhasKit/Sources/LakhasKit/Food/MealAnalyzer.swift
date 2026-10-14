@@ -56,19 +56,24 @@ public struct AIResultCache: Sendable {
         return hasher.finalize().map { String(format: "%02x", $0) }.joined()
     }
 
-    private struct Entry: Codable {
-        let analysis: MealAnalysis
+    private struct Entry<Value: Codable>: Codable {
+        let value: Value
         let model: String
     }
 
     public func load(_ key: String, day: String) -> (analysis: MealAnalysis, model: String)? {
-        guard let data = try? Data(contentsOf: directory.appendingPathComponent(day).appendingPathComponent("\(key).json")),
-              let entry = try? JSONDecoder().decode(Entry.self, from: data) else { return nil }
-        return (entry.analysis, entry.model)
+        value(MealAnalysis.self, key: key, day: day).map { ($0.value, $0.model) }
     }
 
-    public func store(_ analysis: MealAnalysis, model: String, key: String, day: String) {
-        guard let data = try? JSONEncoder().encode(Entry(analysis: analysis, model: model)) else { return }
+    /// Any cached AI answer (meal analysis, product label…). Keys include the feature, so types don't collide.
+    public func value<Value: Codable>(_ type: Value.Type, key: String, day: String) -> (value: Value, model: String)? {
+        guard let data = try? Data(contentsOf: directory.appendingPathComponent(day).appendingPathComponent("\(key).json")),
+              let entry = try? JSONDecoder().decode(Entry<Value>.self, from: data) else { return nil }
+        return (entry.value, entry.model)
+    }
+
+    public func store<Value: Codable>(_ value: Value, model: String, key: String, day: String) {
+        guard let data = try? JSONEncoder().encode(Entry(value: value, model: model)) else { return }
         try? FileProtection.write(data, to: directory.appendingPathComponent(day).appendingPathComponent("\(key).json"))
     }
 
