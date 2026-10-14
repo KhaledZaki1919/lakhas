@@ -54,19 +54,15 @@ final class OnboardingUITests: XCTestCase {
         app.buttons["ax.photo.analyze"].tap()
         XCTAssertTrue(element(app, "ax.review.item").waitForExistence(timeout: 10))
 
-        // A vertical-axis TextField is exposed as a text view, so match by identifier only.
         let correction = element(app, "ax.review.correction")
         scrollTo(correction, in: app)
         correction.tap()
-        correction.typeText("it was a smaller plate")
-        let correct = app.buttons["ax.review.correct"]
-        if !correct.isHittable { app.swipeUp() }        // keyboard and totals bar can cover it
-        correct.tap()
+        correction.typeText("it was a smaller plate\n")   // Go submits the correction
         // corrected to 300 g → 468 kcal
         let total = element(app, "ax.review.total")
-        let predicate = NSPredicate(format: "label CONTAINS %@", "468")
-        expectation(for: predicate, evaluatedWith: total)
-        waitForExpectations(timeout: 10)
+        let corrected = XCTNSPredicateExpectation(predicate: NSPredicate(format: "label CONTAINS %@", "468"), object: total)
+        XCTAssertEqual(XCTWaiter().wait(for: [corrected], timeout: 10), .completed,
+                       "total \(total.label)\n\(app.debugDescription)")
         app.buttons["ax.review.save"].tap()
         XCTAssertTrue(element(app, "ax.today.meal").waitForExistence(timeout: 5))
     }

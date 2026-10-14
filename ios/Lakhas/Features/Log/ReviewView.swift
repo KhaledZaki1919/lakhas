@@ -37,6 +37,7 @@ struct ReviewView: View {
 
     private var totals: Macros { items.reduce(.zero) { $0 + $1.totals } }
     private var canCorrect: Bool { source == .photo || source == .text }
+    private var canSubmitCorrection: Bool { !correction.trimmingCharacters(in: .whitespaces).isEmpty && !isCorrecting }
 
     var body: some View {
         List {
@@ -98,8 +99,9 @@ struct ReviewView: View {
 
     private var correctionSection: some View {
         Section {
-            TextField("review.correct.placeholder", text: $correction, axis: .vertical)
-                .lineLimit(1...3)
+            TextField("review.correct.placeholder", text: $correction)
+                .submitLabel(.go)
+                .onSubmit { if canSubmitCorrection { Task { await runCorrection() } } }
                 .accessibilityIdentifier("ax.review.correction")
             Button {
                 Task { await runCorrection() }
@@ -110,7 +112,7 @@ struct ReviewView: View {
                     if isCorrecting { ProgressView() }
                 }
             }
-            .disabled(correction.trimmingCharacters(in: .whitespaces).isEmpty || isCorrecting)
+            .disabled(!canSubmitCorrection)
             .accessibilityIdentifier("ax.review.correct")
             if let error {
                 Text(error.messageKey).font(.footnote).foregroundStyle(Theme.Palette.accent)
