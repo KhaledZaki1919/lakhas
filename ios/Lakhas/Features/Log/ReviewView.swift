@@ -184,9 +184,13 @@ struct ReviewView: View {
     }
 
     static func costText(_ outcome: MealAnalyzer.Outcome) -> String {
-        if outcome.fromCache { return String(localized: "review.cost.cached") }
-        guard let cost = outcome.estimatedCost else { return String(localized: "review.cost.unknown \(outcome.model)") }
-        return String(localized: "review.cost \(AppFormat.current.cost(cost)) \(outcome.model)")
+        costText(fromCache: outcome.fromCache, cost: outcome.estimatedCost, model: outcome.model)
+    }
+
+    static func costText(fromCache: Bool, cost: Double?, model: String) -> String {
+        if fromCache { return String(localized: "review.cost.cached") }
+        guard let cost else { return String(localized: "review.cost.unknown \(model)") }
+        return String(localized: "review.cost \(AppFormat.current.cost(cost)) \(model)")
     }
 }
 

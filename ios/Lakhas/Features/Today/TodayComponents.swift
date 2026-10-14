@@ -287,6 +287,19 @@ struct SettingsView: View {
                 .accessibilityIdentifier("ax.settings.ai")
             }
             Section {
+                VStack(alignment: .leading, spacing: Theme.Space.xxs) {
+                    Text("barcode.off.attribution").font(.footnote)
+                    if let url = OpenFoodFactsClient.attributionURL {
+                        Link(destination: url) { Text("barcode.off.link").font(.footnote) }
+                    }
+                    if let url = OpenFoodFactsClient.licenseURL {
+                        Link(destination: url) { Text("settings.about.odbl").font(.footnote) }
+                    }
+                }
+            } header: {
+                Text("settings.about")
+            }
+            Section {
                 NavigationLink {
                     CapabilityProbeView()
                 } label: {

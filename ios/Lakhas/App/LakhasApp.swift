@@ -9,7 +9,11 @@ struct LakhasApp: App {
     init() {
         // UI tests launch with -uiTesting: in-memory store and default AI settings (no key).
         let uiTesting = ProcessInfo.processInfo.arguments.contains("-uiTesting")
-        if uiTesting { UserDefaults.standard.removeObject(forKey: AISettings.defaultsKey) }
+        if uiTesting {
+            UserDefaults.standard.removeObject(forKey: AISettings.defaultsKey)
+            // Barcode lookups are answered from a fixed table, never the network.
+            OpenFoodFactsClient.uiTestingProducts = UITestingAIProvider.products
+        }
         if ProcessInfo.processInfo.arguments.contains("-uiTestingStubAI") {
             AIService.overrideProvider = UITestingAIProvider()
         }

@@ -1,5 +1,4 @@
 import LakhasKit
-import PhotosUI
 import SwiftData
 import SwiftUI
 import UIKit
@@ -14,9 +13,6 @@ struct PhotoLogView: View {
     @State private var leftoverPhoto: Data?
     @State private var withLeftovers = false
     @State private var note = ""
-    @State private var picker: PhotosPickerItem?
-    @State private var leftoverPicker: PhotosPickerItem?
-    @State private var cameraTarget: CameraTarget?
     @State private var isAnalyzing = false
     @State private var error: AIError?
     @State private var result: OutcomeBox?
@@ -24,15 +20,10 @@ struct PhotoLogView: View {
     private let format = AppFormat.current
     private let uiTesting = ProcessInfo.processInfo.arguments.contains("-uiTestingStubAI")
 
-    enum CameraTarget: Identifiable {
-        case meal, leftover
-        var id: Self { self }
-    }
-
     var body: some View {
         Form {
             Section {
-                photoRow(data: mealPhoto, titleKey: "photo.meal", selection: $picker, target: .meal)
+                PhotoSlot(titleKey: "photo.meal", data: $mealPhoto)
                 if uiTesting {
                     Button("photo.sample") { mealPhoto = Self.samplePhoto() }
                         .accessibilityIdentifier("ax.photo.sample")
@@ -43,7 +34,7 @@ struct PhotoLogView: View {
             Section {
                 Toggle("photo.leftovers", isOn: $withLeftovers)
                 if withLeftovers {
-                    photoRow(data: leftoverPhoto, titleKey: "photo.leftoverPhoto", selection: $leftoverPicker, target: .leftover)
+                    PhotoSlot(titleKey: "photo.leftoverPhoto", data: $leftoverPhoto)
                 }
             } footer: {
                 Text("photo.leftovers.footer")
@@ -69,58 +60,10 @@ struct PhotoLogView: View {
             .background(Theme.Palette.surface)
         }
         .navigationTitle("log.photo")
-        .onChange(of: picker) { _, item in load(item) { mealPhoto = $0 } }
-        .onChange(of: leftoverPicker) { _, item in load(item) { leftoverPhoto = $0 } }
-        .sheet(item: $cameraTarget) { target in
-            CameraView { data in
-                if let data {
-                    if target == .meal { mealPhoto = data } else { leftoverPhoto = data }
-                }
-                cameraTarget = nil
-            }
-            .ignoresSafeArea()
-        }
         .navigationDestination(item: $result) { box in
             ReviewView(request: request, source: .photo, outcome: box.outcome, photoData: mealPhoto, onSaved: onSaved)
         }
         .overlay { if isAnalyzing { AnalyzingOverlay() } }
-    }
-
-    private func photoRow(data: Data?, titleKey: LocalizedStringKey, selection: Binding<PhotosPickerItem?>,
-                          target: CameraTarget) -> some View {
-        VStack(alignment: .leading, spacing: Theme.Space.sm) {
-            if let data, let image = UIImage(data: data) {
-                Image(uiImage: image)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(height: 180)
-                    .frame(maxWidth: .infinity)
-                    .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.control))
-                    .accessibilityLabel(Text(titleKey))
-            }
-            HStack {
-                PhotosPicker(selection: selection, matching: .images) {
-                    Label("photo.library", systemImage: "photo.on.rectangle")
-                }
-                Spacer()
-                if UIImagePickerController.isSourceTypeAvailable(.camera) {
-                    Button {
-                        cameraTarget = target
-                    } label: {
-                        Label("photo.camera", systemImage: "camera")
-                    }
-                }
-            }
-            .buttonStyle(.bordered)
-            .tint(Theme.Palette.primary)
-        }
-    }
-
-    private func load(_ item: PhotosPickerItem?, assign: @escaping (Data) -> Void) {
-        guard let item else { return }
-        Task {
-            if let data = try? await item.loadTransferable(type: Data.self) { assign(data) }
-        }
     }
 
     private func analyze() async {

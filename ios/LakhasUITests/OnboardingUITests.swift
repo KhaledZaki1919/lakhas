@@ -87,6 +87,76 @@ final class OnboardingUITests: XCTestCase {
         XCTAssertTrue(element(app, "ax.today.meal").waitForExistence(timeout: 5))
     }
 
+    @MainActor
+    private func lookUpBarcode(_ code: String, in app: XCUIApplication) {
+        element(app, "ax.log.barcode").tap()
+        let field = app.textFields["ax.barcode.code"]
+        XCTAssertTrue(field.waitForExistence(timeout: 5))
+        field.tap()
+        field.typeText(code)
+        app.buttons["ax.barcode.lookup"].tap()
+    }
+
+    /// Product card → add the default amount → review total → save to Today.
+    @MainActor
+    private func addProductAndSave(_ app: XCUIApplication, expectedKcal: String, name: String) {
+        XCTAssertTrue(element(app, "ax.barcode.product").waitForExistence(timeout: 10), app.debugDescription)
+        let add = element(app, "ax.barcode.add")
+        scrollUntilHittable(add, in: app)
+        add.tap()
+        XCTAssertTrue(element(app, "ax.review.item").waitForExistence(timeout: 5))
+        let total = element(app, "ax.review.total")
+        XCTAssertTrue(total.label.contains(expectedKcal), "total \(total.label)")
+        app.buttons["ax.review.save"].tap()
+        let meal = element(app, "ax.today.meal")
+        XCTAssertTrue(meal.waitForExistence(timeout: 5))
+        XCTAssertTrue(meal.label.contains(name), meal.label)
+    }
+
+    @MainActor
+    func testBarcodeLookupLogsAProductWithoutAKey() throws {
+        let app = launch(language: "en")
+        openLogSheetAfterOnboarding(app)
+        lookUpBarcode("6221000000010", in: app)   // stubbed Open Food Facts product
+        // 30 g serving × 480 kcal/100 g
+        addProductAndSave(app, expectedKcal: "144", name: "Test Crackers")
+    }
+
+    @MainActor
+    func testUnknownBarcodeIsAddedFromLabelPhotos() throws {
+        let app = launch(language: "en", stubAI: true)
+        openLogSheetAfterOnboarding(app)
+        lookUpBarcode("6221000000027", in: app)
+        let addProduct = element(app, "ax.barcode.addProduct")
+        XCTAssertTrue(addProduct.waitForExistence(timeout: 10), app.debugDescription)
+        scrollUntilHittable(addProduct, in: app)
+        addProduct.tap()
+
+        let sample = element(app, "ax.product.sample")
+        scrollUntilHittable(sample, in: app)
+        sample.tap()
+        let read = element(app, "ax.product.read")
+        scrollUntilHittable(read, in: app)
+        read.tap()
+        // The stub's label fills the form, which enables Save.
+        let save = app.buttons["ax.product.save"]
+        let enabled = XCTNSPredicateExpectation(predicate: NSPredicate(format: "isEnabled == true"), object: save)
+        XCTAssertEqual(XCTWaiter().wait(for: [enabled], timeout: 10), .completed, app.debugDescription)
+        save.tap()
+        // 25 g serving × 400 kcal/100 g
+        addProductAndSave(app, expectedKcal: "100", name: "Label Biscuits")
+    }
+
+    /// Drags from low on the screen (inside the sheet, even at medium height) until the target can be tapped.
+    @MainActor
+    private func scrollUntilHittable(_ target: XCUIElement, in app: XCUIApplication) {
+        for _ in 0..<6 where !(target.exists && target.isHittable) {
+            let start = app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.85))
+            start.press(forDuration: 0.05, thenDragTo: app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)))
+        }
+        XCTAssertTrue(target.exists && target.isHittable, app.debugDescription)
+    }
+
     /// Lists load rows lazily, so rows below the fold only exist after scrolling.
     @MainActor
     private func scrollTo(_ target: XCUIElement, in app: XCUIApplication) {

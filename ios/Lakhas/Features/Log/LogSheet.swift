@@ -3,7 +3,7 @@ import SwiftData
 import SwiftUI
 
 /// The center "+" sheet (docs/design.md §4): Photo · Text · Barcode · Saved meal.
-/// The AI methods arrive in Phases 4–5; Phase 3 adds a manual quick add on local data.
+/// Photo and text need the user's key; the plate-builder, barcode lookup and quick add don't.
 struct LogSheet: View {
     let request: LogRequest
     @Environment(\.dismiss) private var dismiss
@@ -29,7 +29,12 @@ struct LogSheet: View {
                         Label("log.plate", systemImage: "fork.knife")
                     }
                     .accessibilityIdentifier("ax.log.plate")
-                    method("log.barcode", symbol: "barcode.viewfinder", phaseKey: "log.comingSoon")
+                    NavigationLink {
+                        BarcodeLogView(request: request) { dismiss() }
+                    } label: {
+                        Label("log.barcode", systemImage: "barcode.viewfinder")
+                    }
+                    .accessibilityIdentifier("ax.log.barcode")
                     method("log.saved", symbol: "bookmark", phaseKey: "log.comingSoon")
                 } footer: {
                     if !hasKey { Text("log.needsKey") }
