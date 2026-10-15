@@ -52,7 +52,7 @@ There is no backend. `/backend`, `/admin` and `/shared/frozen` are kept for refe
 | `AIProvider` (protocol) | `complete(_ request: AIRequest, model:) async throws -> AIResponse` and `listModels()`. One implementation per provider, plain `URLSession` |
 | `AIRequest` | system prompt, user text, JPEG images, the JSON schema of the expected answer, max output tokens |
 | `AIResponse` | the raw JSON text, input/output token usage, the model used |
-| `StructuredAI` | Builds the request, extracts JSON (tolerates code fences), decodes with `Codable`, runs `validate()`. On failure, **one retry** with the error appended. Records usage. |
+| `StructuredAI` | Builds the request, extracts JSON (tolerates code fences), decodes with `Codable`, runs `validate()`. On failure, **one retry** with the error appended. Records usage and the last request's diagnostic (`AIDiagnostic`, ADR-023). |
 | `AIKeyStore` | One Keychain item per provider (`WhenUnlockedThisDeviceOnly`). Never logged; never in backups or exports |
 | `AISettings` | provider, chosen standard/accurate model per provider, **High accuracy** toggle, optional daily limit (UserDefaults) |
 | `UsageRecord` (SwiftData) + `PriceTable` | Per request: provider, model, feature, tokens, success, estimated cost. Prices are bundled defaults plus user overrides, always labeled "estimate" |
@@ -63,7 +63,7 @@ Structured output per provider:
 |---|---|---|
 | Anthropic | `POST https://api.anthropic.com/v1/messages` (`x-api-key`, `anthropic-version: 2023-06-01`) | `output_config: {format: {type: "json_schema", schema}, effort: "low"}` |
 | OpenAI | `POST https://api.openai.com/v1/chat/completions` (Bearer) | `response_format: {type: "json_schema", json_schema: {name, schema, strict: true}}` |
-| Gemini | `POST https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent` (`x-goog-api-key`) | `generationConfig.responseMimeType: "application/json"`, with the schema in the prompt |
+| Gemini | `POST https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent` (`x-goog-api-key`) | `responseMimeType: "application/json"` + `responseSchema` (OpenAPI subset: `nullable`, no `additionalProperties`); low thinking (`thinkingLevel`, or `thinkingBudget` on 2.5), resent without it if refused; if the schema is refused, retried with the schema in the prompt (ADR-023) |
 | OpenRouter | `POST https://openrouter.ai/api/v1/chat/completions` (Bearer) | `response_format: json_schema`; if the model rejects it, retried without it (prompt-only JSON) |
 
 Model routing: **photo analysis** uses the accurate model when High accuracy is on, otherwise the standard model. **Text, corrections, labels and recipes** always use the standard model.

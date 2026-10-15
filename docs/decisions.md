@@ -228,3 +228,19 @@ Quotas become per-device daily **cost caps**, set to the old Pro limits: photo 1
 - **Drinks:** values per 100 ml are treated as per 100 g (the form says so).
 - **Attribution:** the barcode screen and Settings → About credit Open Food Facts under the ODbL.
 - **UI tests:** `-uiTesting` answers lookups from a fixed table (`UITestingAIProvider.products`) and never reaches the network.
+
+### ADR-023 — "Last AI request" diagnostics; Gemini request hardening
+**Status:** Accepted (2026-10-15).
+**Context:** Photo and text analysis failed on a real phone with a valid Gemini key, and the app only showed a generic message. There was no way to see what the provider actually said.
+**Decision:**
+- **Diagnostics:**
+  - Every structured request leaves one `AIDiagnostic`: provider, model, feature, endpoint (no query), HTTP status, the step that failed (`network`, `http`, `response` envelope, `json`, `validation`), attempts (2 = retried), duration, the provider's message, the redacted error body, and the start of an unusable reply.
+  - `AIHTTP.send` reports through a task-local `AITrace`, so providers didn't change.
+  - Keys are removed (the stored key, plus `AIza…`, `sk-…` and `key=` patterns) before anything is stored. Only the last request is kept, in UserDefaults on this device.
+  - **Settings → AI → Last AI request** shows it with **Copy details**. Error messages under every AI action add the HTTP status and the provider's own message, with a link to the details.
+- **Gemini:**
+  - Native `responseSchema`, converted to Google's OpenAPI subset (`nullable: true` instead of `["x","null"]`, `additionalProperties`/`$ref` dropped). If Gemini rejects the schema, the existing fallback resends with the schema in the prompt.
+  - Thinking set low (`thinkingLevel: low`; `thinkingBudget: 1024` on 2.5; none on 1.x/2.0, flash-lite and non-thinking models). A 400 that mentions thinking is resent once without it.
+  - `maxOutputTokens` = requested + 24,576 on thinking models, since thoughts count against it. `finishReason: MAX_TOKENS` is reported as truncated (partial JSON is never parsed). Thought parts are ignored. More block reasons map to "refused".
+  - Requests time out after 180 s (non-streamed photo replies from thinking models can be slow).
+  - Settings → AI warns when the chosen model ID isn't in the key's live model list. `gemini-flash-latest` / `gemini-pro-latest` stay the defaults: both are Google aliases, but which models a key can use depends on its tier.
