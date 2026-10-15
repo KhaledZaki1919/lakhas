@@ -17,7 +17,7 @@ flowchart LR
     Widgets["LakhasWidgets<br/>(LAKHAS_EXTENSIONS)"]
     subgraph Kit["LakhasKit (SPM package)"]
       NM["NutritionMath"]
-      Models["SwiftData models<br/>meals · profile · usage"]
+      Models["SwiftData models<br/>meals · profile · usage · products"]
       AI["AI layer<br/>AIProvider × 4 · JSON validation · retry<br/>prompts · usage & cost"]
       Keys["AIKeyStore<br/>Keychain, this device only"]
       Env["AppGroupResolver · FileProtection<br/>capability probe"]
@@ -72,7 +72,7 @@ Model routing: **photo analysis** uses the accurate model when High accuracy is 
 
 ## 3. Data on the device
 
-SwiftData models (in LakhasKit): `UserProfile`, `GoalOverride`, `Meal`, `MealItem` (with `sortIndex`; to-many order is not preserved), and `UsageRecord`. Later phases add saved meals, recipes, products, water, weight and workouts.
+SwiftData models (in LakhasKit): `UserProfile`, `GoalOverride`, `Meal`, `MealItem` (with `sortIndex`; to-many order is not preserved), `UsageRecord` and `Product` (barcode library, ADR-022). Later phases add saved meals, recipes, water, weight and workouts.
 
 - **Location:** resolved by `AppGroupResolver` (ADR-014).
 - **Protection:** every file gets `completeUntilFirstUserAuthentication` and is **excluded from device backups** (`isExcludedFromBackup`).
@@ -91,7 +91,13 @@ SwiftData models (in LakhasKit): `UserProfile`, `GoalOverride`, `Meal`, `MealIte
 4. **Call:** `StructuredAI` → provider → JSON → `Codable` + `validate()`, retrying once on failure.
 5. **Post-process:** apply the DB override (§7 of the brief) and compute totals as grams × per-100g. Record usage with its cost estimate.
 
-### 4.2 No key
+### 4.2 Barcode (ADR-022)
+1. Scan with VisionKit (EAN-13, EAN-8, UPC-E) or type the number. `Barcode.normalize` gives one canonical code (UPC-A → EAN-13, check digit verified).
+2. **Local products first**, then Open Food Facts (`GET /api/v2/product/{code}`, no key, only the fields we use).
+3. Found: the user picks a serving, 100 g or grams, and the product goes to the review screen as one `product` line. Logging saves the product locally.
+4. Not found, or found without nutrition values: two label photos (nutrition table + front) are read by the user's provider with the standard model (`label.v1`), or the user types the values. The user checks the form and saves; the product stays on this device.
+
+### 4.3 No key
 Every AI entry point checks `AIKeyStore` for the selected provider. If no key is set, it presents `NoKeyView`: what a key is, how to get one per provider, and a rough cost. It links to Settings → AI. There is no fallback.
 
 ---

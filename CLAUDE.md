@@ -59,6 +59,7 @@ SwiftLint is a separate, non-blocking job.
   - API keys live only in `AIKeyStore`. Never log keys, photos or user text.
   - With no key, AI entry points show `NoKeyView`. Never fall back to anything else.
   - SwiftData to-many relationships are unordered, so give child rows an explicit `sortIndex`.
+- **UI tests** launch with `-uiTesting` (in-memory store, no key, Open Food Facts answered from `UITestingAIProvider.products`) and `-uiTestingStubAI` (canned AI answers, no network).
 
 ## Key decisions (see docs/decisions.md)
-ADR-012 unsigned IPA from CI · ADR-014 free-team fallbacks · ADR-016 backup export · ADR-017 design A · ADR-019 Swift 5 mode + compile-first CI · ADR-020 Bring Your Own Key, no server, device-only data.
+ADR-012 unsigned IPA from CI · ADR-014 free-team fallbacks · ADR-016 backup export · ADR-017 design A · ADR-019 Swift 5 mode + compile-first CI · ADR-020 Bring Your Own Key, no server, device-only data · ADR-021 bundled food DB as JSON · ADR-022 barcode: Open Food Facts + local products + AI label reading.

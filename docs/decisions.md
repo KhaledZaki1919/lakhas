@@ -216,3 +216,15 @@ Quotas become per-device daily **cost caps**, set to the old Pro limits: photo 1
 - **Sources:** `ios/data/scripts/build-usda-subset.mjs` (USDA CSV → subset) and `build-food-db.mjs` (merge + validation) regenerate the file.
 - **Curated dishes:** protein, carbs and fat per 100 g as served, marked `curated_estimate`. kcal is computed from them (4/4/9) so every entry is internally consistent, and each dish carries common Egyptian portions (plate, sandwich, piece, loaf, cup).
 **Revisit if:** the DB grows past a few thousand entries.
+
+### ADR-022 — Barcode: Open Food Facts from the phone, local product library, AI label reading
+**Status:** Accepted (2026-10-14). Implements ADR-020 for §4.3 C.
+**Decision:**
+- **Lookup order:** the local `Product` library, then Open Food Facts (`world.openfoodfacts.org/api/v2/product/{code}?fields=…`, no key, an app User-Agent, 15 s timeout). Nothing else is called.
+- **Barcodes** are stored in one canonical form: UPC-A becomes EAN-13 with a leading 0, GTIN-14 with a leading 0 becomes EAN-13, and EAN-13 check digits are verified. Eastern Arabic digits are accepted when typed.
+- **Open Food Facts values** are used only when plausible (kcal 0–900, macros 0–100, sum ≤ 100 g per 100 g). kcal falls back to kJ ÷ 4.184, then 4/4/9 from the macros. A product with no usable values is treated like a missing one, but its name pre-fills the form.
+- **Missing products:** two photos (nutrition table + front), downscaled with metadata stripped, go to the user's provider with the **standard** model (`AIFeature.label`, prompt `label.v1`). The answer is validated and fills an editable form; nothing is saved until the user taps Save. Without a key the same form is typed in by hand.
+- **Library:** a product is saved locally when the user logs it (Open Food Facts results included, so the next scan works offline) or saves the form. The front photo is kept as a protected, backup-excluded thumbnail. Products are never shared (ADR-020 question 5).
+- **Drinks:** values per 100 ml are treated as per 100 g (the form says so).
+- **Attribution:** the barcode screen and Settings → About credit Open Food Facts under the ODbL.
+- **UI tests:** `-uiTesting` answers lookups from a fixed table (`UITestingAIProvider.products`) and never reaches the network.
