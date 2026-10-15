@@ -48,7 +48,7 @@ struct PhotoLogView: View {
         .safeAreaInset(edge: .bottom) {
             VStack(spacing: Theme.Space.xs) {
                 if let error {
-                    Text(error.messageKey).font(.footnote).foregroundStyle(Theme.Palette.accent)
+                    AIErrorView(error: error)
                 }
                 PrimaryButton(titleKey: "photo.analyze",
                               isEnabled: mealPhoto != nil && !isAnalyzing && !(withLeftovers && leftoverPhoto == nil)) {
@@ -128,7 +128,7 @@ struct TextLogView: View {
                 .disabled(text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || isAnalyzing)
                 .accessibilityIdentifier("ax.text.analyze")
                 if let error {
-                    Text(error.messageKey).font(.footnote).foregroundStyle(Theme.Palette.accent)
+                    AIErrorView(error: error)
                 }
             }
         }

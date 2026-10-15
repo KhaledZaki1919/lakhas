@@ -32,6 +32,7 @@ struct AISettingsView: View {
             keySection
             if storedKey != nil { testSection }
             modelSection
+            diagnosticsSection
             usageSection
             limitSection
         }
@@ -117,13 +118,41 @@ struct AISettingsView: View {
                 }
                 .font(.callout)
             case .failed(let error):
-                Label {
-                    Text(error.messageKey)
-                } icon: {
-                    Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(Theme.Palette.accent)
-                }
-                .font(.callout)
+                AIErrorView(error: error)
             }
+        }
+    }
+
+    private var diagnosticsSection: some View {
+        Section {
+            NavigationLink {
+                AIDiagnosticsView()
+            } label: {
+                LabeledContent {
+                    if let diagnostic = AIDiagnosticsStore.load() {
+                        Text(diagnostic.succeeded ? LocalizedStringKey("ai.diag.success") : diagnostic.failedStep?.titleKey ?? "")
+                    }
+                } label: {
+                    Label("ai.diag.title", systemImage: "stethoscope")
+                }
+            }
+            .accessibilityIdentifier("ax.ai.diagnostics")
+        } footer: {
+            Text("ai.diag.footer")
+        }
+    }
+
+    /// The live list is what this key can actually call; an ID outside it (a typo, a retired
+    /// model, or one the key's tier can't use) is the usual cause of "model not found".
+    @ViewBuilder private func notInListWarning(_ model: String) -> some View {
+        if !liveModels.isEmpty && !liveModels.contains(model) {
+            Label {
+                Text(verbatim: String(localized: "ai.model.notInList \(model)"))
+            } icon: {
+                Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(Theme.Palette.warning)
+            }
+            .font(.footnote)
+            .accessibilityIdentifier("ax.ai.model.notInList")
         }
     }
 
@@ -143,6 +172,7 @@ struct AISettingsView: View {
             } label: {
                 LabeledContent("ai.model.standard", value: settings.standardModel(for: provider))
             }
+            notInListWarning(settings.standardModel(for: provider))
             Toggle("ai.highAccuracy", isOn: $settings.highAccuracy)
                 .accessibilityIdentifier("ax.ai.highAccuracy")
             if settings.highAccuracy {
@@ -160,6 +190,7 @@ struct AISettingsView: View {
                 } label: {
                     LabeledContent("ai.model.accurate", value: settings.accurateModel(for: provider))
                 }
+                notInListWarning(settings.accurateModel(for: provider))
             }
         } header: {
             Text("ai.model.title")

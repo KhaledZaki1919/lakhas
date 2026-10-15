@@ -109,7 +109,8 @@ struct AIProviderTests {
         let body = try #require(StubProtocol.lastJSON())
         let config = try #require(body["generationConfig"] as? [String: Any])
         #expect(config["responseMimeType"] as? String == "application/json")
-        #expect(config["maxOutputTokens"] as? Int == 800 + 8192)   // room for thinking
+        #expect(config["maxOutputTokens"] as? Int == 800 + 24576)   // room for thinking
+        #expect(config["responseSchema"] == nil)                    // structured: false
         let parts = try #require(((body["contents"] as? [[String: Any]])?.first?["parts"]) as? [[String: Any]])
         #expect((parts.first?["inlineData"] as? [String: Any])?["mimeType"] as? String == "image/jpeg")
     }

@@ -45,11 +45,13 @@ public final class AIService {
     ) async throws -> StructuredResult<Value> {
         let settings = settings
         let provider: AIProvider
+        var secrets: [String] = []
         if let override = Self.overrideProvider {
             provider = override
         } else {
             guard let key = keyStore.key(for: settings.provider) else { throw AIError.noKey }
             provider = settings.provider.makeProvider(apiKey: key, session: session)
+            secrets = [key]
         }
         if feature != .connectionTest, let limit = settings.dailyLimit, requestsToday() >= limit {
             throw AIError.dailyLimitReached
@@ -57,6 +59,8 @@ public final class AIService {
         let ai = StructuredAI(
             provider: provider,
             model: settings.model(for: feature),
+            secrets: secrets,
+            onDiagnostic: diagnosticRecorder,
             onUsage: { [weak self] event in
                 Task { @MainActor in self?.record(event) }
             }
@@ -71,6 +75,8 @@ public final class AIService {
         let ai = StructuredAI(
             provider: provider.makeProvider(apiKey: key, session: session),
             model: model,
+            secrets: [key],
+            onDiagnostic: diagnosticRecorder,
             onUsage: { [weak self] event in
                 Task { @MainActor in self?.record(event) }
             }
@@ -88,9 +94,22 @@ public final class AIService {
         (try? await provider.makeProvider(apiKey: key, session: session).listModels()) ?? []
     }
 
+    /// Saves the last request's diagnostic before the result reaches the caller, so an error
+    /// screen can show the provider's own message.
+    private var diagnosticRecorder: @Sendable (AIDiagnostic) -> Void {
+        let defaults = UncheckedDefaults(defaults)
+        return { AIDiagnosticsStore.save($0, to: defaults.value) }
+    }
+
     func record(_ event: AIUsageEvent) {
         let cost = PriceTable.estimatedCost(of: event.usage, model: event.model, overrides: PriceTable.overrides(from: defaults))
         context.insert(UsageRecord(event: event, estimatedCost: cost))
         try? context.save()
     }
+}
+
+/// UserDefaults is thread-safe but not marked Sendable.
+private struct UncheckedDefaults: @unchecked Sendable {
+    let value: UserDefaults
+    init(_ value: UserDefaults) { self.value = value }
 }

@@ -123,7 +123,7 @@ struct ProductFormView: View {
                 }
             }
             if let error {
-                Text(error.messageKey).font(.footnote).foregroundStyle(Theme.Palette.accent)
+                AIErrorView(error: error)
             }
             if unreadable {
                 Text("product.label.unreadable").font(.footnote).foregroundStyle(Theme.Palette.accent)

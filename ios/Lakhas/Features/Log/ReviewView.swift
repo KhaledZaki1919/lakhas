@@ -115,7 +115,7 @@ struct ReviewView: View {
             .disabled(!canSubmitCorrection)
             .accessibilityIdentifier("ax.review.correct")
             if let error {
-                Text(error.messageKey).font(.footnote).foregroundStyle(Theme.Palette.accent)
+                AIErrorView(error: error)
             }
         } header: {
             Text("review.correct.title")

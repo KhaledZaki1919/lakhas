@@ -9,7 +9,7 @@ enum AIHTTP {
         return decoder
     }
 
-    static func jsonRequest(url: URL, headers: [String: String], body: JSONValue, timeout: TimeInterval = 90) throws -> URLRequest {
+    static func jsonRequest(url: URL, headers: [String: String], body: JSONValue, timeout: TimeInterval = 180) throws -> URLRequest {
         var request = URLRequest(url: url, timeoutInterval: timeout)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -25,18 +25,24 @@ enum AIHTTP {
     }
 
     /// With `retryTransient`, an overloaded server (5xx) or a rate limit that asks for a short
-    /// wait (Gemini's free tier) is retried once after the delay.
+    /// wait (Gemini's free tier) is retried once after the delay. The endpoint, status and body
+    /// (or the network error) go to `AITrace.current` for the diagnostics screen. The timeout
+    /// is long because non-streamed replies from thinking models with photos can take a while.
     static func send(_ request: URLRequest, session: URLSession, retryTransient: Bool = false) async throws -> Data {
         var attempt = 0
+        let trace = AITrace.current
         while true {
+            trace?.begin(request.url)
             let data: Data
             let response: URLResponse
             do {
                 (data, response) = try await session.data(for: request)
             } catch {
+                trace?.failed(error)
                 throw AIError.network
             }
             guard let http = response as? HTTPURLResponse else { throw AIError.network }
+            trace?.received(status: http.statusCode, body: data)
             if (200..<300).contains(http.statusCode) { return data }
             let error = mapError(status: http.statusCode, body: data)
             guard retryTransient, attempt == 0, let delay = retryDelay(status: http.statusCode, body: data) else { throw error }

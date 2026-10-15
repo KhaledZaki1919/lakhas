@@ -91,11 +91,35 @@ struct StructuredAITests {
         #expect(provider.requests.last?.request.system.contains("JSON Schema") == true)
     }
 
-    @Test func geminiAlwaysGetsTheSchemaInThePrompt() async throws {
+    @Test func geminiStartsWithItsNativeSchema() async throws {
         let provider = FakeProvider(kind: .gemini, results: [.success(#"{"name":"x","grams":50}"#)])
         _ = try await StructuredAI(provider: provider, model: "m").run(Meal.self, request: request, feature: .text)
-        #expect(provider.requests.first?.structured == false)
-        #expect(provider.requests.first?.request.system.contains("\"additionalProperties\":false") == true)
+        #expect(provider.requests.first?.structured == true)
+        #expect(provider.requests.first?.request.system.contains("JSON Schema") == false)
+    }
+
+    @Test func diagnosticRecordsValidationFailureAfterTheRetry() async throws {
+        let provider = FakeProvider(results: [.success(#"{"name":"x","grams":-1}"#), .success(#"{"name":"x","grams":-2}"#)])
+        let box = DiagnosticBox()
+        let ai = StructuredAI(provider: provider, model: "m", onDiagnostic: { box.value = $0 })
+        await #expect(throws: AIError.invalidOutput("grams out of range")) {
+            _ = try await ai.run(Meal.self, request: request, feature: .text)
+        }
+        let diagnostic = try #require(box.value)
+        #expect(diagnostic.failedStep == .validation)
+        #expect(diagnostic.attempts == 2)
+        #expect(diagnostic.message == "grams out of range")
+        #expect(diagnostic.replyExcerpt == #"{"name":"x","grams":-2}"#)
+    }
+
+    @Test func diagnosticForASuccess() async throws {
+        let provider = FakeProvider(results: [.success(#"{"name":"x","grams":5}"#)])
+        let box = DiagnosticBox()
+        let ai = StructuredAI(provider: provider, model: "m", onDiagnostic: { box.value = $0 })
+        _ = try await ai.run(Meal.self, request: request, feature: .photo)
+        #expect(box.value?.succeeded == true)
+        #expect(box.value?.feature == .photo)
+        #expect(box.value?.attempts == 1)
     }
 
     @Test func providerErrorsPassThroughAndAreRecorded() async {

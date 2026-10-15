@@ -11,6 +11,7 @@ struct LakhasApp: App {
         let uiTesting = ProcessInfo.processInfo.arguments.contains("-uiTesting")
         if uiTesting {
             UserDefaults.standard.removeObject(forKey: AISettings.defaultsKey)
+            AIDiagnosticsStore.clear()
             // Barcode lookups are answered from a fixed table, never the network.
             OpenFoodFactsClient.uiTestingProducts = UITestingAIProvider.products
         }

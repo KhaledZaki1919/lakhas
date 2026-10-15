@@ -57,9 +57,10 @@ public enum AIProviderKind: String, CaseIterable, Codable, Sendable, Identifiabl
         }
     }
 
-    /// Whether the provider enforces a JSON Schema natively. Gemini gets JSON mode plus the
-    /// schema in the prompt; every response is validated either way.
-    public var supportsStructuredOutput: Bool { self != .gemini }
+    /// Whether requests start with the provider's native schema enforcement (Gemini gets its
+    /// OpenAPI `responseSchema`). A provider that rejects it is retried with the schema in the
+    /// prompt (`StructuredAI`); every response is validated either way.
+    public var supportsStructuredOutput: Bool { true }
 
     public func makeProvider(apiKey: String, session: URLSession = .shared) -> AIProvider {
         switch self {
