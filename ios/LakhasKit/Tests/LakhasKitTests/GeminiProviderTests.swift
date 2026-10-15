@@ -72,7 +72,7 @@ extension AIProviderTests {
         #expect((config["thinkingConfig"] as? [String: Any])?["thinkingLevel"] as? String == "low")
         let schema = try #require(config["responseSchema"] as? [String: Any])
         #expect(schema["type"] as? String == "object")
-        let rawBody = String(decoding: sent.body, as: UTF8.self)
+        let rawBody = (String(bytes: sent.body, encoding: .utf8) ?? "")
         #expect(!rawBody.contains("additionalProperties"))
         let parts = try #require(((body(0)?["contents"] as? [[String: Any]])?.first?["parts"]) as? [[String: Any]])
         let inline = try #require(parts.first?["inlineData"] as? [String: Any])
@@ -85,6 +85,7 @@ extension AIProviderTests {
     /// `x-goog-api-key` only: never `?key=`, never `Authorization: Bearer`.
     @Test func geminiAQKeyIsSentOnlyInTheHeader() async throws {
         let aqKey = "AQ.Ab8RN6JzT1yQ-example_key-0123456789xyz"
+        // swiftlint:disable:next line_length
         let models = #"{"models":[{"name":"models/gemini-flash-latest","supportedGenerationMethods":["generateContent"]},{"name":"models/text-embedding-004","supportedGenerationMethods":["embedContent"]}]}"#
         StubProtocol.reset([(200, Recorded.success), (200, models)])
         let provider = GeminiProvider(apiKey: aqKey, session: StubProtocol.session())
@@ -99,7 +100,7 @@ extension AIProviderTests {
             #expect(request.value(forHTTPHeaderField: "Authorization") == nil)
             #expect(request.url?.query?.contains("key=") != true)
             #expect(request.url?.absoluteString.contains(aqKey) == false)
-            #expect(!String(decoding: sent.body, as: UTF8.self).contains(aqKey))
+            #expect(!(String(bytes: sent.body, encoding: .utf8) ?? "").contains(aqKey))
         }
         #expect(StubProtocol.recorded.last?.request.url?.absoluteString
             == "https://generativelanguage.googleapis.com/v1beta/models?pageSize=200")

@@ -244,3 +244,13 @@ Quotas become per-device daily **cost caps**, set to the old Pro limits: photo 1
   - `maxOutputTokens` = requested + 24,576 on thinking models, since thoughts count against it. `finishReason: MAX_TOKENS` is reported as truncated (partial JSON is never parsed). Thought parts are ignored. More block reasons map to "refused".
   - Requests time out after 180 s (non-streamed photo replies from thinking models can be slow).
   - Settings → AI warns when the chosen model ID isn't in the key's live model list. `gemini-flash-latest` / `gemini-pro-latest` stay the defaults: both are Google aliases, but which models a key can use depends on its tier.
+
+### ADR-024 — Hard deadlines on AI calls; key hygiene
+**Status:** Accepted (2026-10-15). Amends ADR-023.
+**Context:** On a phone with a valid Google "AQ." key, Settings → AI → "Save and test" spun for 10+ minutes. Each Gemini request could wait up to 180 s, and one test may send up to four (a resend without thinking, a fallback without the schema), so a server that holds the connection open kept the spinner going for minutes.
+**Decision:**
+- **Deadlines:** every AI call runs under `AIDeadline`: 30 s for Test connection and the model list, 200 s for analysis. The operation runs in its own task, so even an await that never returns can't block the caller. On timeout or cancellation it's cancelled and abandoned, and a late result can't overwrite the timeout's diagnostic.
+- **UI:** Test connection has a **Cancel** button. Every outcome (answer, error, timeout, cancel) stops the spinner and is recorded in Last AI request (`timeout` / `cancelled` steps).
+- **Gemini auth:** the key goes only in `x-goog-api-key`, for generate and the model list. No `?key=` and no `Authorization` header (Google rejects two credentials). "AIza" and "AQ." keys are both accepted.
+- **Keys:** pasted keys are sanitized on save and on read. Whitespace, line breaks, invisible format characters (zero-width, LRM/RLM, bidi isolates, BOM), wrapping quotes and a "Bearer " prefix are removed. The field is LTR with no autocorrect. A masked preview shows the first 4 and last 4 characters and the length.
+- **Warnings, never blocking:** a key in another provider's format (e.g. "sk-ant-" in the Gemini field), an unknown format, leftover non-ASCII characters, or an unusually short key.

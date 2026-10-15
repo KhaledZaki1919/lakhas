@@ -144,7 +144,7 @@ public enum AIRedactor {
     /// Redacted and capped, for storage.
     static func excerpt(_ data: Data?, secrets: [String], limit: Int = 4000) -> String? {
         guard let data, !data.isEmpty else { return nil }
-        return excerpt(String(decoding: data, as: UTF8.self), secrets: secrets, limit: limit)
+        return excerpt(String(bytes: data, encoding: .utf8) ?? "<\(data.count) bytes, not UTF-8>", secrets: secrets, limit: limit)
     }
 
     static func excerpt(_ text: String, secrets: [String], limit: Int = 4000) -> String? {
