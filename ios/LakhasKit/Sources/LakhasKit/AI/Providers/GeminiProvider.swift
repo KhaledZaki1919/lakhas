@@ -15,6 +15,9 @@ public struct GeminiProvider: AIProvider {
         self.session = session
     }
 
+    /// The only credential on every Gemini request (generate and model list). Google's newer
+    /// "AQ." auth keys and the older "AIza" keys both work this way; adding `?key=` or an
+    /// `Authorization` header as well makes Google reject the request for carrying two credentials.
     private var headers: [String: String] { ["x-goog-api-key": apiKey] }
 
     static func modelPath(_ model: String) -> String {

@@ -9,18 +9,52 @@ public struct AIKeyStore: Sendable {
         self.keychain = keychain
     }
 
+    /// Sanitized on read too, so a key saved before sanitizing existed still works.
     public func key(for provider: AIProviderKind) -> String? {
         guard let data = try? keychain.read(account: provider.rawValue),
-              let key = String(data: data, encoding: .utf8), !key.isEmpty else { return nil }
-        return key
+              let raw = String(data: data, encoding: .utf8) else { return nil }
+        let key = Self.sanitize(raw)
+        return key.isEmpty ? nil : key
     }
 
     public func hasKey(for provider: AIProviderKind) -> Bool { key(for: provider) != nil }
 
     public func save(_ key: String, for provider: AIProviderKind) throws {
-        let trimmed = key.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty else { return delete(for: provider) }
-        try keychain.save(Data(trimmed.utf8), account: provider.rawValue)
+        let clean = Self.sanitize(key)
+        guard !clean.isEmpty else { return delete(for: provider) }
+        try keychain.save(Data(clean.utf8), account: provider.rawValue)
+    }
+
+    /// Pasted keys often carry spaces, line breaks, wrapping quotes, a "Bearer " prefix, or
+    /// invisible characters (zero-width spaces, LTR/RTL marks from Arabic text). Any of these
+    /// breaks the auth header, so they're removed. Nothing else about the key changes.
+    public static func sanitize(_ raw: String) -> String {
+        let scalars = raw.unicodeScalars.filter { scalar in
+            let category = scalar.properties.generalCategory
+            return !(scalar.properties.isWhitespace || category == .format || category == .control)
+        }
+        var key = String(String.UnicodeScalarView(scalars))
+        if key.lowercased().hasPrefix("bearer") && raw.trimmingCharacters(in: .whitespaces).lowercased().hasPrefix("bearer ") {
+            key.removeFirst("bearer".count)
+        }
+        let wrappers = CharacterSet(charactersIn: "\"'`“”‘’<>")
+        return key.trimmingCharacters(in: wrappers)
+    }
+
+    /// Format hints shown while typing. They never block saving: providers change formats
+    /// (Google's AI Studio has issued "AQ." keys since 2026-05-28, alongside older "AIza" keys).
+    public static func warnings(for key: String, provider: AIProviderKind) -> [AIKeyWarning] {
+        let clean = sanitize(key)
+        guard !clean.isEmpty else { return [] }
+        var warnings: [AIKeyWarning] = []
+        if let owner = AIProviderKind.owner(ofKey: clean) {
+            if owner != provider { warnings.append(.looksLike(owner)) }
+        } else {
+            warnings.append(.unexpectedFormat)
+        }
+        if !clean.unicodeScalars.allSatisfy({ $0.isASCII }) { warnings.append(.unexpectedCharacters) }
+        if clean.count < 20 { warnings.append(.tooShort) }
+        return warnings
     }
 
     public func delete(for provider: AIProviderKind) {
@@ -31,10 +65,41 @@ public struct AIKeyStore: Sendable {
         AIProviderKind.allCases.forEach(delete(for:))
     }
 
-    /// "sk-ant-a…9f3c" for display.
+    /// "AQ.A…9f3c · 39" for display: first 4, last 4 and the length.
     public static func masked(_ key: String) -> String {
         guard key.count > 12 else { return String(repeating: "•", count: key.count) }
-        return "\(key.prefix(8))…\(key.suffix(4))"
+        return "\(key.prefix(4))…\(key.suffix(4)) · \(key.count)"
+    }
+}
+
+public enum AIKeyWarning: Equatable, Sendable {
+    /// The key has another provider's format (e.g. "sk-ant-" in the Gemini field).
+    case looksLike(AIProviderKind)
+    /// Not a format we know for any provider.
+    case unexpectedFormat
+    /// Non-ASCII characters remain after cleaning.
+    case unexpectedCharacters
+    case tooShort
+}
+
+extension AIProviderKind {
+    /// Usual key prefixes, for the format hint.
+    public var keyPrefixes: [String] {
+        switch self {
+        case .anthropic: ["sk-ant-"]
+        case .openai: ["sk-"]
+        case .gemini: ["AIza", "AQ."]
+        case .openrouter: ["sk-or-"]
+        }
+    }
+
+    /// The provider whose key format this is, most specific prefix first.
+    public static func owner(ofKey key: String) -> AIProviderKind? {
+        if key.hasPrefix("sk-ant-") { return .anthropic }
+        if key.hasPrefix("sk-or-") { return .openrouter }
+        if key.hasPrefix("AIza") || key.hasPrefix("AQ.") { return .gemini }
+        if key.hasPrefix("sk-") { return .openai }
+        return nil
     }
 }
 

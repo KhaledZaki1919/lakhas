@@ -151,6 +151,10 @@ public enum AIError: Error, Equatable, Sendable {
     case providerUnavailable
     case badRequest(String)
     case dailyLimitReached
+    /// No answer before the app's hard deadline (`AIDeadline`).
+    case timedOut
+    /// The user cancelled (e.g. Settings → AI → Test connection).
+    case cancelled
 }
 
 /// One provider implementation (plain URLSession, no SDKs).

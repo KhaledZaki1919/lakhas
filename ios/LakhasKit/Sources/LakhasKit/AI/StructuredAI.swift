@@ -64,9 +64,8 @@ public struct StructuredAI: Sendable {
     }
 
     public func run<Value: Decodable & AIValidatable>(
-        _ type: Value.Type, request: AIRequest, feature: AIFeature
+        _ type: Value.Type, request: AIRequest, feature: AIFeature, trace: AITrace = AITrace()
     ) async throws -> StructuredResult<Value> {
-        let trace = AITrace()
         let state = RunState()
         let started = Date()
         do {

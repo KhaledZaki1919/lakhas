@@ -169,7 +169,7 @@ struct AISettingsAndPriceTests {
     }
 
     @Test func maskedKeysHideTheMiddle() {
-        #expect(AIKeyStore.masked("sk-ant-api03-abcdefghijklmnop1234") == "sk-ant-a…1234")
+        #expect(AIKeyStore.masked("sk-ant-api03-abcdefghijklmnop1234") == "sk-a…1234 · 33")
         #expect(AIKeyStore.masked("short") == "•••••")
     }
 

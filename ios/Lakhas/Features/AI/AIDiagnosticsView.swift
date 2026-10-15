@@ -156,6 +156,8 @@ extension AIDiagnostic.Step {
         case .response: "ai.diag.step.response"
         case .json: "ai.diag.step.json"
         case .validation: "ai.diag.step.validation"
+        case .timeout: "ai.diag.step.timeout"
+        case .cancelled: "ai.diag.step.cancelled"
         }
     }
 }

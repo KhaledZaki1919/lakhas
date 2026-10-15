@@ -15,6 +15,10 @@ public struct AIDiagnostic: Codable, Equatable, Sendable {
         case json
         /// Valid JSON that failed `validate()` (ranges, required content).
         case validation
+        /// No answer before the app's hard deadline (`AIDeadline`).
+        case timeout
+        /// The user cancelled.
+        case cancelled
     }
 
     public var date: Date

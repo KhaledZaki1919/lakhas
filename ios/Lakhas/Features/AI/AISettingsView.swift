@@ -11,6 +11,8 @@ struct AISettingsView: View {
     @State private var storedKey: String?
     @State private var liveModels: [String] = []
     @State private var testState: TestState = .idle
+    @State private var testTask: Task<Void, Never>?
+    @State private var testID: UUID?
     @State private var usageToday = UsageSummary([])
     @State private var usageMonth = UsageSummary([])
 
@@ -61,8 +63,12 @@ struct AISettingsView: View {
         Section {
             if let storedKey {
                 LabeledContent("ai.key.saved") {
-                    Text(verbatim: AIKeyStore.masked(storedKey)).font(.callout.monospaced())
+                    Text(verbatim: AIKeyStore.masked(storedKey))
+                        .font(.callout.monospaced())
+                        .environment(\.layoutDirection, .leftToRight)
+                        .accessibilityIdentifier("ax.ai.key.masked")
                 }
+                keyWarnings(storedKey)
                 Button("ai.key.delete", role: .destructive) {
                     keyStore.delete(for: provider)
                     reload()
@@ -71,15 +77,28 @@ struct AISettingsView: View {
                 SecureField("ai.key.placeholder", text: $keyDraft)
                     .textInputAutocapitalization(.never)
                     .autocorrectionDisabled()
+                    .keyboardType(.asciiCapable)
                     .font(.callout.monospaced())
+                    // Keys are Latin text: typed and shown left to right, even in Arabic.
+                    .environment(\.layoutDirection, .leftToRight)
+                    .multilineTextAlignment(.leading)
                     .accessibilityIdentifier("ax.ai.key")
+                let clean = AIKeyStore.sanitize(keyDraft)
+                if !clean.isEmpty {
+                    Text(verbatim: AIKeyStore.masked(clean))
+                        .font(.footnote.monospaced())
+                        .foregroundStyle(Theme.Palette.muted)
+                        .environment(\.layoutDirection, .leftToRight)
+                        .accessibilityIdentifier("ax.ai.key.preview")
+                    keyWarnings(clean)
+                }
                 Button("ai.key.save") {
                     try? keyStore.save(keyDraft, for: provider)
                     keyDraft = ""
                     reload()
-                    Task { await runTest() }
+                    startTest()
                 }
-                .disabled(keyDraft.trimmingCharacters(in: .whitespaces).isEmpty)
+                .disabled(clean.isEmpty)
                 .accessibilityIdentifier("ax.ai.saveKey")
             }
             if let url = provider.keyPageURL {
@@ -97,7 +116,7 @@ struct AISettingsView: View {
     private var testSection: some View {
         Section {
             Button {
-                Task { await runTest() }
+                startTest()
             } label: {
                 HStack {
                     Text("ai.test")
@@ -107,6 +126,10 @@ struct AISettingsView: View {
             }
             .disabled(testState == .running)
             .accessibilityIdentifier("ax.ai.test")
+            if testState == .running {
+                Button("ai.test.cancel", role: .cancel) { testTask?.cancel() }
+                    .accessibilityIdentifier("ax.ai.test.cancel")
+            }
             switch testState {
             case .idle, .running:
                 EmptyView()
@@ -139,6 +162,33 @@ struct AISettingsView: View {
             .accessibilityIdentifier("ax.ai.diagnostics")
         } footer: {
             Text("ai.diag.footer")
+        }
+    }
+
+    /// Format hints for a key (never block saving).
+    @ViewBuilder private func keyWarnings(_ key: String) -> some View {
+        ForEach(Array(AIKeyStore.warnings(for: key, provider: provider).enumerated()), id: \.offset) { _, warning in
+            Label {
+                Text(verbatim: warningText(warning))
+            } icon: {
+                Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(Theme.Palette.warning)
+            }
+            .font(.footnote)
+            .accessibilityIdentifier("ax.ai.key.warning")
+        }
+    }
+
+    private func warningText(_ warning: AIKeyWarning) -> String {
+        switch warning {
+        case .looksLike(let owner):
+            return String(localized: "ai.key.warn.looksLike \(owner.displayName) \(provider.displayName)")
+        case .unexpectedFormat:
+            let prefixes = provider.keyPrefixes.map { "\($0)…" }.joined(separator: " / ")
+            return String(localized: "ai.key.warn.format \(provider.displayName) \(prefixes)")
+        case .unexpectedCharacters:
+            return String(localized: "ai.key.warn.characters")
+        case .tooShort:
+            return String(localized: "ai.key.warn.short")
         }
     }
 
@@ -243,6 +293,9 @@ struct AISettingsView: View {
 
     private func reload() {
         storedKey = keyStore.key(for: provider)
+        testTask?.cancel()
+        testTask = nil
+        testID = nil
         testState = .idle
         liveModels = []
         let service = AIService(context: context)
@@ -259,17 +312,33 @@ struct AISettingsView: View {
         }
     }
 
-    private func runTest() async {
-        guard let key = storedKey ?? keyStore.key(for: provider) else { return }
+    /// Runs the test in a task the Cancel button can stop. `testConnection` always returns
+    /// (answer, error, 30 s timeout or cancellation), so the spinner always stops.
+    private func startTest() {
+        testTask?.cancel()
+        guard let key = storedKey ?? keyStore.key(for: provider) else {
+            testState = .idle
+            return
+        }
         testState = .running
+        let kind = provider
+        let model = settings.standardModel(for: kind)
         let service = AIService(context: context)
-        let result = await service.testConnection(provider: provider, key: key, model: settings.standardModel(for: provider))
-        switch result {
-        case .success(let reply):
-            let cost = PriceTable.estimatedCost(of: reply.usage, model: reply.model, overrides: PriceTable.overrides())
-            testState = .passed(model: reply.model, cost: cost)
-        case .failure(let error):
-            testState = .failed(error)
+        let id = UUID()
+        testID = id
+        testTask = Task {
+            let result = await service.testConnection(provider: kind, key: key, model: model)
+            guard testID == id else { return }   // a newer test (or a provider change) replaced this one
+            switch result {
+            case .success(let reply):
+                let cost = PriceTable.estimatedCost(of: reply.usage, model: reply.model, overrides: PriceTable.overrides())
+                testState = .passed(model: reply.model, cost: cost)
+            case .failure(.cancelled):
+                testState = .idle
+            case .failure(let error):
+                testState = .failed(error)
+            }
+            testTask = nil
         }
     }
 

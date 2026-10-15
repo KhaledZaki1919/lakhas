@@ -17,6 +17,8 @@ extension AIError {
         case .providerUnavailable: "ai.error.unavailable"
         case .badRequest: "ai.error.badRequest"
         case .dailyLimitReached: "ai.error.dailyLimit"
+        case .timedOut: "ai.error.timedOut"
+        case .cancelled: "ai.error.cancelled"
         }
     }
 }

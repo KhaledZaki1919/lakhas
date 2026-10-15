@@ -5049,6 +5049,159 @@
           }
         }
       }
+    },
+    "ai.error.timedOut": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لم يصل رد من المزوّد خلال المهلة. تأكد من الإنترنت وحاول مجددًا."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The provider didn't answer in time. Check your internet and try again."
+          }
+        }
+      }
+    },
+    "ai.error.cancelled": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أُلغي الطلب."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The request was cancelled."
+          }
+        }
+      }
+    },
+    "ai.test.cancel": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إلغاء"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cancel"
+          }
+        }
+      }
+    },
+    "ai.diag.step.timeout": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "فشل: انتهت المهلة دون رد"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Failed: no answer before the time limit"
+          }
+        }
+      }
+    },
+    "ai.diag.step.cancelled": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أُلغي"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cancelled"
+          }
+        }
+      }
+    },
+    "ai.key.warn.looksLike %@ %@": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "يبدو هذا مفتاح %1$@، لكن المزوّد المختار %2$@. تأكد أنك لصقت المفتاح الصحيح."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This looks like a %1$@ key, but the selected provider is %2$@. Check that you pasted the right key."
+          }
+        }
+      }
+    },
+    "ai.key.warn.format %@ %@": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مفاتيح %1$@ تبدأ عادةً بـ %2$@. سنحفظه على أي حال."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ keys usually start with %2$@. It will be saved anyway."
+          }
+        }
+      }
+    },
+    "ai.key.warn.characters": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "المفتاح يحتوي على أحرف غير متوقعة. انسخه مرة أخرى من صفحة المزوّد."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The key has unexpected characters. Copy it again from the provider's page."
+          }
+        }
+      }
+    },
+    "ai.key.warn.short": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "المفتاح أقصر من المعتاد. تأكد أنك نسخته كاملًا."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The key is shorter than usual. Check that you copied all of it."
+          }
+        }
+      }
     }
   },
   "version": "1.0"

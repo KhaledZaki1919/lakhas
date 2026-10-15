@@ -81,6 +81,30 @@ extension AIProviderTests {
         #expect(parts.last?["text"] as? String == mealRequest.userText)
     }
 
+    /// Google's "AQ." auth keys fail when a second credential is present, so the key goes in
+    /// `x-goog-api-key` only: never `?key=`, never `Authorization: Bearer`.
+    @Test func geminiAQKeyIsSentOnlyInTheHeader() async throws {
+        let aqKey = "AQ.Ab8RN6JzT1yQ-example_key-0123456789xyz"
+        let models = #"{"models":[{"name":"models/gemini-flash-latest","supportedGenerationMethods":["generateContent"]},{"name":"models/text-embedding-004","supportedGenerationMethods":["embedContent"]}]}"#
+        StubProtocol.reset([(200, Recorded.success), (200, models)])
+        let provider = GeminiProvider(apiKey: aqKey, session: StubProtocol.session())
+        _ = try await provider.complete(mealRequest, model: "gemini-flash-latest", structured: true)
+        let listed = try await provider.listModels()
+        #expect(listed == ["gemini-flash-latest"])
+
+        #expect(StubProtocol.recorded.count == 2)
+        for sent in StubProtocol.recorded {
+            let request = sent.request
+            #expect(request.value(forHTTPHeaderField: "x-goog-api-key") == aqKey)
+            #expect(request.value(forHTTPHeaderField: "Authorization") == nil)
+            #expect(request.url?.query?.contains("key=") != true)
+            #expect(request.url?.absoluteString.contains(aqKey) == false)
+            #expect(!String(decoding: sent.body, as: UTF8.self).contains(aqKey))
+        }
+        #expect(StubProtocol.recorded.last?.request.url?.absoluteString
+            == "https://generativelanguage.googleapis.com/v1beta/models?pageSize=200")
+    }
+
     @Test func geminiSchemaConversionUsesNullableAndDropsUnsupportedKeywords() {
         let converted = GeminiProvider.openAPISchema(MealAnalysis.schema)
         let text = converted.jsonString()
