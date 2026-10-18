@@ -301,3 +301,143 @@ Quotas become per-device daily **cost caps**, set to the old Pro limits: photo 1
 - **Favorites and ratings** live in `DishPreference` (SwiftData, one row per dish: favorite, 👍 / 👎, photo). There are no shared votes (ADR-020).
 - **Dish page:** servings scale every amount. Grams are editable, and ingredients can be removed or added from the food DB. **Log to Today** asks for a meal type (preselected by time of day when the dish fits it) and an amount in ½-serving steps. **Save to My Recipes** creates a `Recipe` (source `explore`, `exploreDishId`), which appears under "From Explore" in My Recipes.
 - **No AI:** Explore never calls a provider or reads the key. Logs have source `explore` and DB values. The UI tests run with no key and no AI stub.
+
+### ADR-027 — A small backend again: accounts, Explore content, encrypted backup, sharing (AI stays BYOK)
+**Status:** **Proposed (2026-10-18), awaiting approval.** Amends ADR-020: there is a server again, but AI stays 100% on the device. Revives `backend/` (Hono, D1, R2, Workers Rate Limiting). Brings back ADR-007 (admin behind Access), ADR-013's HMAC signing and ADR-005's pinning, adapted. Moves ADR-016's backup format forward.
+
+**Context:** I want Explore dishes I can edit without shipping an IPA, a backup that survives a reinstall or a new phone, and a little sharing between invited users: real votes and a common product library. Everything has to fit the Cloudflare free tier on a `*.workers.dev` subdomain. The app must keep working offline and without the server for everything else.
+
+**Free-plan limits that shape this design:**
+- 10 ms CPU per request.
+- Workers' WebCrypto PBKDF2 is capped at 100,000 iterations.
+- 100k requests/day.
+- D1: 5M reads and 100k writes/day.
+- R2: 10 GB.
+- KV: 1,000 writes/day, so KV is not used for counters.
+
+**The server never:** calls an AI provider, receives or stores an AI key, sees a password, or sees backup contents.
+
+#### 1. Accounts (email + password, invite only)
+- **Sign up** needs the current **invite code** (set and regenerated in the admin panel; optional expiry and use limit) plus an email and a password of at least 10 characters. There's no email verification and no email sending for now.
+- **Password handling.** The phone stretches the password, because the server can't run a strong KDF in 10 ms:
+  - `authKey = PBKDF2-SHA256(password, authSalt, 600,000)`, computed on the phone (CommonCrypto).
+  - Only `authKey` is sent. The server stores `verifier = HMAC-SHA256(PEPPER, authKey)`, where `PEPPER` is a Worker secret, and compares in constant time.
+  - So the server never sees the password. A D1 leak without the pepper can't be checked offline, and even with the pepper, every guess costs 600k PBKDF2 rounds.
+  - The iteration count is stored per account, so it can be raised later.
+- **Separate salts:** `authSalt` and `encSalt` are 16 random bytes per account. `POST /v1/auth/prelogin {email}` returns them with the KDF parameters. For an unknown email it returns stable fake salts (an HMAC of the email), so it doesn't reveal who has an account.
+- **Sessions:**
+  - Sign in returns a **device credential**: a `deviceId` and a 32-byte `deviceSecret`. As in ADR-013, D1 keeps the secret AES-GCM-encrypted under `DEVICE_ENC_KEY`.
+  - It also returns an **access token**: 15 minutes, signed by the server (`ACCESS_TOKEN_KEY`), naming the user, device and expiry.
+  - And a **refresh token**: 32 random bytes, 60 days, rotated on every use, stored hashed. Reusing an old refresh token revokes the device.
+  - All of these go in the Keychain (`AfterFirstUnlockThisDeviceOnly`, this app only) and never into backups.
+- **Request signing (ADR-013 reused, version LK2):**
+  - Every authenticated request carries `Authorization: Bearer <access>`, plus `X-Lakhas-Device`, `X-Lakhas-Timestamp`, `X-Lakhas-Nonce` and `X-Lakhas-Signature`.
+  - Signature = HMAC-SHA256(deviceSecret, `"LK2\n" + METHOD + "\n" + path?query + "\n" + timestamp + "\n" + nonce + "\n" + hex(SHA256(body))`).
+  - The clock may be off by 5 minutes at most. Nonces are kept in D1 for 10 minutes.
+  - Refresh calls are signed too, so a stolen refresh token alone is useless.
+  - Shared test vectors are used by both the Swift and TypeScript tests.
+- **Ready to extend later:**
+  - `users` (with a nullable `email_verified_at`) is kept separate from `identities` (`password` now; `google` / `apple` later) and from `key_envelopes`.
+  - An email reset added later only replaces the login credential. Opening the backup still needs the old password or the recovery code (§2).
+  - Sign in with Google/Apple added later = a new identity plus a backup passphrase.
+- **Admin:** list users and their devices, disable a user (all their tokens stop working at once) or a single device, regenerate the invite code, and see an audit log.
+
+#### 2. Recovery code
+- Shown **once** at sign up: 128 random bits as 26 base32 characters in groups (`K7QD-…`). The app offers Copy and only continues after you confirm you saved it.
+- From the code the app derives `recoveryAuth` and `recoveryKEK` with HKDF (the code is fully random, so it needs no slow KDF). The server stores only a verifier of `recoveryAuth`.
+- **Reset password with the recovery code:**
+  1. The phone proves `recoveryAuth` and downloads the recovery-wrapped backup key.
+  2. It unwraps the key and re-wraps it under the new password.
+  3. It sends a new `authKey` verifier, new salts and the new envelope.
+  4. All sessions are revoked.
+- Changing the password while signed in re-wraps the key the same way. A new recovery code can be made while signed in.
+- **The UI says it plainly, at sign up and on the restore screen:** "If you lose both your password and your recovery code, nobody, not even the app's owner, can open your backup."
+
+#### 3. End-to-end encrypted backup
+- **Contents:** the whole SwiftData store plus photos (the ADR-016 export, moved up from Phase 11). **Never** included: AI keys, session credentials, or anything else in the Keychain.
+- **Keys:**
+  - A random 256-bit data key (DEK) encrypts the backups.
+  - The server holds the DEK only in wrapped form (AES-GCM): once wrapped under `KEK = PBKDF2-SHA256(password, encSalt, 600,000)`, and once under the recovery KEK.
+  - After sign in, the phone keeps the DEK in the Keychain, so daily backups don't ask for the password.
+- **Format:** a zlib-compressed archive, encrypted with AES-GCM in 1 MB chunks (CryptoKit). Each chunk has its own nonce and AAD (version, backup ID, index, last-chunk flag), so a truncated or reordered file fails to open.
+- **Storage:**
+  - Uploaded through the Worker to R2 (`backups/<userId>/<backupId>`).
+  - D1 keeps the size, a SHA-256 of the ciphertext and the time.
+  - The last 7 daily and the last 4 weekly backups are kept, with a per-user cap (default 500 MB).
+- **When:**
+  - automatically once a day when online (when the app opens and the last backup is over 24 h old, plus a `BGAppRefreshTask`);
+  - **Back up now** in Settings;
+  - an optional "Wi-Fi only" switch.
+- **Restore:**
+  - After sign in on a phone whose store is empty, the latest backup is restored automatically, with progress.
+  - On a phone that already has data, the app asks first.
+  - A restore replaces local data. ADR-016's merge stays for file imports.
+  - It needs the password used to sign in, or the recovery code.
+
+#### 4. Explore content from the server
+- **Admin panel:**
+  - Add, edit, delete and publish dishes, with the same fields as ADR-026.
+  - Ingredients are picked from the food DB (seeded into D1 from `foods.json`), so values stay grams × per-100 g.
+  - Photos go to R2. The panel downscales the JPEG in the browser; the Worker doesn't process images.
+  - The 91 bundled dishes are seeded, so they can be edited too.
+- **Sync is public, without sign in**, and rate-limited per IP. Dish content isn't private, and this way Explore updates work before you sign in.
+  - `GET /v1/explore?since=<version>` returns changed dishes and tombstones, with an ETag.
+  - `GET /v1/media/<key>` serves photos, cached at the edge.
+- **On the phone:**
+  - A cached copy (`FileProtection`, excluded from backups) overlays the bundled set by dish ID.
+  - A server tombstone hides a bundled dish.
+  - With no network or no server, the bundled set plus the last cache work as today.
+
+#### 5. Sharing
+- **Votes:** 👍/👎 per dish, **one per account** (question 3), kept on the server.
+  - The dish page and the list show the counts.
+  - "Most liked" uses the server counts when available, otherwise my own ratings (ADR-026).
+  - Votes made offline are queued.
+  - My own rating also stays local, so it still works signed out.
+- **Shared products:**
+  - When a signed-in user saves a product they added themselves (typed, or read from label photos; not one from Open Food Facts), it goes to a **review queue** with its front photo. The photo is metadata-stripped and downscaled.
+  - Sending can be turned off in Settings (question 4).
+  - The admin approves, edits or rejects it.
+  - Barcode lookup becomes: local products → approved shared products (when online) → Open Food Facts. A shared product is cached locally once used.
+
+#### 6. Abuse controls
+- Workers Rate Limiting bindings, per IP and per device:
+  - Sign in and sign up: 5/min per IP, with failed attempts per email backing off.
+  - API: 120/min per device.
+  - Explore sync: 60/min per IP.
+  - Uploads: 10/hour per device.
+- An `abuse_events` log in D1.
+- Body caps: 100 MB per backup upload (the free-plan limit; larger backups are sent in parts), 2 MB per photo, 64 KB of JSON.
+
+#### 7. Admin panel protection
+- **Recommended:** a Cloudflare Access application on `/admin*` of the workers.dev host (Zero Trust free plan, one email allowed). The Worker also verifies the `Cf-Access-Jwt-Assertion` itself (the existing `access.ts`).
+- **Fallback, without Zero Trust:** a 32-byte `ADMIN_TOKEN` secret. A login form sets a short-lived HttpOnly, Secure, SameSite=Strict cookie. Every change is CSRF-checked and written to the audit log.
+
+#### 8. Transport and pinning
+- HTTPS only, ATS on.
+- Pinning **is still a valid technique** for workers.dev, but there you can't choose the CA. Cloudflare may issue from Google Trust Services, Let's Encrypt or SSL.com, and switch without notice.
+- **Proposal:**
+  - Pin the root CAs of all three families: the ADR-005 list plus the missing SSL.com ECC 2022 root.
+  - Pin the API host only, never AI providers or Open Food Facts.
+  - A pin failure affects only server features (backup, votes, sharing, Explore updates), shows its own message, and is fixed with a new IPA (quick, given the 7-day re-sign).
+  - I check the live certificate chain right after the first deploy.
+
+#### 9. Offline behavior
+- Without the server, these all work exactly as today: onboarding, Today, every logging method (BYOK AI included), recipes, the bundled and cached Explore, workouts, water and weight.
+- Only backup, votes, shared products and Explore updates need the server.
+- Signing in is optional. The app works signed out, and Settings → Account offers it.
+
+**Supersedes / amends:**
+- ADR-020: its "no server" parts, and its open question 5 (sharing comes back, with review).
+- ADR-013: admin-issued device tokens become account sign in, signed the same way.
+- ADR-005, ADR-007: revived as above.
+- ADR-016: the backup format moves into the backup phase.
+- ADR-026: votes become server votes when signed in.
+
+**Open questions (answer before Phase 9):**
+1. **Password stretching on the phone** instead of a server-side KDF. The 10 ms CPU limit and the 100k PBKDF2 cap force this. **OK?** The alternative, Workers Paid ($5/month, 30 s CPU), still caps PBKDF2 at 100k iterations.
+2. **Admin protection:** Cloudflare Access (recommended; the free Zero Trust sign-up may ask for a payment method) or the admin-token fallback?
+3. **Votes per account or per device?** Per account is proposed, so two phones don't count twice.
+4. **Product sharing:** on by default for signed-in users (with a switch in Settings), or ask for each product?
+5. **Pinning:** root CAs of the three families as above, or none (ATS + system trust)?
+6. **Phase order:** server foundation → Explore online → shared products → backup → Workouts. Or should backup come right after the foundation, since it protects the data?
