@@ -73,9 +73,10 @@ extension OnboardingUITests {
         importLink("https://www.tiktok.com/@lakhas/video/7000000000000000001?_r=1", in: app)
         waitForPerServing("623", in: app)
 
-        let stepper = app.steppers.firstMatch
-        XCTAssertTrue(stepper.waitForExistence(timeout: 5), app.debugDescription)
-        stepper.buttons["Increment"].tap()   // 2 → 3 servings, amounts × 1.5
+        // SwiftUI exposes the stepper's buttons as "<identifier>-Increment" / "-Decrement".
+        let increment = app.buttons["ax.recipe.servings-Increment"]
+        XCTAssertTrue(increment.waitForExistence(timeout: 5), app.debugDescription)
+        increment.tap()   // 2 → 3 servings, amounts × 1.5
         let rice = app.textFields.matching(identifier: "ax.recipe.grams").firstMatch
         let scaled = XCTNSPredicateExpectation(predicate: NSPredicate(format: "value == %@", "300"), object: rice)
         XCTAssertEqual(XCTWaiter().wait(for: [scaled], timeout: 5), .completed, String(describing: rice.value))
