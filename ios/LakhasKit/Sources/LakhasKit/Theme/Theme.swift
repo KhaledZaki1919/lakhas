@@ -27,6 +27,12 @@ public enum Theme {
         public static let protein = Color(light: 0x2F6FB0, dark: 0x6FA8E6)
         public static let carbs = Color(light: 0xA86F0E, dark: 0xE7B44F)
         public static let fat = Color(light: 0x8A5BB8, dark: 0xB993E3)
+
+        // Dish placeholder plates (docs/design.md §1.4), with mint (`primary`) and pomegranate (`accent`).
+        public static let plateOlive = Color(light: 0x6B7A3A, dark: 0xA9B86E)
+        public static let plateEggplant = Color(light: 0x4B2E4F, dark: 0xC79BCB)
+        public static let plateWheat = Color(light: 0x8F6410, dark: 0xE3B65A)
+        public static let plateTahini = Color(light: 0x7E6236, dark: 0xD9BF8F)
     }
 
     public enum Space {

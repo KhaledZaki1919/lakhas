@@ -2,19 +2,20 @@ import LakhasKit
 import SwiftData
 import SwiftUI
 
-/// "My Recipes" (PROJECT_PROMPT.md §4.4): imported recipes, saved meals and the user's products,
-/// with search and delete. Everything here lives on this device only.
+/// "My Recipes" (PROJECT_PROMPT.md §4.4): imported recipes, dishes saved from Explore, saved meals
+/// and the user's products, with search and delete. Everything here lives on this device only.
 struct RecipesHubView: View {
     let onImport: () -> Void
 
     enum HubTab: String, CaseIterable, Identifiable {
-        case recipes, meals, products
+        case recipes, explore, meals, products
 
         var id: String { rawValue }
 
         var titleKey: LocalizedStringKey {
             switch self {
             case .recipes: "recipes.hub.recipes"
+            case .explore: "recipes.hub.explore"
             case .meals: "recipes.hub.meals"
             case .products: "recipes.hub.products"
             }
@@ -42,6 +43,7 @@ struct RecipesHubView: View {
 
             switch section {
             case .recipes: recipeRows
+            case .explore: exploreRows
             case .meals: mealRows
             case .products: productRows
             }
@@ -64,7 +66,7 @@ struct RecipesHubView: View {
     // MARK: Rows
 
     @ViewBuilder private var recipeRows: some View {
-        let shown = recipes.filter { matches($0.titleAr, $0.titleEn, $0.creatorHandle ?? "") }
+        let shown = recipes.filter { $0.exploreDishId == nil && matches($0.titleAr, $0.titleEn, $0.creatorHandle ?? "") }
         if shown.isEmpty {
             emptyState(search.isEmpty ? "recipes.empty.recipes" : "recipes.empty.search", symbol: "book") {
                 if search.isEmpty {
@@ -80,6 +82,25 @@ struct RecipesHubView: View {
             .accessibilityIdentifier("ax.recipes.row")
         }
         .onDelete { offsets in delete(offsets.map { shown[$0] }) }
+    }
+
+    @ViewBuilder private var exploreRows: some View {
+        let shown = recipes.filter { $0.exploreDishId != nil && matches($0.titleAr, $0.titleEn) }
+        if shown.isEmpty {
+            emptyState(search.isEmpty ? "recipes.empty.explore" : "recipes.empty.search", symbol: "safari") { EmptyView() }
+        }
+        ForEach(shown) { recipe in
+            NavigationLink(value: recipe) {
+                HubRow(photo: recipe.photoFileName, symbol: exploreSymbol(recipe), title: recipe.title(language: format.language),
+                       detail: recipeDetail(recipe), kcal: recipe.draft.perServing.kcal, format: format)
+            }
+            .accessibilityIdentifier("ax.recipes.explore")
+        }
+        .onDelete { offsets in delete(offsets.map { shown[$0] }) }
+    }
+
+    private func exploreSymbol(_ recipe: Recipe) -> String {
+        recipe.exploreDishId.flatMap { ExploreLibrary.shared.dish(id: $0)?.dishCategory.symbol } ?? "safari"
     }
 
     @ViewBuilder private var mealRows: some View {

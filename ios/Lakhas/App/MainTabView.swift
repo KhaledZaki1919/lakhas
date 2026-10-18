@@ -24,7 +24,7 @@ struct MainTabView: View {
             NavigationStack { RecipesHubView { recipeImport = RecipeImportRequest() } }
                 .toolbar(.hidden, for: .tabBar)
                 .tag(AppTab.recipes)
-            NavigationStack { PlaceholderView(titleKey: "tab.explore") }
+            NavigationStack { ExploreView() }
                 .toolbar(.hidden, for: .tabBar)
                 .tag(AppTab.explore)
             NavigationStack { PlaceholderView(titleKey: "tab.workouts") }

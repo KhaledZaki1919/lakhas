@@ -111,6 +111,7 @@ struct RecipeDetailView: View {
         if let platform = draft.platform { parts.append(platform.displayName) }
         if let handle = draft.creatorHandle { parts.append(handle) }
         if parts.isEmpty, draft.source == .screenshot { parts.append(String(localized: "recipes.detail.fromScreenshots")) }
+        if parts.isEmpty, draft.source == .explore { parts.append(String(localized: "recipes.detail.fromExplore")) }
         return parts.isEmpty ? nil : parts.joined(separator: " · ")
     }
 

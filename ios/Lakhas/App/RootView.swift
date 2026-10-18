@@ -1,7 +1,7 @@
 import LakhasKit
 import SwiftUI
 
-/// Placeholder for tabs built in later phases (Explore 8, Workouts 9, Progress 10).
+/// Placeholder for tabs built in later phases (Workouts 9, Progress 10).
 struct PlaceholderView: View {
     let titleKey: LocalizedStringKey
 
