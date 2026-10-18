@@ -1,7 +1,7 @@
 import Foundation
 
 /// Links handed from the share extension to the app through the shared container
-/// (docs/sideloading.md §2). The app drains the queue on launch (Phase 6).
+/// (docs/sideloading.md §2). The app offers each queued link when it opens (`ImportOffer`).
 public struct PendingImport: Codable, Sendable, Equatable, Identifiable {
     public let id: UUID
     public let url: URL
@@ -9,6 +9,12 @@ public struct PendingImport: Codable, Sendable, Equatable, Identifiable {
 }
 
 public struct PendingImportQueue: Sendable {
+    /// Pasteboard type the share extension adds next to the copied link, so the app can tell a
+    /// shared link from any copied one without reading the clipboard.
+    public static let clipboardMarkerType = "lakhas.shared-link"
+    /// The copied link expires after this long.
+    public static let clipboardLifetime: TimeInterval = 3600
+
     public let directory: URL
 
     public init(location: StoreLocation) {

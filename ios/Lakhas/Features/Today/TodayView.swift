@@ -43,6 +43,7 @@ private struct DayContent: View {
     @AppStorage("lastCelebratedDay") private var lastCelebratedDay = ""
     @State private var undo: DeletedMeal?
     @State private var celebrate = false
+    @State private var savedMeal = 0
 
     private let format = AppFormat.current
     private var isToday: Bool { Calendar.current.isDateInToday(date) }
@@ -92,6 +93,7 @@ private struct DayContent: View {
         .onChange(of: eaten.kcal) { old, new in
             checkCelebration(old: old, new: new)
         }
+        .sensoryFeedback(.success, trigger: savedMeal)
     }
 
     private var macroCard: some View {
@@ -179,6 +181,9 @@ private struct DayContent: View {
         Button { logAgainToday(meal) } label: {
             Label(relogKey, systemImage: "arrow.clockwise")
         }
+        Button { saveAsMeal(meal) } label: {
+            Label("saved.save", systemImage: "bookmark")
+        }
         Button(role: .destructive) { delete(meal) } label: {
             Label("common.delete", systemImage: "trash")
         }
@@ -206,6 +211,13 @@ private struct DayContent: View {
         context.insert(copy)
         copy.append(meal.orderedItems.map { $0.copy() })
         save()
+    }
+
+    /// Keeps a copy in My Recipes → Saved meals, to log again in one tap.
+    private func saveAsMeal(_ meal: Meal) {
+        SavedMeal.save(meal, language: format.language, in: context)
+        save()
+        savedMeal += 1
     }
 
     private func delete(_ meal: Meal) {

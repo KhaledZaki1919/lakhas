@@ -8,15 +8,20 @@ enum AppTab: Hashable {
 /// Tab bar per ADR-017 / docs/design.md §4: Today, Recipes, [+], Explore, Workouts.
 /// Progress lives in the Today header, so the "+" is truly centered (2 + 2).
 struct MainTabView: View {
+    @Environment(\.scenePhase) private var scenePhase
     @State private var tab: AppTab = .today
     @State private var logRequest: LogRequest?
+    @State private var recipeImport: RecipeImportRequest?
+    @State private var offer: ImportOffer?
+
+    private let uiTesting = ProcessInfo.processInfo.arguments.contains("-uiTesting")
 
     var body: some View {
         TabView(selection: $tab) {
             NavigationStack { TodayView(onLog: { logRequest = $0 }) }
                 .toolbar(.hidden, for: .tabBar)
                 .tag(AppTab.today)
-            NavigationStack { PlaceholderView(titleKey: "tab.recipes") }
+            NavigationStack { RecipesHubView { recipeImport = RecipeImportRequest() } }
                 .toolbar(.hidden, for: .tabBar)
                 .tag(AppTab.recipes)
             NavigationStack { PlaceholderView(titleKey: "tab.explore") }
@@ -34,6 +39,47 @@ struct MainTabView: View {
         .sheet(item: $logRequest) { request in
             LogSheet(request: request)
         }
+        .sheet(item: $recipeImport) { request in
+            RecipeImportView(request: request)
+        }
+        .alert("recipes.offer.title", isPresented: Binding(get: { offer != nil }, set: { if !$0 { offer = nil } }),
+               presenting: offer) { offer in
+            Button("recipes.offer.import") { accept(offer) }
+            Button("recipes.offer.notNow", role: .cancel) { decline(offer) }
+        } message: { offer in
+            Text(offer.messageKey)
+        }
+        .task { await lookForSharedLink() }
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .active { Task { await lookForSharedLink() } }
+        }
+    }
+
+    // MARK: Shared links (share extension hand-off)
+
+    private func lookForSharedLink() async {
+        guard !uiTesting, offer == nil, recipeImport == nil, logRequest == nil else { return }
+        offer = await ImportOfferFinder.next()
+    }
+
+    private func accept(_ offer: ImportOffer) {
+        let link: String?
+        switch offer {
+        case .queued(let item):
+            ImportOfferFinder.remove(item)
+            link = item.url.absoluteString
+        case .clipboard:
+            link = ImportOfferFinder.clipboardText()
+        }
+        // The extension copies the link as well; it has been handled now.
+        ImportOfferFinder.markClipboardSeen()
+        tab = .recipes
+        recipeImport = RecipeImportRequest(link: link)
+    }
+
+    private func decline(_ offer: ImportOffer) {
+        if case .queued(let item) = offer { ImportOfferFinder.remove(item) }
+        ImportOfferFinder.markClipboardSeen()
     }
 }
 

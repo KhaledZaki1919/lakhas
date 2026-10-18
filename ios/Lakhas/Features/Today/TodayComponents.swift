@@ -200,13 +200,15 @@ struct MealCard: View {
 /// The photo the user took (device only), otherwise a styled placeholder plate (ADR-020).
 struct MealThumbnail: View {
     let fileName: String?
+    /// Placeholder symbol (dish-category style) when there's no photo.
+    var symbol = "fork.knife"
 
     var body: some View {
         Group {
             if let fileName, let image = UIImage(contentsOfFile: MealPhotoStore().url(for: fileName).path) {
                 Image(uiImage: image).resizable().scaledToFill()
             } else {
-                Image(systemName: "fork.knife")
+                Image(systemName: symbol)
                     .font(.headline)
                     .foregroundStyle(Theme.Palette.primary)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)

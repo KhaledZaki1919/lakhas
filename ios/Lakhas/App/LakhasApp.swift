@@ -14,6 +14,8 @@ struct LakhasApp: App {
             AIDiagnosticsStore.clear()
             // Barcode lookups are answered from a fixed table, never the network.
             OpenFoodFactsClient.uiTestingProducts = UITestingAIProvider.products
+            // Recipe pages likewise: one known link, everything else reads like a login wall.
+            RecipePageFetcher.uiTestingPages = UITestingAIProvider.recipePages
         }
         if ProcessInfo.processInfo.arguments.contains("-uiTestingStubAI") {
             AIService.overrideProvider = UITestingAIProvider()

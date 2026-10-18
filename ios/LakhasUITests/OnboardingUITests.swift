@@ -8,7 +8,7 @@ final class OnboardingUITests: XCTestCase {
     }
 
     @MainActor
-    private func launch(language: String, stubAI: Bool = false) -> XCUIApplication {
+    func launch(language: String, stubAI: Bool = false) -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = ["-uiTesting", "-AppleLanguages", "(\(language))", "-AppleLocale", language == "ar" ? "ar_EG" : "en_US"]
         if stubAI { app.launchArguments.append("-uiTestingStubAI") }
@@ -149,7 +149,7 @@ final class OnboardingUITests: XCTestCase {
 
     /// Drags from low on the screen (inside the sheet, even at medium height) until the target can be tapped.
     @MainActor
-    private func scrollUntilHittable(_ target: XCUIElement, in app: XCUIApplication) {
+    func scrollUntilHittable(_ target: XCUIElement, in app: XCUIApplication) {
         for _ in 0..<6 where !(target.exists && target.isHittable) {
             let start = app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.85))
             start.press(forDuration: 0.05, thenDragTo: app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)))
@@ -159,18 +159,18 @@ final class OnboardingUITests: XCTestCase {
 
     /// Lists load rows lazily, so rows below the fold only exist after scrolling.
     @MainActor
-    private func scrollTo(_ target: XCUIElement, in app: XCUIApplication) {
+    func scrollTo(_ target: XCUIElement, in app: XCUIApplication) {
         for _ in 0..<4 where !target.exists { app.swipeUp() }
         XCTAssertTrue(target.waitForExistence(timeout: 5))
     }
 
     @MainActor
-    private func element(_ app: XCUIApplication, _ id: String) -> XCUIElement {
+    func element(_ app: XCUIApplication, _ id: String) -> XCUIElement {
         app.descendants(matching: .any)[id].firstMatch
     }
 
     @MainActor
-    private func completeOnboarding(_ app: XCUIApplication) {
+    func completeOnboarding(_ app: XCUIApplication) {
         let next = app.buttons["ax.onboarding.next"]
         XCTAssertTrue(next.waitForExistence(timeout: 10))
         next.tap()                                        // welcome
@@ -187,7 +187,7 @@ final class OnboardingUITests: XCTestCase {
 
     /// Summary → optional AI step (skipped) → Today.
     @MainActor
-    private func finishAfterSummary(_ app: XCUIApplication) {
+    func finishAfterSummary(_ app: XCUIApplication) {
         app.buttons["ax.onboarding.next"].tap()
         XCTAssertTrue(app.buttons["ax.onboarding.aiSetup"].waitForExistence(timeout: 5))
         app.buttons["ax.onboarding.finish"].tap()

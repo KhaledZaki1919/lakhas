@@ -24,13 +24,13 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "تم نسخ الرابط. افتح لخّص واضغط «لصق» في الوصفات."
+            "value": "تم نسخ الرابط. افتح لخّص وسيعرض عليك استيراد الوصفة."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Link copied. Open Lakhas and tap Paste in Recipes."
+            "value": "Link copied. Open Lakhas and it will offer to import the recipe."
           }
         }
       }
@@ -41,13 +41,13 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "تم الحفظ. افتح لخّص لإكمال استيراد الوصفة."
+            "value": "تم الحفظ. افتح لخّص وسيعرض عليك استيراد الوصفة."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Saved. Open Lakhas to finish importing the recipe."
+            "value": "Saved. Open Lakhas and it will offer to import the recipe."
           }
         }
       }
@@ -58,13 +58,13 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "لم نجد رابطًا هنا. شارك رابط الفيديو من تيك توك أو إنستجرام أو يوتيوب."
+            "value": "لم نجد رابطًا من تيك توك أو إنستجرام أو يوتيوب. شارك رابط الفيديو نفسه."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "No link found. Share the video link from TikTok, Instagram or YouTube."
+            "value": "No TikTok, Instagram or YouTube link found. Share the video's own link."
           }
         }
       }

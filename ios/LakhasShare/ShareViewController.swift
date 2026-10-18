@@ -3,9 +3,10 @@ import SwiftUI
 import UIKit
 import UniformTypeIdentifiers
 
-/// Receives a recipe link from TikTok/Instagram/YouTube. Extensions never call the API:
-/// with an App Group the link is queued for the app; without one it goes to the clipboard
-/// (docs/sideloading.md §2). Image shares arrive in Phase 6.
+/// Receives a recipe link from TikTok/Instagram/YouTube (a URL, or text that contains one).
+/// Extensions never call the network: the link is copied to the clipboard with a marker (free
+/// Apple IDs often have no App Group) and, when an App Group works, also queued. The app offers
+/// "Import the shared link?" when it opens (docs/sideloading.md §2).
 final class ShareViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -19,26 +20,34 @@ final class ShareViewController: UIViewController {
     private func handleSharedItems() async -> ShareOutcome {
         let items = extensionContext?.inputItems.compactMap { $0 as? NSExtensionItem } ?? []
         let providers = items.flatMap { $0.attachments ?? [] }
-        guard let url = await firstURL(in: providers) else { return .unsupported }
+        guard let url = await firstRecipeLink(in: providers) else { return .unsupported }
 
+        UIPasteboard.general.setItems(
+            [[UTType.url.identifier: url, PendingImportQueue.clipboardMarkerType: Data("1".utf8)]],
+            options: [.expirationDate: Date().addingTimeInterval(PendingImportQueue.clipboardLifetime)]
+        )
         let location = AppGroupResolver.resolve()
         if location.isShared, (try? PendingImportQueue(location: location).enqueue(url: url)) != nil {
             return .queued
         }
-        UIPasteboard.general.url = url
         return .copied
     }
 
-    private func firstURL(in providers: [NSItemProvider]) async -> URL? {
-        let type = UTType.url.identifier
-        guard let provider = providers.first(where: { $0.hasItemConformingToTypeIdentifier(type) }) else {
-            return nil
-        }
-        return await withCheckedContinuation { continuation in
-            provider.loadItem(forTypeIdentifier: type, options: nil) { item, _ in
-                continuation.resume(returning: item as? URL)
+    /// The first TikTok / Instagram / YouTube link among the shared URLs and texts.
+    private func firstRecipeLink(in providers: [NSItemProvider]) async -> URL? {
+        for type in [UTType.url.identifier, UTType.plainText.identifier] {
+            for provider in providers where provider.hasItemConformingToTypeIdentifier(type) {
+                let text = await withCheckedContinuation { (continuation: CheckedContinuation<String?, Never>) in
+                    provider.loadItem(forTypeIdentifier: type, options: nil) { item, _ in
+                        let text = (item as? URL)?.absoluteString ?? (item as? String)
+                            ?? (item as? Data).flatMap { String(data: $0, encoding: .utf8) }
+                        continuation.resume(returning: text)
+                    }
+                }
+                if let text, let url = RecipeLink.parse(text) { return RecipeLink.canonical(url) }
             }
         }
+        return nil
     }
 
     private func showResult(_ outcome: ShareOutcome) {

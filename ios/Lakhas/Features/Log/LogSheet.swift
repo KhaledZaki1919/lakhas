@@ -35,7 +35,12 @@ struct LogSheet: View {
                         Label("log.barcode", systemImage: "barcode.viewfinder")
                     }
                     .accessibilityIdentifier("ax.log.barcode")
-                    method("log.saved", symbol: "bookmark", phaseKey: "log.comingSoon")
+                    NavigationLink {
+                        SavedMealPickerView(request: request) { dismiss() }
+                    } label: {
+                        Label("log.saved", systemImage: "bookmark")
+                    }
+                    .accessibilityIdentifier("ax.log.saved")
                 } footer: {
                     if !hasKey { Text("log.needsKey") }
                 }
@@ -79,16 +84,6 @@ struct LogSheet: View {
             }
         }
         .accessibilityIdentifier(identifier)
-    }
-
-    private func method(_ key: LocalizedStringKey, symbol: String, phaseKey: LocalizedStringKey) -> some View {
-        HStack {
-            Label(key, systemImage: symbol)
-            Spacer()
-            Text(phaseKey).font(.caption).foregroundStyle(Theme.Palette.muted)
-        }
-        .foregroundStyle(Theme.Palette.muted)
-        .accessibilityElement(children: .combine)
     }
 }
 
