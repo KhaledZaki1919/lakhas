@@ -247,6 +247,5 @@ private struct RecipeIngredientRow: View {
                 .font(.callout.monospacedDigit())
                 .frame(minWidth: 44, alignment: .trailing)
         }
-        .accessibilityIdentifier("ax.recipe.ingredient")
     }
 }

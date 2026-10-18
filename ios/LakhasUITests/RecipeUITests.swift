@@ -77,7 +77,7 @@ extension OnboardingUITests {
         let increment = app.buttons["ax.recipe.servings-Increment"]
         XCTAssertTrue(increment.waitForExistence(timeout: 5), app.debugDescription)
         increment.tap()   // 2 → 3 servings, amounts × 1.5
-        let rice = app.textFields.matching(identifier: "ax.recipe.grams").firstMatch
+        let rice = element(app, "ax.recipe.grams")
         let scaled = XCTNSPredicateExpectation(predicate: NSPredicate(format: "value == %@", "300"), object: rice)
         XCTAssertEqual(XCTWaiter().wait(for: [scaled], timeout: 5), .completed, String(describing: rice.value))
         waitForPerServing("623", in: app)   // one serving stays the same
