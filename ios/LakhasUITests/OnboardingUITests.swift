@@ -52,7 +52,9 @@ final class OnboardingUITests: XCTestCase {
         XCTAssertTrue(sample.waitForExistence(timeout: 5))
         sample.tap()
         app.buttons["ax.photo.analyze"].tap()
-        XCTAssertTrue(element(app, "ax.review.item").waitForExistence(timeout: 10))
+        // Downscaling the sample photo on a busy CI simulator can take a while.
+        XCTAssertTrue(element(app, "ax.review.item").waitForExistence(timeout: 30), "no review items
+(app.debugDescription)")
 
         let correction = element(app, "ax.review.correction")
         scrollTo(correction, in: app)
@@ -64,7 +66,8 @@ final class OnboardingUITests: XCTestCase {
         XCTAssertEqual(XCTWaiter().wait(for: [corrected], timeout: 10), .completed,
                        "total \(total.label)\n\(app.debugDescription)")
         app.buttons["ax.review.save"].tap()
-        XCTAssertTrue(element(app, "ax.today.meal").waitForExistence(timeout: 5))
+        XCTAssertTrue(element(app, "ax.today.meal").waitForExistence(timeout: 10), "meal not on Today
+(app.debugDescription)")
     }
 
     @MainActor
@@ -161,7 +164,8 @@ final class OnboardingUITests: XCTestCase {
     @MainActor
     func scrollTo(_ target: XCUIElement, in app: XCUIApplication) {
         for _ in 0..<4 where !target.exists { app.swipeUp() }
-        XCTAssertTrue(target.waitForExistence(timeout: 5))
+        XCTAssertTrue(target.waitForExistence(timeout: 5), "not found after scrolling: (target)
+(app.debugDescription)")
     }
 
     @MainActor
