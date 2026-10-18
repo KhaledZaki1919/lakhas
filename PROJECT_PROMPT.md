@@ -1,6 +1,6 @@
 # Project Brief for Claude Code — AI Calorie & Macro Tracker (iOS)
 
-> **Revision 4 — small backend, AI still BYOK (ADR-027, PROPOSED 2026-10-18, awaiting approval).** A Cloudflare Worker on `*.workers.dev` comes back for invite-only accounts, Explore content, end-to-end encrypted backup, votes and shared products. AI still runs only on the device with the user's own key: the server never calls an AI provider and never stores an AI key. Everything else keeps working offline and without the server.
+> **Revision 4 — small backend, AI still BYOK (ADR-027, accepted 2026-10-18).** A Cloudflare Worker on `*.workers.dev` comes back for invite-only accounts, Explore content, end-to-end encrypted backup, votes and shared products. AI still runs only on the device with the user's own key: the server never calls an AI provider and never stores an AI key. Everything else keeps working offline and without the server.
 >
 > *Revision 3 — Bring Your Own Key (ADR-020, accepted 2026-10-13): AI on the device against the provider the user picks, with the user's own API key.*
 >
@@ -75,7 +75,8 @@ Target user: Arabic speakers, with strong recognition of Arabic and Egyptian/Gul
 ### Backend (ADR-027)
 - **Cloudflare Workers** free plan on the `*.workers.dev` subdomain (no custom domain), **Hono** + TypeScript, **D1** (accounts, devices, dishes, votes, products, backup index), **R2** (dish photos, product photos, encrypted backups), **Workers Rate Limiting** (per IP and per device). KV only for read caches.
 - The server **never calls an AI provider, never receives an AI key, never sees a password and never sees backup contents.**
-- **Admin panel** at `/admin` (served by the Worker), protected by Cloudflare Access (or a strong admin token, ADR-027 §7): Explore dishes with photos, product review queue, users and devices, invite code, audit log.
+- **Two Workers from one codebase:** `lakhas-api` (the app's API, plus `/privacy` and `/terms`) and `lakhas-admin` (the admin panel), sharing D1 and R2. The **admin Worker's whole hostname is behind Cloudflare Access** (my email only), and it verifies the Access JWT itself (ADR-027 §7). The panel covers Explore dishes with photos, the product review queue, users and devices (disable), the invite code and the audit log.
+- R2 buckets: `lakhas-media` (dish and product photos) and `lakhas-backups` (private, ciphertext only).
 - Unit tests with Vitest + the Workers pool; shared signing vectors with the Swift tests. Deployed by me with `wrangler deploy`; CI runs lint, typecheck, tests and a dry-run build.
 
 ### Build & distribution (ADR-012)
@@ -90,7 +91,7 @@ Target user: Arabic speakers, with strong recognition of Arabic and Egyptian/Gul
 ### Repository layout
 ```
 /ios        — Xcode project (XcodeGen), app + widget + share extension + LakhasKit package
-/backend    — Cloudflare Worker (ADR-027): API + admin panel; revived from the frozen ADR-013 code
+/backend    — Cloudflare Workers (ADR-027): `lakhas-api` and `lakhas-admin`; revived from the frozen ADR-013 code
 /shared     — test vectors (nutrition, request signing, backup crypto); FROZEN: old openapi.yaml
 /admin      — FROZEN (the admin panel now lives in /backend)
 /docs       — architecture notes, decisions, runbooks
@@ -104,7 +105,7 @@ CLAUDE.md   — conventions for future sessions
 These are requirements, not suggestions.
 
 1. **No secrets in the app binary.** The IPA contains no keys. The user's provider key is entered at runtime and stored only in the **Keychain** (`kSecAttrAccessibleWhenUnlockedThisDeviceOnly`: not synced, not in backups). It's shown masked, and the user can delete it.
-2. **Transport:** HTTPS/TLS 1.2+ only (ATS on, no exceptions). Requests go only to the chosen AI provider, Open Food Facts, the public recipe page the user shares, and our Worker. Our Worker's host is pinned to the root CAs Cloudflare uses (ADR-027 §8, if approved); nothing else is pinned.
+2. **Transport:** HTTPS/TLS 1.2+ only (ATS on, no exceptions). Requests go only to the chosen AI provider, Open Food Facts, the public recipe page the user shares, and our Worker. No certificate pinning anywhere (ADR-027 §8): our Worker relies on TLS, HMAC request signing and end-to-end encrypted backups.
 3. **Where data goes:** photos and text sent for analysis go **directly to the provider the user picked**, under that provider's terms. Settings → AI and the privacy notes say so plainly.
 4. **Local data at rest:** the SwiftData store and cached images use iOS Data Protection (`NSFileProtectionCompleteUntilFirstUserAuthentication` minimum, set per file, so widgets and background work still function). Anything sensitive goes in the Keychain, never `UserDefaults`.
 5. **Photo hygiene:** strip EXIF/GPS metadata and downscale (max ~1568px long edge, JPEG ~0.8) on device **before** any upload.
@@ -115,7 +116,7 @@ These are requirements, not suggestions.
 7. **No analytics SDKs, no ads, no tracking.** The privacy manifest (`PrivacyInfo.xcprivacy`) must be accurate.
 8. **Delete my data:** wipes the local store, the cached images, the stored API key and the session. When signed in, it also offers to delete the account and all its server backups, votes and pending products.
 9. **Device first:** no cloud sync; the store and photos are excluded from iCloud/iTunes device backups. Data leaves the phone only as an exported file or as an **end-to-end encrypted backup** (below).
-10. **Accounts (ADR-027):** invite code required. The password never leaves the phone: the phone stretches it (PBKDF2-SHA256, 600k iterations, per-account salt) and the server stores only a peppered HMAC of the result. Short-lived access token + rotating refresh token + a per-device HMAC secret, all in the Keychain. Every request is HMAC-signed with a timestamp and nonce (replay protection). Rate limits per IP and per device.
+10. **Accounts (ADR-027):** invite code required. The password never leaves the phone. The phone stretches it (PBKDF2-SHA256, 600k iterations, per-account salt), then derives two separate keys with HKDF (different salts and info): an auth secret, which is the only thing sent (the server stores a peppered HMAC of it), and the backup key-encryption key, which never leaves the phone. So the server can never derive the backup key. Short-lived access token + rotating refresh token + a per-device HMAC secret, all in the Keychain. Every request is HMAC-signed with a timestamp and nonce (replay protection). Rate limits per IP and per device.
 11. **Encrypted backup:** encrypted on the phone with AES-GCM under a random data key. That key is stored on the server only wrapped by a password-derived key (separate salt) and by a one-time **recovery code**. The server only ever holds ciphertext. Lose both the password and the recovery code and the backup is gone. The UI says so clearly. AI keys and session credentials are never in a backup.
 
 ---
@@ -161,7 +162,7 @@ These are requirements, not suggestions.
 **C. Barcode (no key for lookup)**
 - Scan → look up the user's local products first, then **Open Food Facts** directly. Show ODbL attribution in the UI and in the About screen.
 - If not found (needs a key): the user takes **two photos** (nutrition table + product front). The AI extracts product name, brand, serving size and per-100g values, and the product is saved **locally** for this user.
-- **Shared products (signed in, ADR-027):** a product the user adds is also sent to my **review queue**. Once I approve it in the admin panel, every user finds it. Lookup order: local products → approved shared products (online) → Open Food Facts.
+- **Shared products (signed in, ADR-027):** a product the user adds is also sent to my **review queue** (on by default; off switch in Settings → Account). Once I approve it in the admin panel, every user finds it. Shared products have a Report action. Lookup order: local products → approved shared products (online) → Open Food Facts.
 
 **D. Saved meals**
 - Save any logged meal as a reusable "ready meal" and log it in one tap.
@@ -183,7 +184,7 @@ These are requirements, not suggestions.
 ### 4.5 Explore (bundled + synced, no key)
 - Curated dish library shipped inside the app: macros, ingredients with measures, and goal tags (lose / gain / maintain). **I edit dishes and photos in the admin panel**; the app syncs them when online and caches them, and the bundled set stays as the offline fallback (ADR-027 §4).
 - Filters by goal and meal type, and search that tolerates Arabic spelling variants. Sort: recommended for my goal, lowest calories, highest protein, my favorites, most liked (my own ratings) (ADR-026).
-- **Favorites** (local) and 👍/👎: my own rating works offline; when signed in it's also a **real vote** on the server (one per account), and lists show the totals.
+- **Favorites** (local) and 👍/👎: my own rating works offline. When signed in it's also a **real vote** on the server (**one per account**; changing it replaces it), and lists show the totals.
 - Dish page: scale servings, edit grams, log to Today with a meal type, save to My Recipes. Logging never uses AI or the key.
 - No AI images: a category placeholder, or the user's own photo of the dish.
 
@@ -216,12 +217,12 @@ These are requirements, not suggestions.
 - Custom calorie/macro targets ("My Goals"), overriding the computed ones, including an optional goal weight.
 - Language (System / العربية / English), units (kg/lb, g/oz, ml/fl oz; metric by default), digit style in Arabic (Western/Eastern Arabic), appearance (light/dark/system).
 - Reminders for meals, water and training: each individually toggleable, scheduled locally.
-- **Account (optional, ADR-027):** sign up with my invite code, sign in, sign out, change password, reset the password with the recovery code, delete the account.
+- **Account (optional, ADR-027):** sign up with my invite code, sign in, sign out, change password, reset the password with the recovery code, **delete the account in the app** (removes all server data and backups), share products on/off, privacy policy link.
 - **Backup:**
   - export all local data to a file (share sheet / Files) and import it back (ADR-016);
   - when signed in: an **automatic daily end-to-end encrypted backup** when online (optionally Wi-Fi only), **Back up now**, **Restore**, and the last backup's date and size; after signing in on a new phone the latest backup is restored automatically;
   - the API key and session credentials are never included.
-- **Sideloading status:** shows whether widgets and the share extension are active in this build (ADR-014).
+- **Sideloading status:** shows whether widgets and the share extension are active in this build (ADR-014). Hidden in a future App Store build (`LAKHAS_STORE` flag, ADR-027 §10).
 - Privacy notes (including where AI requests go), Open Food Facts attribution, Delete my data.
 
 ### 4.9 Images
@@ -369,16 +370,18 @@ The Worker never calls an AI provider. `/admin` and `/shared/frozen/openapi.yaml
 | **6 — Barcode** ✅ | Open Food Facts lookup, local product library, label-photo extraction for missing products. |
 | **7 — Recipes** ✅ | On-device link import (safe fetcher), screenshot import, share extension hand-off, My Recipes hub. |
 | **8 — Explore** ✅ | Bundled dishes, filters, favorites, log from Explore. |
-| **9 — Server foundation** *(ADR-027, proposed)* | Unfreeze `/backend`; D1 schema v2; invite-only accounts (prelogin salts, phone-side password stretching, peppered verifier), devices with HMAC signing (LK2 + shared vectors), access/refresh tokens, rate limits, abuse log; admin panel shell (Access or admin token) with users/devices, disable, invite code, audit; deploy to workers.dev; backend CI. iOS: API client, signer, Keychain session, root-CA pinning (if approved), Settings → Account (sign up with recovery code, sign in/out, password change and reset), server status in the probe. |
-| **10 — Explore online** | Admin dish editor (food-DB ingredients, R2 photos, publish), seed the 91 bundled dishes, public sync with versions/tombstones, app cache over the bundled set, server votes (queued offline) with counts. |
-| **11 — Shared products** | Submission of user-added products with the front photo, admin review queue (approve/edit/reject), lookup local → shared → Open Food Facts, local cache. |
-| **12 — Encrypted backup** | Versioned backup format (ADR-016, moved up), on-device AES-GCM chunked encryption, wrapped data key (password + recovery code), R2 storage with retention, automatic daily backup + Back up now + Restore, automatic restore after sign in on a new phone, local export/import of the same format. |
+| **9 — Server foundation** *(ADR-027)* | Unfreeze `/backend`; D1 schema v2 (users, identities ready for Sign in with Apple, devices, sessions, key envelopes, invites, audit); invite-only accounts (prelogin salts, phone-side stretching + HKDF split, peppered verifier), devices with HMAC signing (LK2 + shared vectors), access/refresh tokens, rate limits, abuse log; **in-app account deletion**; `/privacy` and `/terms` pages (ar/en); admin Worker behind Cloudflare Access (users/devices, disable, invite code, audit); deploy both Workers; backend CI. iOS: API client, signer, Keychain session, Settings → Account (sign up with recovery code, sign in/out, password change and reset, delete account), `LAKHAS_STORE` build flag hiding sideload-only screens, server status in the probe. |
+| **10 — Encrypted backup** | Versioned backup format (ADR-016, moved up), on-device AES-GCM chunked encryption, wrapped data key (password + recovery code), R2 storage with retention, automatic daily backup + Back up now + Restore, automatic restore after sign in on a new phone, local export/import of the same format. |
+| **11 — Explore online** | Admin dish editor (food-DB ingredients, R2 photos, publish), seed the 91 bundled dishes, public sync with versions/tombstones, app cache over the bundled set, server votes (one per account, queued offline) with counts. |
+| **12 — Shared products** | Submission of user-added products with the front photo (on by default, off switch), admin review queue (approve/edit/reject), Report action, lookup local → shared → Open Food Facts, local cache. |
 | **13 — Workouts** | Bundled exercise DB, program builder, logging, progress. |
 | **14 — Water, weight, progress, widgets, reminders** | |
 | **15 — Settings, delete-my-data (local + account), privacy manifest, Arabic & English copy review** | Review all copy in both languages for consistency, tone and completeness. Run the full app in each language. |
 | **16 — Hardening** | Full test pass (app + Worker), accessibility audit, sideloading runbook, refresh/backup/restore drill, key-loss drill. |
 
 **Later / optional:**
+- App Store release with a paid developer account: build with `LAKHAS_STORE`, handle the risks listed in ADR-027 §10 (BYOK review key, invite/demo account, UGC reporting, export compliance).
+- Sign in with Apple / Google, email verification and email password reset (the tables are ready, ADR-027 §1).
 - iCloud (CloudKit) sync — needs the paid Apple Developer Program.
 - Apple Health integration.
 - On-device models (Apple Foundation Models) as a free, keyless option for text analysis.

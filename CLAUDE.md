@@ -1,6 +1,6 @@
 # CLAUDE.md — Lakhas (لخّص)
 
-Bilingual (Arabic default, RTL / English, LTR) AI calorie & macro tracker for iOS, **sideloaded for personal use**. **Bring Your Own Key, no server** (ADR-020): the app calls AI providers directly with the user's own key, and all data stays on the device. The product brief is `PROJECT_PROMPT.md`; read it and `docs/` before changing behavior.
+Bilingual (Arabic default, RTL / English, LTR) AI calorie & macro tracker for iOS, **sideloaded for personal use** (designed so an App Store build is possible later, ADR-027 §10). **AI is Bring Your Own Key** (ADR-020): the app calls AI providers directly with the user's own key. A **small optional backend** (ADR-027, Cloudflare Workers) handles invite-only accounts, end-to-end encrypted backup, Explore content, votes and shared products. It **never calls an AI provider and never stores an AI key**. Everything else works offline and without the server. The product brief is `PROJECT_PROMPT.md`; read it and `docs/` before changing behavior.
 
 ## Working rules
 - **Commit after every finished step** and push (`origin` = github.com/KhaledZaki1919/lakhas, branch `main`). Small commits; end messages with the `Co-Authored-By: Claude …` line.
@@ -15,7 +15,8 @@ Bilingual (Arabic default, RTL / English, LTR) AI calorie & macro tracker for iO
 | `ios/LakhasKit` | `NutritionMath` (pure math) + `LakhasKit` (AI providers, models, store resolver, Keychain, theme tokens, …) |
 | `ios/data/` | Source data + generators: `scripts/build-food-db.mjs` (food DB), `scripts/build-explore.mjs` (Explore dishes from `explore/dishes.mjs`; run after changing foods) |
 | `shared/test-vectors/` | `nutrition.json` (used by the Swift tests) and its generator |
-| `backend/`, `admin/`, `shared/frozen/` | **FROZEN** (ADR-020): former server, kept for reference only. Don't build on it |
+| `backend/` | Cloudflare Workers (ADR-027), Hono + TypeScript: `lakhas-api` (app API, `/privacy`, `/terms`) and `lakhas-admin` (panel behind Cloudflare Access). D1 `lakhas`, R2 `lakhas-media` + `lakhas-backups`, Workers Rate Limiting |
+| `admin/`, `shared/frozen/` | **FROZEN** (ADR-020): old admin app and OpenAPI, reference only |
 | `docs/` | `architecture.md`, `design.md` (final design system), `decisions.md`, `sideloading.md`, `build-environment.md`; `archive/` for retired runbooks |
 
 ## Environment
@@ -24,6 +25,17 @@ Bilingual (Arabic default, RTL / English, LTR) AI calorie & macro tracker for iO
 - GitHub CLI is at `C:\Program Files\GitHub CLI\gh.exe`. It uses the Git Credential Manager login through `GH_TOKEN` (set per command from `git credential fill`; never print or store it).
 
 ## Commands
+Backend (runs locally on Windows, in `backend/`; Git Bash with Node on PATH):
+```
+npm ci
+npm test                          # Vitest + Workers pool (local D1/R2)
+npm run typecheck && npm run lint
+npx wrangler d1 migrations apply lakhas --remote    # only when the user asks; production data
+npx wrangler deploy                                 # API Worker (wrangler.toml); deploys only when the user asks
+npx wrangler deploy -c wrangler.admin.toml          # admin Worker
+```
+Never print, log or commit Worker secrets; the user enters them with `wrangler secret put`.
+
 iOS (CI only; locally you can only edit):
 ```
 xcodegen generate --spec project.full.yml   # app + widget + share extension (LAKHAS_EXTENSIONS)
@@ -61,7 +73,16 @@ SwiftLint is a separate, non-blocking job.
   - Show AI errors with `AIErrorView` (friendly text + the provider's message + a link to Last AI request), not bare text.
   - With no key, AI entry points show `NoKeyView`. Never fall back to anything else.
   - SwiftData to-many relationships are unordered, so give child rows an explicit `sortIndex`.
+- **Server (ADR-027):**
+  - The server never calls AI providers, never receives AI keys, never sees passwords (only the HKDF `authKey`) and never sees backup plaintext.
+  - Every authenticated request is LK2-signed (shared vectors in `shared/test-vectors/signing.json`).
+  - Secrets are Keychain-only on the phone and Worker secrets on the server.
+  - Admin routes live only in the admin Worker, which verifies the Access JWT.
+  - D1 schema changes go through numbered migrations.
+  - No certificate pinning.
+- **Offline first:** server features (backup, votes, shared products, Explore sync) fail soft. Nothing else may depend on the network or on being signed in.
+- **App Store readiness (ADR-027 §10):** sideload-only UI (Sideloading status, capability probe) goes behind `#if !LAKHAS_STORE`. Account deletion and the privacy policy link must stay reachable.
 - **UI tests** launch with `-uiTesting` (in-memory store, no key, Open Food Facts answered from `UITestingAIProvider.products`, recipe pages from `UITestingAIProvider.recipePages`) and `-uiTestingStubAI` (canned AI answers, no network).
 
 ## Key decisions (see docs/decisions.md)
-ADR-012 unsigned IPA from CI · ADR-014 free-team fallbacks · ADR-016 backup export · ADR-017 design A · ADR-019 Swift 5 mode + compile-first CI · ADR-020 Bring Your Own Key, no server, device-only data · ADR-021 bundled food DB as JSON · ADR-022 barcode: Open Food Facts + local products + AI label reading · ADR-023 Last AI request diagnostics + Gemini hardening · ADR-024 hard AI deadlines + key sanitizing · ADR-025 recipes: on-device page text, AI extraction, clipboard hand-off · ADR-026 Explore: bundled dishes from the food DB, local favorites/ratings, logging without AI.
+ADR-012 unsigned IPA from CI · ADR-014 free-team fallbacks · ADR-016 backup export · ADR-017 design A · ADR-019 Swift 5 mode + compile-first CI · ADR-020 Bring Your Own Key, no server, device-only data · ADR-021 bundled food DB as JSON · ADR-022 barcode: Open Food Facts + local products + AI label reading · ADR-023 Last AI request diagnostics + Gemini hardening · ADR-024 hard AI deadlines + key sanitizing · ADR-025 recipes: on-device page text, AI extraction, clipboard hand-off · ADR-026 Explore: bundled dishes from the food DB, local favorites/ratings, logging without AI · **ADR-027 small backend: invite-only accounts, phone-side password stretching + HKDF split, LK2 signing, E2E backup with recovery code, admin Worker behind Access, no pinning, App Store readiness**.

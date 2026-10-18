@@ -1,8 +1,8 @@
 # لخّص (Lakhas) — Architecture
 
-Status: **Bring Your Own Key, no server (ADR-020)** · Last updated: 2026-10-18
+Status: **AI is Bring Your Own Key (ADR-020); small optional backend (ADR-027)** · Last updated: 2026-10-18
 
-Everything runs on the iPhone. AI requests go **directly** from the app to the provider the user chose, with the user's own API key. All data stays on the device. Decisions are in [`decisions.md`](decisions.md); sideloading constraints in [`sideloading.md`](sideloading.md).
+AI runs on the iPhone. Requests go **directly** from the app to the provider the user chose, with the user's own API key. Data lives on the device. A small Cloudflare backend (ADR-027) adds optional accounts, an end-to-end encrypted backup, Explore content, votes and shared products. It never calls an AI provider, and everything else works without it. Decisions are in [`decisions.md`](decisions.md); sideloading constraints in [`sideloading.md`](sideloading.md).
 
 ---
 
@@ -38,9 +38,24 @@ flowchart LR
   AI -- "HTTPS, user's key" --> Providers["Anthropic · OpenAI<br/>Google Gemini · OpenRouter"]
   App -- "HTTPS, no key" --> OFF["Open Food Facts"]
   App -- "HTTPS, safe fetcher" --> Pages["Public recipe pages<br/>TikTok · YouTube · Instagram"]
+
+  subgraph CF["Cloudflare (free plan, workers.dev)"]
+    API["lakhas-api Worker<br/>accounts · LK2 signing · rate limits<br/>backups · Explore sync · votes · products<br/>/privacy · /terms"]
+    Admin["lakhas-admin Worker<br/>behind Cloudflare Access"]
+    D1[("D1 lakhas")]
+    R2M[("R2 lakhas-media")]
+    R2B[("R2 lakhas-backups<br/>ciphertext only")]
+    API --> D1
+    API --> R2M
+    API --> R2B
+    Admin --> D1
+    Admin --> R2M
+  end
+  App -- "HTTPS, signed (optional, offline-first)" --> API
+  Me["Admin (my browser)"] -- "Access login" --> Admin
 ```
 
-There is no backend. `/backend`, `/admin` and `/shared/frozen` are kept for reference only (ADR-020).
+The backend lives in `/backend` (§6). `/admin` and `/shared/frozen` stay frozen for reference only.
 
 ---
 
@@ -78,7 +93,7 @@ SwiftData models (in LakhasKit): `UserProfile`, `GoalOverride`, `Meal`, `MealIte
 - **Protection:** every file gets `completeUntilFirstUserAuthentication` and is **excluded from device backups** (`isExcludedFromBackup`).
 - **Photos:** meal, recipe and product photos are stored as files next to the store, with the same protection and exclusion. They are downscaled with metadata stripped before saving or sending.
 - **Bundled read-only data (Phases 5, 8, 9):** `foods.json` (USDA subset + Arabic dishes, ADR-021), `Explore/dishes.json` (91 dishes built from the food DB, ADR-026; placeholder plates, no images), `exercises.json` + images (Phase 9).
-- **Leaving the phone:** data leaves only through an export file the user creates (Phase 11). The API key is never included.
+- **Leaving the phone:** data leaves only through an export file the user creates, or as an end-to-end encrypted backup when signed in (§6). The API key and session credentials are never included.
 
 ---
 
@@ -115,12 +130,73 @@ Every AI entry point checks `AIKeyStore` for the selected provider. If no key is
 
 ---
 
-## 5. Security summary
+## 6. Server (ADR-027)
+
+Two Cloudflare Workers from `backend/`, on the free plan and `*.workers.dev`. They share one D1 database and two R2 buckets. **No AI calls, no AI keys, no passwords, no backup plaintext on the server.**
+
+| Worker | Host | Serves | Auth |
+|---|---|---|---|
+| `lakhas-api` | `lakhas-api.<sub>.workers.dev` | `/v1/*` app API, `/privacy`, `/terms`, `/health` | public: prelogin, sign up, sign in, Explore sync, media, pages; everything else: Bearer access token + LK2 signature |
+| `lakhas-admin` | `lakhas-admin.<sub>.workers.dev` | admin panel (HTML) + `/api/*` | Cloudflare Access on the whole host + Access JWT verified in the Worker |
+
+### 6.1 Keys (on the phone)
+```
+password ──PBKDF2-SHA256 (kdfSalt, 600k)──► stretched (never stored, never sent)
+stretched ──HKDF(authSalt, "lakhas/auth/v1")──────► authKey ──► server stores HMAC(PEPPER, authKey)
+stretched ──HKDF(encSalt,  "lakhas/backup-kek/v1")► passwordKEK ─┐
+recovery code ──HKDF(recSalt, "lakhas/recovery-kek/v1")► recoveryKEK ─┤ wrap (AES-GCM)
+recovery code ──HKDF(recSalt, "lakhas/recovery-auth/v1")► recoveryAuth ──► server stores HMAC(PEPPER, recoveryAuth)
+random DEK (256-bit) ◄──────────────────────────────────────────────────┘ stored on the server only wrapped, twice
+DEK ──AES-GCM, 1 MB chunks──► backup ciphertext ──► R2 lakhas-backups
+```
+The phone keeps the DEK, the device secret and the tokens in the Keychain (this device only). None of them go into a backup.
+
+### 6.2 D1 tables (schema v2, Phase 9 onward)
+- `users`: id, email (unique, lowercased), `email_verified_at` (null for now), status (active/disabled), created_at, deleted_at.
+- `identities`: user_id, provider (`password` now; `apple`/`google` later), subject, email, is_private_relay.
+- `password_credentials`: user_id, kdf name and iterations, kdf/auth/enc salts, verifier.
+- `key_envelopes`: user_id, kind (`password`, `recovery`; `passphrase` later), salt, wrapped DEK, nonce, version. Plus the recovery verifier.
+- `devices`: id, user_id, label, encrypted device secret, status, created/last seen.
+- `refresh_tokens`: hashed token, device, expiry, rotated_from. `request_nonces`: device, nonce, time.
+- `invites`: code, expiry, use limit, uses.
+- `backups`: id, user_id, R2 key, size, SHA-256, created_at, kind (daily/weekly).
+- `explore_dishes`, `explore_votes` (PK dish_id + user_id), `foods` (seeded from `foods.json`).
+- `products` (approved / pending_review / rejected), `product_reports`.
+- `abuse_events`, `admin_audit`.
+
+### 6.3 Flows
+1. **Sign up:**
+   1. `prelogin` returns the salts.
+   2. The phone derives the keys and creates the DEK and the recovery code.
+   3. `POST /v1/auth/signup` sends the invite code, email, `authKey`, the envelopes and the recovery verifier.
+   4. The server returns the device credential and tokens.
+   5. The recovery code is shown once.
+2. **Sign in:** `prelogin` → derive `authKey` → `POST /v1/auth/login` → device credential + tokens + the password envelope → unwrap the DEK on the phone.
+3. **Refresh:** `POST /v1/auth/refresh` (signed) rotates the refresh token. Reusing an old one revokes the device.
+4. **Backup (Phase 10):** export → compress → encrypt the chunks with the DEK → `PUT /v1/backups/<id>` → R2. Retention: 7 daily + 4 weekly.
+5. **Restore:** list backups → download → decrypt → replace the local store. Automatic after sign in on an empty phone.
+6. **Recovery reset:**
+   1. Prove `recoveryAuth` and get the recovery envelope.
+   2. Unwrap the DEK and re-wrap it with the new password.
+   3. Send the new verifier and envelopes. All sessions are revoked.
+7. **Account deletion:** `DELETE /v1/account` (signed, with `authKey` or `recoveryAuth`) deletes the user rows, devices, sessions, envelopes, R2 backups, votes (totals recounted) and pending products, then signs out.
+8. **Explore sync (Phase 11):** `GET /v1/explore?since=` (public, ETag) overlays the bundled set. Votes go to `PUT /v1/explore/<id>/vote` (signed, one per account).
+9. **Shared products (Phase 12):** `POST /v1/products` (signed) → review queue → approved products are found via `GET /v1/products/<barcode>`.
+
+### 6.4 Limits
+Workers Rate Limiting per IP and per device (ADR-027 §6). The free-plan budget (10 ms CPU per request, D1 100k writes/day) is why the phone does the password stretching and why KV isn't used for counters.
+
+---
+
+## 7. Security summary
 
 | Control | Implementation |
 |---|---|
 | Keys | Keychain only, `WhenUnlockedThisDeviceOnly`; masked in UI; deletable; never logged or exported |
-| Transport | ATS, HTTPS only, system trust (no pinning) |
+| Transport | ATS, HTTPS only, system trust, no pinning (ADR-027 §8) |
+| Server auth | Invite-only accounts; password stretched on the phone, only an HKDF `authKey` sent; peppered verifier; per-device secret with LK2 HMAC signing (timestamp + nonce); 15-min access + rotating refresh tokens; rate limits per IP and per device |
+| Backup | AES-GCM on the phone with a random DEK, wrapped by the password KEK and the recovery KEK; the server can't derive either |
+| Admin | Separate Worker behind Cloudflare Access + JWT check in the Worker; audited, CSRF-checked writes |
 | Data at rest | File protection on every file; excluded from device backups; no cloud sync |
 | Photos | Metadata stripped and downscaled before saving or sending |
 | Untrusted input | AI output validated; recipe fetcher allow-lists hosts and caps size/redirects; page text passed as data |

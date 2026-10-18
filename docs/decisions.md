@@ -32,7 +32,7 @@ Short ADRs. Status values: **Accepted**, **Proposed** (awaiting approval), **Sup
 **Status:** Superseded by ADR-013. App Attest needs the paid Developer Program and isn't available to sideloaded free-team apps.
 
 ### ADR-007 — Admin protected by Cloudflare Access
-**→ Withdrawn by ADR-020 (no admin panel).**
+**→ Withdrawn by ADR-020 (no admin panel); revived by ADR-027 §7 on a separate admin Worker.**
 **Status:** Accepted (2026-10-11). Access policy on `/admin/*`, plus the Worker verifies the `Cf-Access-Jwt-Assertion` JWT (defense in depth).
 
 ### ADR-008 — SVG illustrations rasterized server-side
@@ -71,7 +71,7 @@ Short ADRs. Status values: **Accepted**, **Proposed** (awaiting approval), **Sup
 **Consequences:** Free-team apps expire after 7 days and need a Sideloadly refresh. Data survives a refresh as long as the bundle ID and Apple ID stay the same (see ADR-016 for the backup).
 
 ### ADR-013 — Device access tokens with HMAC request signing (replaces App Attest)
-**→ Superseded by ADR-020 (no device tokens or request signing).**
+**→ Superseded by ADR-020; the signing scheme is revived as LK2 by ADR-027 §1 (account sign in instead of admin-issued tokens).**
 **Status:** Accepted (2026-10-11).
 **Decision:**
 - **Token creation:** the admin creates a token per device: `lk1_<tokenId>_<secret>`, where `secret` is 32 random bytes in base64url. It's shown once, as text and a QR code. D1 stores `token_id`, a label, and the secret **encrypted with AES-GCM** under the Worker secret `TOKEN_ENC_KEY`. A D1 leak alone doesn't expose secrets.
@@ -303,7 +303,7 @@ Quotas become per-device daily **cost caps**, set to the old Pro limits: photo 1
 - **No AI:** Explore never calls a provider or reads the key. Logs have source `explore` and DB values. The UI tests run with no key and no AI stub.
 
 ### ADR-027 — A small backend again: accounts, Explore content, encrypted backup, sharing (AI stays BYOK)
-**Status:** **Proposed (2026-10-18), awaiting approval.** Amends ADR-020: there is a server again, but AI stays 100% on the device. Revives `backend/` (Hono, D1, R2, Workers Rate Limiting). Brings back ADR-007 (admin behind Access), ADR-013's HMAC signing and ADR-005's pinning, adapted. Moves ADR-016's backup format forward.
+**Status:** **Accepted (2026-10-18)**, with the answers in "Decisions on the open questions" below. Amends ADR-020: there is a server again, but AI stays 100% on the device. Revives `backend/` (Hono, D1, R2, Workers Rate Limiting). Brings back ADR-007 (admin behind Cloudflare Access) and ADR-013's HMAC signing, adapted. Moves ADR-016's backup format forward. **No certificate pinning** (§8).
 
 **Context:** I want Explore dishes I can edit without shipping an IPA, a backup that survives a reinstall or a new phone, and a little sharing between invited users: real votes and a common product library. Everything has to fit the Cloudflare free tier on a `*.workers.dev` subdomain. The app must keep working offline and without the server for everything else.
 
@@ -319,12 +319,15 @@ Quotas become per-device daily **cost caps**, set to the old Pro limits: photo 1
 
 #### 1. Accounts (email + password, invite only)
 - **Sign up** needs the current **invite code** (set and regenerated in the admin panel; optional expiry and use limit) plus an email and a password of at least 10 characters. There's no email verification and no email sending for now.
-- **Password handling.** The phone stretches the password, because the server can't run a strong KDF in 10 ms:
-  - `authKey = PBKDF2-SHA256(password, authSalt, 600,000)`, computed on the phone (CommonCrypto).
-  - Only `authKey` is sent. The server stores `verifier = HMAC-SHA256(PEPPER, authKey)`, where `PEPPER` is a Worker secret, and compares in constant time.
-  - So the server never sees the password. A D1 leak without the pepper can't be checked offline, and even with the pepper, every guess costs 600k PBKDF2 rounds.
-  - The iteration count is stored per account, so it can be raised later.
-- **Separate salts:** `authSalt` and `encSalt` are 16 random bytes per account. `POST /v1/auth/prelogin {email}` returns them with the KDF parameters. For an unknown email it returns stable fake salts (an HMAC of the email), so it doesn't reveal who has an account.
+- **Password handling.** The phone stretches the password, because the server can't run a strong KDF in 10 ms. One slow stretch, then two independent one-way derivations:
+  - `stretched = PBKDF2-SHA256(password, kdfSalt, 600,000)`, computed on the phone (CommonCrypto). It never leaves the phone and is never stored.
+  - `authKey = HKDF-SHA256(stretched, salt: authSalt, info: "lakhas/auth/v1")`. **This is the only value sent to the server.**
+  - `passwordKEK = HKDF-SHA256(stretched, salt: encSalt, info: "lakhas/backup-kek/v1")`. It wraps the backup key (§3) and is never sent.
+  - HKDF is one-way and the salts and info strings differ, so knowing `authKey` gives nothing toward `passwordKEK`. The server can never derive the backup key.
+  - The server stores `verifier = HMAC-SHA256(PEPPER, authKey)` (`PEPPER` is a Worker secret) and compares in constant time. A D1 leak without the pepper can't be checked offline.
+  - **Residual risk, stated in the UI:** anyone holding `authKey` (the server during sign in, or a thief with the pepper) could still guess passwords offline at 600k PBKDF2 rounds per guess. Passwords need at least 10 characters, and the sign-up screen recommends a passphrase.
+  - The KDF name and iteration count are stored per account, so they can be raised later (re-derived on the next sign in).
+- **Salts:** `kdfSalt`, `authSalt` and `encSalt` are 16 random bytes each, per account. `POST /v1/auth/prelogin {email}` returns them with the KDF parameters. For an unknown email it returns stable fake values (an HMAC of the email), so it doesn't reveal who has an account.
 - **Sessions:**
   - Sign in returns a **device credential**: a `deviceId` and a 32-byte `deviceSecret`. As in ADR-013, D1 keeps the secret AES-GCM-encrypted under `DEVICE_ENC_KEY`.
   - It also returns an **access token**: 15 minutes, signed by the server (`ACCESS_TOKEN_KEY`), naming the user, device and expiry.
@@ -339,8 +342,9 @@ Quotas become per-device daily **cost caps**, set to the old Pro limits: photo 1
 - **Ready to extend later:**
   - `users` (with a nullable `email_verified_at`) is kept separate from `identities` (`password` now; `google` / `apple` later) and from `key_envelopes`.
   - An email reset added later only replaces the login credential. Opening the backup still needs the old password or the recovery code (§2).
-  - Sign in with Google/Apple added later = a new identity plus a backup passphrase.
+  - **Sign in with Apple** (and Google) added later = a new `identities` row (`provider`, `subject`, `email`, `is_private_relay`), plus a **backup passphrase**. That passphrase is stretched exactly like the password, so the backup stays end-to-end encrypted. `users.email` may be an Apple private-relay address. Apple's token-revocation call on account deletion is planned in the deletion flow.
 - **Admin:** list users and their devices, disable a user (all their tokens stop working at once) or a single device, regenerate the invite code, and see an audit log.
+- **Account deletion in the app** (App Store guideline 5.1.1(v), built now). Settings → Account → Delete account needs the password or the recovery code. It deletes the user, identities, devices, sessions, key envelopes, all backups in R2, votes (totals are recounted) and pending product submissions, then signs out. Approved shared products stay but lose any link to the user. It happens immediately, with no grace period, and is audited without the email.
 
 #### 2. Recovery code
 - Shown **once** at sign up: 128 random bits as 26 base32 characters in groups (`K7QD-…`). The app offers Copy and only continues after you confirm you saved it.
@@ -361,7 +365,7 @@ Quotas become per-device daily **cost caps**, set to the old Pro limits: photo 1
   - After sign in, the phone keeps the DEK in the Keychain, so daily backups don't ask for the password.
 - **Format:** a zlib-compressed archive, encrypted with AES-GCM in 1 MB chunks (CryptoKit). Each chunk has its own nonce and AAD (version, backup ID, index, last-chunk flag), so a truncated or reordered file fails to open.
 - **Storage:**
-  - Uploaded through the Worker to R2 (`backups/<userId>/<backupId>`).
+  - Uploaded through the API Worker to the private R2 bucket `lakhas-backups` (`<userId>/<backupId>`). Dish and product photos live in a separate bucket, `lakhas-media`.
   - D1 keeps the size, a SHA-256 of the ciphertext and the time.
   - The last 7 daily and the last 4 weekly backups are kept, with a per-user cap (default 500 MB).
 - **When:**
@@ -394,9 +398,10 @@ Quotas become per-device daily **cost caps**, set to the old Pro limits: photo 1
   - "Most liked" uses the server counts when available, otherwise my own ratings (ADR-026).
   - Votes made offline are queued.
   - My own rating also stays local, so it still works signed out.
+  - Changing a vote replaces it (`PRIMARY KEY (dish_id, user_id)`), and totals are kept in the dish row.
 - **Shared products:**
   - When a signed-in user saves a product they added themselves (typed, or read from label photos; not one from Open Food Facts), it goes to a **review queue** with its front photo. The photo is metadata-stripped and downscaled.
-  - Sending can be turned off in Settings (question 4).
+  - Sending is **on by default** for signed-in users, with an off switch in Settings → Account. The product form says the product will be reviewed and shared.
   - The admin approves, edits or rejects it.
   - Barcode lookup becomes: local products → approved shared products (when online) → Open Food Facts. A shared product is cached locally once used.
 
@@ -409,35 +414,70 @@ Quotas become per-device daily **cost caps**, set to the old Pro limits: photo 1
 - An `abuse_events` log in D1.
 - Body caps: 100 MB per backup upload (the free-plan limit; larger backups are sent in parts), 2 MB per photo, 64 KB of JSON.
 
-#### 7. Admin panel protection
-- **Recommended:** a Cloudflare Access application on `/admin*` of the workers.dev host (Zero Trust free plan, one email allowed). The Worker also verifies the `Cf-Access-Jwt-Assertion` itself (the existing `access.ts`).
-- **Fallback, without Zero Trust:** a 32-byte `ADMIN_TOKEN` secret. A login form sets a short-lived HttpOnly, Secure, SameSite=Strict cookie. Every change is CSRF-checked and written to the audit log.
+#### 7. Admin panel protection (Cloudflare Access)
+- **Two Workers, one codebase (`backend/`):**
+  - `lakhas-api` serves the app and the public pages (`/privacy`). It has **no admin routes**.
+  - `lakhas-admin` serves the panel and its API. It shares the same D1 database and R2 buckets.
+- **Why two:** without a domain of our own, Access can only be switched on for a Worker's whole `*.workers.dev` hostname, not for one path. A separate admin Worker puts its entire hostname behind Access while the API stays open to the app.
+- **Access:**
+  - Zero Trust free plan, an Access application for `lakhas-admin.<subdomain>.workers.dev` (created by the Worker's "Cloudflare Access" switch), and a policy that allows only my email (one-time PIN login).
+  - The admin Worker also verifies `Cf-Access-Jwt-Assertion` itself (signature, `aud`, issuer, expiry; the existing `access.ts`). So a misconfigured or disabled Access app fails closed.
+  - Preview URLs are off for both Workers.
+- **Every admin change** is CSRF-checked (Origin + a per-session token) and written to `admin_audit`.
 
-#### 8. Transport and pinning
-- HTTPS only, ATS on.
-- Pinning **is still a valid technique** for workers.dev, but there you can't choose the CA. Cloudflare may issue from Google Trust Services, Let's Encrypt or SSL.com, and switch without notice.
-- **Proposal:**
-  - Pin the root CAs of all three families: the ADR-005 list plus the missing SSL.com ECC 2022 root.
-  - Pin the API host only, never AI providers or Open Food Facts.
-  - A pin failure affects only server features (backup, votes, sharing, Explore updates), shows its own message, and is fixed with a new IPA (quick, given the 7-day re-sign).
-  - I check the live certificate chain right after the first deploy.
+#### 8. Transport: TLS, no certificate pinning
+- HTTPS only, ATS on, system trust. **No certificate pinning** for our Worker (and none for anything else).
+- **Why it was dropped:**
+  - On `*.workers.dev` we can't choose the certificate authority. Cloudflare may issue from Google Trust Services, Let's Encrypt or SSL.com and switch without notice, so pins would have to cover several CA families and could still break server features until a new build is installed. That's worse in an App Store build, where updates take review time.
+  - The assets pinning would protect are protected another way:
+    - **Backups** are end-to-end encrypted, so a man in the middle sees only ciphertext.
+    - **Passwords** never leave the phone, only `authKey` (§1).
+    - **Requests** are HMAC-signed with a per-device secret, timestamp and nonce, so a captured request can't be replayed or altered. The device secret travels only once, in the sign-in response.
+  - What's left (an attacker with a rogue CA trusted by the phone could read a sign-in exchange) is accepted for this app. Revisit if we move to a custom domain.
+- ADR-005 stays superseded. The old pinning runbook stays in `docs/archive/`.
 
 #### 9. Offline behavior
 - Without the server, these all work exactly as today: onboarding, Today, every logging method (BYOK AI included), recipes, the bundled and cached Explore, workouts, water and weight.
 - Only backup, votes, shared products and Explore updates need the server.
 - Signing in is optional. The app works signed out, and Settings → Account offers it.
 
+#### 10. App Store readiness (a later paid account)
+Built now, so a store build needs no redesign:
+- **In-app account deletion** that removes server data and backups (§1).
+- **Privacy policy** at `https://lakhas-api.<subdomain>.workers.dev/privacy`, in Arabic and English, served by the API Worker and linked from Settings and from sign up. Terms are at `/terms`.
+- **Sign in with Apple ready:** `identities` table, backup passphrase design and token revocation on deletion (§1).
+- **Build flag `LAKHAS_STORE`** (off for sideloaded builds). It hides sideload-only screens: Sideloading status, the capability probe, App Group fallback messages and the 7-day refresh tips. It also uses a fixed App Group (no `embedded.mobileprovision` lookup) and the store privacy manifest.
+- **Nothing that blocks review:**
+  - No private APIs.
+  - Signing in is optional; the app works without an account (5.1.1).
+  - No external purchase links.
+  - The share extension doesn't read the clipboard silently (ADR-025).
+  - Accurate privacy manifest and nutrition labels.
+
+**App Store risks to handle before submitting:**
+- **BYOK (2.1, 3.1.1):** review needs working AI. Give the reviewer a temporary key with a spending limit in the review notes, and make sure the app is useful without one (manual logging, plate builder, Explore, barcode). Paying an AI provider directly isn't in-app purchase of our content, but say so plainly in the review notes. Don't mention or link to buying keys inside the app beyond the providers' key pages.
+- **Invite-only sign up (2.1, 3.2):** the reviewer needs an invite code and a demo account in the review notes. A public listing for an invite-only service can be questioned. Options are an open sign up for the store build, or Unlisted distribution.
+- **User-generated content (1.2):** votes and shared products count. Products are pre-moderated (review queue). Still needed: a "Report" action on shared products, a way to block abusive accounts (admin disable), and contact info in the app.
+- **Health claims (1.4.1):** calories and macros are estimates. Keep the "values are estimates" notes and don't make medical claims.
+- **Sign in with Apple (4.8):** required only if we add a third-party login (e.g. Google). Our own email + password doesn't trigger it.
+- **Third-party content (5.2.2):** recipe import reads public TikTok, Instagram and YouTube page metadata. Keep it to oEmbed and metadata, personal use, with source attribution. Instagram scraping is the weakest point; it can be disabled in the store build.
+- **Encryption export compliance:** the app uses its own AES-GCM backup encryption (CryptoKit), so `ITSAppUsesNonExemptEncryption = false` must be re-checked. Standard algorithms used to protect user data usually qualify for the mass-market exemption, but App Store Connect's export questions have to be answered (and possibly a self-classification report filed) for the store build.
+- **Background work:** daily backup uses `BGAppRefreshTask` (declared in `UIBackgroundModes`/`BGTaskSchedulerPermittedIdentifiers`); no silent audio or location tricks.
+- **Data deletion:** "Delete my data" and account deletion must also remove server backups (planned in §1).
+
+**Decisions on the open questions (2026-10-18):**
+1. **Password stretching on the phone: yes.** The auth secret and the backup key-encryption key come from separate HKDF derivations (different salts and info strings), so the server can never derive the backup key (§1).
+2. **Admin protection: Cloudflare Access**, on a separate admin Worker (§7).
+3. **Votes: one per account.**
+4. **Shared products: on by default**, with an off switch in Settings.
+5. **Pinning: dropped.** TLS + HMAC signing + end-to-end encrypted backup instead (§8).
+6. **Order:** server foundation → encrypted backup → Explore online → shared products → Workouts and the later phases.
+7. **App Store readiness designed in now (§10).**
+
 **Supersedes / amends:**
 - ADR-020: its "no server" parts, and its open question 5 (sharing comes back, with review).
 - ADR-013: admin-issued device tokens become account sign in, signed the same way.
-- ADR-005, ADR-007: revived as above.
+- ADR-007: revived, on a separate admin Worker.
+- ADR-005: stays superseded (no pinning).
 - ADR-016: the backup format moves into the backup phase.
 - ADR-026: votes become server votes when signed in.
-
-**Open questions (answer before Phase 9):**
-1. **Password stretching on the phone** instead of a server-side KDF. The 10 ms CPU limit and the 100k PBKDF2 cap force this. **OK?** The alternative, Workers Paid ($5/month, 30 s CPU), still caps PBKDF2 at 100k iterations.
-2. **Admin protection:** Cloudflare Access (recommended; the free Zero Trust sign-up may ask for a payment method) or the admin-token fallback?
-3. **Votes per account or per device?** Per account is proposed, so two phones don't count twice.
-4. **Product sharing:** on by default for signed-in users (with a switch in Settings), or ask for each product?
-5. **Pinning:** root CAs of the three families as above, or none (ATS + system trust)?
-6. **Phase order:** server foundation → Explore online → shared products → backup → Workouts. Or should backup come right after the foundation, since it protects the data?
