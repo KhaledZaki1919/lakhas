@@ -72,12 +72,12 @@ Model routing: **photo analysis** uses the accurate model when High accuracy is 
 
 ## 3. Data on the device
 
-SwiftData models (in LakhasKit): `UserProfile`, `GoalOverride`, `Meal`, `MealItem` (with `sortIndex`; to-many order is not preserved), `UsageRecord`, `Product` (barcode library, ADR-022), `Recipe` + `RecipeIngredient` and `SavedMeal` + `SavedMealItem` (ADR-025). Later phases add water, weight and workouts.
+SwiftData models (in LakhasKit): `UserProfile`, `GoalOverride`, `Meal`, `MealItem` (with `sortIndex`; to-many order is not preserved), `UsageRecord`, `Product` (barcode library, ADR-022), `Recipe` + `RecipeIngredient` and `SavedMeal` + `SavedMealItem` (ADR-025), `DishPreference` (Explore favorite, own rating, own photo; ADR-026). Later phases add water, weight and workouts.
 
 - **Location:** resolved by `AppGroupResolver` (ADR-014).
 - **Protection:** every file gets `completeUntilFirstUserAuthentication` and is **excluded from device backups** (`isExcludedFromBackup`).
 - **Photos:** meal, recipe and product photos are stored as files next to the store, with the same protection and exclusion. They are downscaled with metadata stripped before saving or sending.
-- **Bundled read-only data (Phases 5, 8, 9):** `FoodDB.sqlite` (USDA subset + Arabic dishes, FTS5), `explore.json` + images, `exercises.json` + images.
+- **Bundled read-only data (Phases 5, 8, 9):** `foods.json` (USDA subset + Arabic dishes, ADR-021), `Explore/dishes.json` (91 dishes built from the food DB, ADR-026; placeholder plates, no images), `exercises.json` + images (Phase 9).
 - **Leaving the phone:** data leaves only through an export file the user creates (Phase 11). The API key is never included.
 
 ---
@@ -104,7 +104,13 @@ SwiftData models (in LakhasKit): `UserProfile`, `GoalOverride`, `Meal`, `MealIte
 4. **Recipe screen:** servings (scaling or sharing the same pot), grams and ingredients with live per-serving values. "Log one serving" logs each ingredient's share. Everything is saved on the device.
 5. **Share extension:** copies the link with a `lakhas.shared-link` marker (and queues it when an App Group works). On open, the app offers "Import a recipe?" without reading the clipboard until the user accepts.
 
-### 4.4 No key
+### 4.4 Explore (ADR-026)
+1. `ExploreLibrary` loads the bundled dishes; the list filters by meal type and goal, searches names, aliases and ingredients (Arabic-normalized), and sorts by the profile goal, kcal, protein, favorites or my ratings (`DishPreference`).
+2. The dish page edits a `RecipeDraft` (servings scale every amount, grams, ingredients from the food DB).
+3. **Log to Today:** `ExploreLog.log` writes one `Meal` (source `explore`) with each ingredient's share for the chosen portions. No AI, no key.
+4. **Save to My Recipes:** `ExploreLog.saveToRecipes` creates a `Recipe` with `exploreDishId`, shown under "From Explore".
+
+### 4.5 No key
 Every AI entry point checks `AIKeyStore` for the selected provider. If no key is set, it presents `NoKeyView`: what a key is, how to get one per provider, and a rough cost. It links to Settings → AI. There is no fallback.
 
 ---

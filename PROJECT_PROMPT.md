@@ -170,8 +170,10 @@ These are requirements, not suggestions.
 
 ### 4.5 Explore (bundled, no key)
 - Curated dish library shipped inside the app: photo, macros, ingredients with measures, and a goal tag (lose / gain / maintain). It's updated with app releases.
-- Filters by goal and meal type. Sort: newest and A–Z.
-- **Favorites** (local) replace server votes.
+- Filters by goal and meal type, and search that tolerates Arabic spelling variants. Sort: recommended for my goal, lowest calories, highest protein, my favorites, most liked (my own ratings) (ADR-026).
+- **Favorites** and a personal 👍/👎 (local) replace server votes.
+- Dish page: scale servings, edit grams, log to Today with a meal type, save to My Recipes. Logging never uses AI or the key.
+- No AI images: a category placeholder, or the user's own photo of the dish.
 
 ### 4.6 Workouts
 - Program builder:
@@ -348,7 +350,7 @@ There is no backend. `/backend`, `/shared/openapi.yaml` and `/admin` are frozen 
 | **5 — Photo & text analysis** ✅ | Bundled food DB (USDA subset + Arabic dishes), prompts in the app, photo pipeline (downscale/EXIF strip), review screen, correction, leftovers, plate-builder search. |
 | **6 — Barcode** ✅ | Open Food Facts lookup, local product library, label-photo extraction for missing products. |
 | **7 — Recipes** ✅ | On-device link import (safe fetcher), screenshot import, share extension hand-off, My Recipes hub. |
-| **8 — Explore** | Bundled dishes, filters, favorites, log from Explore. |
+| **8 — Explore** ✅ | Bundled dishes, filters, favorites, log from Explore. |
 | **9 — Workouts** | Bundled exercise DB, program builder, logging, progress. |
 | **10 — Water, weight, progress, widgets, reminders** | |
 | **11 — Settings, backup export/import, delete-my-data, privacy manifest, Arabic & English copy review** | Review all copy in both languages for consistency, tone and completeness. Run the full app in each language. |

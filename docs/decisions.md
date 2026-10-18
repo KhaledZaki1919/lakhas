@@ -284,3 +284,20 @@ Quotas become per-device daily **cost caps**, set to the old Pro limits: photo 1
   - When the app becomes active, it offers "Import a recipe?" for a queued link, the marked link, or any copied web link. The check uses `detectPatterns`, which reads no clipboard content and shows no paste prompt.
   - Each clipboard change is offered once, and a declined offer isn't repeated.
 - **UI tests:** `-uiTesting` answers pages from `UITestingAIProvider.recipePages`, where any other link reads like a login wall. `-uiTestingStubAI` returns a fixed 2-serving recipe.
+
+### ADR-026 — Explore: bundled dish library, local favorites and ratings, logging without AI
+**Status:** Accepted (2026-10-18). Implements §4.5 (Phase 8). Amends §4.5's sort list.
+**Decision:**
+- **Library:** 91 curated dishes in `LakhasKit/Resources/Explore/dishes.json`: mostly Egyptian, plus Arab classics, everyday healthy meals, snacks and desserts. Each has Arabic and English names with spelling aliases, a category, meal types, goal tags (lose / maintain / gain), servings, and ingredients with grams and a household measure in both languages. Shipped with app releases.
+- **Numbers come from the food DB.** The source list (`ios/data/explore/dishes.mjs`) names a food DB id and grams per ingredient. `ios/data/scripts/build-explore.mjs` copies that food's names and per-100 g values into the JSON and validates the library: known foods, meal types, goals and categories; 50–1,500 kcal per serving; at least 60 dishes. Totals are grams × per-100 g in our code, never typed. Every dish says "values are estimates".
+- **Images:** no AI images. A dish shows a category symbol on a tinted plate (`plate*` tokens, docs/design.md §1.4). The user can set their own photo from the dish page, and is offered to right after logging it. The photo is stored on this device (`MealPhotoStore`, protected, excluded from backups). The logged meal and a saved recipe each get their own copy, so deleting one never removes another's photo.
+- **Browse:** filter chips for meal type and goal, and search over names, aliases and ingredient names. Search uses the food DB's Arabic normalization plus the article: "الكشري" finds "كشري", and "كشرى", "طعميه" and "ملوخيه" all match.
+- **Sort:** these replace "newest / A–Z":
+  - **Recommended for my goal:** dishes tagged with the profile's goal come first. Then, to lose: fewer kcal and more protein per kcal. To maintain: close to 550 kcal with good protein. To gain: more kcal and protein. My 👍 and favorites move a dish up; a 👎 moves it to the end.
+  - Lowest calories.
+  - Highest protein.
+  - My favorites first.
+  - **Most liked:** my own ratings.
+- **Favorites and ratings** live in `DishPreference` (SwiftData, one row per dish: favorite, 👍 / 👎, photo). There are no shared votes (ADR-020).
+- **Dish page:** servings scale every amount. Grams are editable, and ingredients can be removed or added from the food DB. **Log to Today** asks for a meal type (preselected by time of day when the dish fits it) and an amount in ½-serving steps. **Save to My Recipes** creates a `Recipe` (source `explore`, `exploreDishId`), which appears under "From Explore" in My Recipes.
+- **No AI:** Explore never calls a provider or reads the key. Logs have source `explore` and DB values. The UI tests run with no key and no AI stub.

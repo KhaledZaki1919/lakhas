@@ -40,8 +40,19 @@ All text pairs meet **WCAG AA ≥ 4.5:1** on their background; graphic marks mee
 | `carbs` | `#A86F0E` | `#E7B44F` | wheat stalk | 4.3 / 8.7 |
 | `fat` | `#8A5BB8` | `#B993E3` | drop | 4.9 / 6.6 |
 
-### 1.4 Illustration palette (AI-generated SVGs, server-enforced)
-`#FBF7F0` cream · `#EAD9BA` tahini · `#1F7A5A` mint · `#B4363F` pomegranate · `#6B7A3A` olive · `#4B2E4F` eggplant · `#D9A441` wheat · `#2A2420` ink. The sanitizer rejects any other fill or stroke.
+### 1.4 Placeholder plates (no AI images, ADR-020 / ADR-026)
+A dish, meal or recipe without the user's photo shows its category symbol on a plate: `surface` disc, `halo` rim, a well tinted at 16% and the symbol in the tint. The tints come from the old illustration palette:
+
+| Token | Light | Dark | Categories |
+|---|---|---|---|
+| `primary` (mint) | `#1F7A5A` | `#5CC59B` | fish, salad, drinks |
+| `accent` (pomegranate) | `#B4363F` | `#F07A80` | stews, grills, pasta |
+| `plateOlive` | `#6B7A3A` | `#A9B86E` | beans, fruit |
+| `plateWheat` | `#8F6410` | `#E3B65A` | eggs, bread, soups |
+| `plateTahini` | `#7E6236` | `#D9BF8F` | dairy, rice dishes |
+| `plateEggplant` | `#4B2E4F` | `#C79BCB` | sweets, snacks |
+
+Plates are decorative (hidden from VoiceOver); the dish name always sits next to them.
 
 ---
 
