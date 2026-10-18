@@ -81,10 +81,13 @@ public struct DraftItem: Identifiable, Equatable, Sendable {
     public var leftoverGrams: Double?
     /// Set for packaged products (barcode flow).
     public var barcode: String?
+    /// Recipe ingredients: the amount as written in the source ("2 cups").
+    public var measure: String?
 
     public init(id: UUID = UUID(), nameAr: String, nameEn: String, grams: Double, per100: Macros,
                 valueSource: ValueSource, foodDbId: String? = nil, confidence: Double? = nil,
-                servedGrams: Double? = nil, leftoverGrams: Double? = nil, barcode: String? = nil) {
+                servedGrams: Double? = nil, leftoverGrams: Double? = nil, barcode: String? = nil,
+                measure: String? = nil) {
         self.id = id
         self.nameAr = nameAr
         self.nameEn = nameEn
@@ -96,6 +99,7 @@ public struct DraftItem: Identifiable, Equatable, Sendable {
         self.servedGrams = servedGrams
         self.leftoverGrams = leftoverGrams
         self.barcode = barcode
+        self.measure = measure
     }
 
     public init(food: FoodEntry, grams: Double) {

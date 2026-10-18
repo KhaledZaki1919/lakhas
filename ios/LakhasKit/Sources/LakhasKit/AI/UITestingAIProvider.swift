@@ -26,6 +26,9 @@ public struct UITestingAIProvider: AIProvider {
             """
             return AIResponse(text: text, usage: AIUsage(inputTokens: 1500, outputTokens: 60), model: "claude-haiku-5-5")
         }
+        if request.schemaName == "recipe" {
+            return AIResponse(text: Self.recipeJSON, usage: AIUsage(inputTokens: 1800, outputTokens: 400), model: "claude-haiku-5-5")
+        }
         let isCorrection = request.userText.contains("<current_items>")
         let grams = isCorrection ? 300 : 450
         let text = """
@@ -36,4 +39,25 @@ public struct UITestingAIProvider: AIProvider {
     }
 
     public func listModels() async throws -> [String] { ["claude-haiku-5-5"] }
+
+    /// A recipe page for UI tests (`RecipePageFetcher.uiTestingPages`). Any other link reads like
+    /// a login wall.
+    public static let recipeLink = "https://www.tiktok.com/@lakhas/video/7000000000000000001"
+    public static let recipePages: [String: RecipePageText] = {
+        guard let url = URL(string: recipeLink) else { return [:] }
+        return [recipeLink: RecipePageText(platform: .tiktok, url: url, caption: "Lentil rice: 1 cup rice, half a cup lentils, oil",
+                                           author: "Lakhas", creatorHandle: "@lakhas")]
+    }()
+
+    /// 2 servings: rice 200 g × 360 + lentils 100 g × 350 + oil 20 g × 884 = 1,246.8 kcal → 623 per serving.
+    static let recipeJSON = """
+    {"found":true,"titleAr":"أرز بالعدس","titleEn":"Lentil rice","servings":2,"ingredients":[\
+    {"nameAr":"أرز","nameEn":"Rice","quantity":"1 cup","grams":200,"per100":{"kcal":360,"protein":7,"carbs":79,"fat":0.6},\
+    "foodDbId":null,"confidence":0.9},\
+    {"nameAr":"عدس","nameEn":"Lentils","quantity":"half a cup","grams":100,"per100":{"kcal":350,"protein":25,"carbs":60,"fat":1},\
+    "foodDbId":null,"confidence":0.9},\
+    {"nameAr":"زيت","nameEn":"Oil","quantity":null,"grams":20,"per100":{"kcal":884,"protein":0,"carbs":0,"fat":100},\
+    "foodDbId":null,"confidence":0.9}],\
+    "steps":["Boil the lentils.","Add the rice and cook."],"estimated":false,"notes":null}
+    """
 }

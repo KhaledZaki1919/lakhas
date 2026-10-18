@@ -28,10 +28,10 @@ public enum PromptLibrary {
         return common + "\n\n" + taskText
     }
 
-    /// User text is always wrapped as data (injection resistance).
-    static func wrap(_ text: String) -> String {
-        let cleaned = text.replacingOccurrences(of: "</user_content>", with: "")
-        return "<user_content>\n\(cleaned)\n</user_content>"
+    /// User text and page text are always wrapped as data (injection resistance).
+    static func wrap(_ text: String, tag: String = "user_content") -> String {
+        let cleaned = text.replacingOccurrences(of: "</\(tag)>", with: "", options: .caseInsensitive)
+        return "<\(tag)>\n\(cleaned)\n</\(tag)>"
     }
 }
 
