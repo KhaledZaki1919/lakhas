@@ -1,6 +1,6 @@
 # لخّص (Lakhas) — Architecture
 
-Status: **Bring Your Own Key, no server (ADR-020)** · Last updated: 2026-10-13
+Status: **Bring Your Own Key, no server (ADR-020)** · Last updated: 2026-10-18
 
 Everything runs on the iPhone. AI requests go **directly** from the app to the provider the user chose, with the user's own API key. All data stays on the device. Decisions are in [`decisions.md`](decisions.md); sideloading constraints in [`sideloading.md`](sideloading.md).
 
@@ -72,7 +72,7 @@ Model routing: **photo analysis** uses the accurate model when High accuracy is 
 
 ## 3. Data on the device
 
-SwiftData models (in LakhasKit): `UserProfile`, `GoalOverride`, `Meal`, `MealItem` (with `sortIndex`; to-many order is not preserved), `UsageRecord` and `Product` (barcode library, ADR-022). Later phases add saved meals, recipes, water, weight and workouts.
+SwiftData models (in LakhasKit): `UserProfile`, `GoalOverride`, `Meal`, `MealItem` (with `sortIndex`; to-many order is not preserved), `UsageRecord`, `Product` (barcode library, ADR-022), `Recipe` + `RecipeIngredient` and `SavedMeal` + `SavedMealItem` (ADR-025). Later phases add water, weight and workouts.
 
 - **Location:** resolved by `AppGroupResolver` (ADR-014).
 - **Protection:** every file gets `completeUntilFirstUserAuthentication` and is **excluded from device backups** (`isExcludedFromBackup`).
@@ -97,7 +97,14 @@ SwiftData models (in LakhasKit): `UserProfile`, `GoalOverride`, `Meal`, `MealIte
 3. Found: the user picks a serving, 100 g or grams, and the product goes to the review screen as one `product` line. Logging saves the product locally.
 4. Not found, or found without nutrition values: two label photos (nutrition table + front) are read by the user's provider with the standard model (`label.v1`), or the user types the values. The user checks the form and saves; the product stays on this device.
 
-### 4.3 No key
+### 4.3 Recipes (ADR-025)
+1. **Link:** `RecipeLink.parse` accepts TikTok, Instagram and YouTube links (also inside shared text). `RecipePageFetcher` reads oEmbed and meta tags on the phone: allow-listed HTTPS hosts, every redirect re-checked, 15 s / 30 s timeouts, 3 MB cap, no cookies.
+2. **No usable text** (login wall, hashtags only): the app says so and offers **paste the caption** or **screenshots** (≤ 6, downscaled, no metadata).
+3. **Extraction:** `RecipeImporter` → `AIService` (standard model, `recipe.v1`, page text as `<page_content>` data) → validated `RecipeExtraction` → `RecipeDraft`. A cost estimate is shown before, the real estimate is kept after.
+4. **Recipe screen:** servings (scaling or sharing the same pot), grams and ingredients with live per-serving values. "Log one serving" logs each ingredient's share. Everything is saved on the device.
+5. **Share extension:** copies the link with a `lakhas.shared-link` marker (and queues it when an App Group works). On open, the app offers "Import a recipe?" without reading the clipboard until the user accepts.
+
+### 4.4 No key
 Every AI entry point checks `AIKeyStore` for the selected provider. If no key is set, it presents `NoKeyView`: what a key is, how to get one per provider, and a rough cost. It links to Settings → AI. There is no fallback.
 
 ---

@@ -347,7 +347,7 @@ There is no backend. `/backend`, `/shared/openapi.yaml` and `/admin` are frozen 
 | **4 — BYOK foundation** ✅ | Remove token/server code from the app; `AIProvider` abstraction with Anthropic, OpenAI, Gemini, OpenRouter; Settings → AI (provider, model list/custom ID, Keychain key, Test connection, recommended defaults); "no key" screen; local usage + cost tracking with an optional daily limit; freeze `/backend` and its CI. |
 | **5 — Photo & text analysis** ✅ | Bundled food DB (USDA subset + Arabic dishes), prompts in the app, photo pipeline (downscale/EXIF strip), review screen, correction, leftovers, plate-builder search. |
 | **6 — Barcode** ✅ | Open Food Facts lookup, local product library, label-photo extraction for missing products. |
-| **7 — Recipes** | On-device link import (safe fetcher), screenshot import, share extension hand-off, My Recipes hub. |
+| **7 — Recipes** ✅ | On-device link import (safe fetcher), screenshot import, share extension hand-off, My Recipes hub. |
 | **8 — Explore** | Bundled dishes, filters, favorites, log from Explore. |
 | **9 — Workouts** | Bundled exercise DB, program builder, logging, progress. |
 | **10 — Water, weight, progress, widgets, reminders** | |

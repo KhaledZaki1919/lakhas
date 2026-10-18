@@ -254,3 +254,33 @@ Quotas become per-device daily **cost caps**, set to the old Pro limits: photo 1
 - **Gemini auth:** the key goes only in `x-goog-api-key`, for generate and the model list. No `?key=` and no `Authorization` header (Google rejects two credentials). "AIza" and "AQ." keys are both accepted.
 - **Keys:** pasted keys are sanitized on save and on read. Whitespace, line breaks, invisible format characters (zero-width, LRM/RLM, bidi isolates, BOM), wrapping quotes and a "Bearer " prefix are removed. The field is LTR with no autocorrect. A masked preview shows the first 4 and last 4 characters and the length.
 - **Warnings, never blocking:** a key in another provider's format (e.g. "sk-ant-" in the Gemini field), an unknown format, leftover non-ASCII characters, or an unusually short key.
+
+### ADR-025 — Recipes: on-device page text, AI extraction, clipboard hand-off
+**Status:** Accepted (2026-10-18). Implements ADR-020 and ADR-018 for §4.4 (Phase 7).
+**Decision:**
+- **Link import, on the phone:** only the public text of a post is read. That means YouTube and TikTok oEmbed (no key), plus the page's `<title>` and `og:`/`description` meta tags. For YouTube it also means the full description (`shortDescription` in the page's player data). Instagram has no keyless oEmbed, so its meta tags are best effort. No scripts run, no cookies are kept, and nothing behind a login is reached.
+- **Safe fetcher (`RecipePageFetcher`):**
+  - HTTPS on the default port only, and only tiktok.com, instagram.com, youtube.com, youtu.be and their subdomains.
+  - Automatic redirects are refused. The fetcher follows at most 5 by hand and re-checks every hop against the allow-list.
+  - 15 s per request and 30 s overall. The body is capped at 3 MB (read up to the cap; the metadata is near the top).
+  - Only HTML, JSON or text responses are read. The session is ephemeral, with no cookies or cache, and the phone's Safari user agent.
+- **Usable text:** a page counts only when the title and caption hold at least 20 letters once links, hashtags, mentions and site boilerplate are removed ("Instagram", "Log in…", "TikTok - Make Your Day"). Otherwise the app says the site hid the caption and offers two fallbacks: **paste the caption** (the link stays the recipe's source) or **import from screenshots** (up to 6, downscaled and stripped of metadata).
+- **Extraction (`recipe.v1`):**
+  - Runs on the standard model with feature `recipe`, through `StructuredAI` and `AIService` (deadline, diagnostics, usage).
+  - Page text is wrapped in `<page_content>` and pasted text in `<user_content>`. Both are data, never instructions.
+  - The model returns: found, both titles, servings, ingredients with grams for the whole recipe (raw), the source's own measure, per-100 g values and optional DB ids, steps in the app language, an estimated flag and notes.
+  - Validation: servings 1–50, 1–60 ingredients, the same per-100 g ranges as meals. Confident DB matches take the bundled values.
+  - The same input on the same day reuses the cached answer at no cost.
+- **Cost:** the import screen shows an estimate before importing (prompt + text or about 1,600 tokens per screenshot in, 1,500 out, at the chosen model's price). The recipe keeps the real estimate of its import.
+- **Recipes (`Recipe` + `RecipeIngredient`, `sortIndex`):** saved on the device as soon as they're read.
+  - Editing changes the title, servings, grams and ingredients, and per-serving values update live. With "scale ingredients", changing servings scales every amount, so one serving stays the same. Without it, the same pot is shared by more or fewer people.
+  - "Log one serving" logs each ingredient's share as one meal titled with the recipe.
+  - The source URL and creator handle are kept. Imported recipes are for personal use.
+- **Saved meals (`SavedMeal` + `SavedMealItem`):** "Save as meal" on any meal on Today. They're logged in one tap from the log sheet, or from the hub with a meal type.
+- **My Recipes hub:** tabs for Recipes, Saved meals and My products, with search (Arabic-normalized) and swipe to delete (photos are deleted too). Saved Explore dishes join it in Phase 8.
+- **Share extension hand-off:**
+  - It accepts a URL or text containing one, and only allow-listed links. It never calls the network.
+  - It always puts the link on the clipboard with a marker type (`lakhas.shared-link`, expires in 1 h), because free Apple IDs usually get no App Group. When an App Group works, it queues the link as well.
+  - When the app becomes active, it offers "Import a recipe?" for a queued link, the marked link, or any copied web link. The check uses `detectPatterns`, which reads no clipboard content and shows no paste prompt.
+  - Each clipboard change is offered once, and a declined offer isn't repeated.
+- **UI tests:** `-uiTesting` answers pages from `UITestingAIProvider.recipePages`, where any other link reads like a login wall. `-uiTestingStubAI` returns a fixed 2-serving recipe.

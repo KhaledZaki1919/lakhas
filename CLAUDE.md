@@ -60,7 +60,7 @@ SwiftLint is a separate, non-blocking job.
   - Show AI errors with `AIErrorView` (friendly text + the provider's message + a link to Last AI request), not bare text.
   - With no key, AI entry points show `NoKeyView`. Never fall back to anything else.
   - SwiftData to-many relationships are unordered, so give child rows an explicit `sortIndex`.
-- **UI tests** launch with `-uiTesting` (in-memory store, no key, Open Food Facts answered from `UITestingAIProvider.products`) and `-uiTestingStubAI` (canned AI answers, no network).
+- **UI tests** launch with `-uiTesting` (in-memory store, no key, Open Food Facts answered from `UITestingAIProvider.products`, recipe pages from `UITestingAIProvider.recipePages`) and `-uiTestingStubAI` (canned AI answers, no network).
 
 ## Key decisions (see docs/decisions.md)
-ADR-012 unsigned IPA from CI · ADR-014 free-team fallbacks · ADR-016 backup export · ADR-017 design A · ADR-019 Swift 5 mode + compile-first CI · ADR-020 Bring Your Own Key, no server, device-only data · ADR-021 bundled food DB as JSON · ADR-022 barcode: Open Food Facts + local products + AI label reading · ADR-023 Last AI request diagnostics + Gemini hardening · ADR-024 hard AI deadlines + key sanitizing.
+ADR-012 unsigned IPA from CI · ADR-014 free-team fallbacks · ADR-016 backup export · ADR-017 design A · ADR-019 Swift 5 mode + compile-first CI · ADR-020 Bring Your Own Key, no server, device-only data · ADR-021 bundled food DB as JSON · ADR-022 barcode: Open Food Facts + local products + AI label reading · ADR-023 Last AI request diagnostics + Gemini hardening · ADR-024 hard AI deadlines + key sanitizing · ADR-025 recipes: on-device page text, AI extraction, clipboard hand-off.
