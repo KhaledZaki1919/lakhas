@@ -9,6 +9,8 @@ public enum RecipeSource: String, Codable, Sendable {
     case text
     /// One or more screenshots read by the user's AI provider.
     case screenshot
+    /// A dish saved from the bundled Explore library (no AI).
+    case explore
 }
 
 /// An imported recipe (PROJECT_PROMPT.md §4.4). Personal use, stays on this device (ADR-020).
@@ -33,6 +35,8 @@ public final class Recipe {
     public var importModel: String?
     /// USD estimate of the import request; 0 when it came from the same-day cache.
     public var importCost: Double?
+    /// The Explore dish this recipe was saved from, if any (ADR-026).
+    public var exploreDishId: String?
     public var createdAt: Date
     public var updatedAt: Date
     @Relationship(deleteRule: .cascade, inverse: \RecipeIngredient.recipe) public var ingredients: [RecipeIngredient] = []
