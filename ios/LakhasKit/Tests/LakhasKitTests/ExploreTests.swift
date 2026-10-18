@@ -102,6 +102,17 @@ struct ExploreSortTests {
         #expect(gain.first?.id == "fattah-meat-plate")    // more kcal
     }
 
+    @Test func searchingPutsTheBestMatchFirstWhateverTheSort() {
+        for sort in ExploreSort.allCases {
+            let shown = library.ranked(matching: "koshari", sort: sort, userGoal: .lose, preferences: [:])
+            #expect(shown.first?.id == "koshary-medium", "\(sort)")   // exact alias beats "small koshari"
+            #expect(shown.contains { $0.id == "koshary-small-salad" })
+        }
+        // Without a query the sort alone decides.
+        let all = library.ranked(sort: .lowestCalories, userGoal: nil, preferences: [:])
+        #expect(all == ExploreLibrary.sorted(library.dishes, by: .lowestCalories, goal: nil, preferences: [:]))
+    }
+
     @Test func myRatingsAndFavoritesOrderTheList() {
         let three = Array(library.dishes.prefix(3))
         let now = Date(timeIntervalSince1970: 1_000_000)

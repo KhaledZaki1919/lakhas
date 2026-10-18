@@ -148,6 +148,27 @@ public final class ExploreLibrary: @unchecked Sendable {
 
     /// Dishes that pass the filters and match `query`. With a query, better matches come first.
     public func dishes(matching query: String = "", goal: Goal? = nil, mealType: MealType? = nil) -> [ExploreDish] {
+        scored(query, goal: goal, mealType: mealType).map(\.dish)
+    }
+
+    /// The list as shown: filtered and sorted. While searching, better matches come first and
+    /// `sort` orders the dishes that match equally well ("koshari" shows Koshary before the
+    /// small koshary even when the small one suits the goal better).
+    public func ranked(matching query: String = "", goal: Goal? = nil, mealType: MealType? = nil, sort: ExploreSort,
+                       userGoal: Goal?, preferences: [String: DishPreferenceState]) -> [ExploreDish] {
+        let matches = scored(query, goal: goal, mealType: mealType)
+        let sorted = Self.sorted(matches.map(\.dish), by: sort, goal: userGoal, preferences: preferences)
+        guard !Self.searchKey(query).isEmpty else { return sorted }
+        let scores = Dictionary(matches.map { ($0.dish.id, $0.score) }, uniquingKeysWith: { first, _ in first })
+        return sorted.enumerated()
+            .sorted { lhs, rhs in
+                let left = scores[lhs.element.id] ?? 0, right = scores[rhs.element.id] ?? 0
+                return left != right ? left > right : lhs.offset < rhs.offset
+            }
+            .map(\.element)
+    }
+
+    private func scored(_ query: String, goal: Goal?, mealType: MealType?) -> [(score: Int, dish: ExploreDish)] {
         let needle = Self.searchKey(query)
         var scored: [(score: Int, dish: ExploreDish)] = []
         for (index, dish) in dishes.enumerated() {
@@ -159,7 +180,7 @@ public final class ExploreLibrary: @unchecked Sendable {
         scored.sort { lhs, rhs in
             lhs.score != rhs.score ? lhs.score > rhs.score : lhs.dish.order < rhs.dish.order
         }
-        return scored.map(\.dish)
+        return scored
     }
 
     /// Orders dishes for the list. Sorting is stable: ties keep the incoming order.

@@ -20,8 +20,8 @@ struct ExploreView: View {
     }
 
     private var shown: [ExploreDish] {
-        let matches = library.dishes(matching: search, goal: goalFilter, mealType: mealFilter)
-        return ExploreLibrary.sorted(matches, by: sort, goal: profiles.first?.goal, preferences: preferenceStates)
+        library.ranked(matching: search, goal: goalFilter, mealType: mealFilter, sort: sort,
+                       userGoal: profiles.first?.goal, preferences: preferenceStates)
     }
 
     var body: some View {

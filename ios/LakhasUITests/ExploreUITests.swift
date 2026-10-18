@@ -7,8 +7,13 @@ extension OnboardingUITests {
     private func openExplore(_ app: XCUIApplication) {
         completeOnboarding(app)
         finishAfterSummary(app)
-        app.buttons["ax.tab.explore"].tap()
-        XCTAssertTrue(element(app, "ax.explore.dish").waitForExistence(timeout: 5), app.debugDescription)
+        // Let onboarding's closing transition finish, or the tab's frame is read mid-animation.
+        XCTAssertTrue(element(app, "ax.today.ring").waitForExistence(timeout: 10), app.debugDescription)
+        let tab = app.buttons["ax.tab.explore"]
+        XCTAssertTrue(tab.waitForExistence(timeout: 5) && tab.isHittable, app.debugDescription)
+        tab.tap()
+        XCTAssertTrue(element(app, "ax.explore.dish").waitForExistence(timeout: 5),
+                      "explore tab selected: \(tab.isSelected)\n\(app.debugDescription)")
     }
 
     @MainActor
