@@ -183,7 +183,9 @@ private struct DeviceRow: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(verbatim: device.label).font(.callout.weight(.semibold))
                 if let seen = device.lastSeenAt {
-                    Text("account.devices.lastSeen \(Date(timeIntervalSince1970: Double(seen) / 1000).formatted(.relative(presentation: .named).locale(format.locale)))")
+                    let when = Date(timeIntervalSince1970: Double(seen) / 1000)
+                        .formatted(.relative(presentation: .named).locale(format.locale))
+                    Text("account.devices.lastSeen \(when)")
                         .font(.caption)
                         .foregroundStyle(Theme.Palette.muted)
                 }

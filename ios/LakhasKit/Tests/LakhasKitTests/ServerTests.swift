@@ -25,13 +25,13 @@ struct SigningVectorTests {
         let file = try JSONDecoder().decode(File.self, from: Data(contentsOf: vectorURL("signing.json")))
         let secret = try #require(Data(base64URL: file.secret))
         #expect(file.vectors.count >= 4)
-        for v in file.vectors {
-            let body = Data(v.body.utf8)
-            #expect(RequestSigner.canonicalString(method: v.method, pathAndQuery: v.pathAndQuery, timestamp: v.timestamp,
-                                                  nonce: v.nonce, deviceId: v.deviceId, body: body) == v.canonical, "\(v.name)")
-            #expect(RequestSigner.signature(secret: secret, method: v.method, pathAndQuery: v.pathAndQuery,
-                                            timestamp: v.timestamp, nonce: v.nonce, deviceId: v.deviceId, body: body)
-                    == v.signature, "\(v.name)")
+        for vector in file.vectors {
+            let body = Data(vector.body.utf8)
+            #expect(RequestSigner.canonicalString(method: vector.method, pathAndQuery: vector.pathAndQuery, timestamp: vector.timestamp,
+                                                  nonce: vector.nonce, deviceId: vector.deviceId, body: body) == vector.canonical, "\(vector.name)")
+            #expect(RequestSigner.signature(secret: secret, method: vector.method, pathAndQuery: vector.pathAndQuery,
+                                            timestamp: vector.timestamp, nonce: vector.nonce, deviceId: vector.deviceId, body: body)
+                    == vector.signature, "\(vector.name)")
         }
     }
 
@@ -67,29 +67,30 @@ struct AccountKeyVectorTests {
     @Test func derivationMatchesNode() throws {
         let file = try JSONDecoder().decode(File.self, from: Data(contentsOf: vectorURL("account-keys.json")))
         #expect(file.vectors.contains { $0.iterations == 600_000 })
-        for v in file.vectors {
-            let salts = AccountKeys.Salts(kdf: v.kdfSalt, auth: v.authSalt, enc: v.encSalt)
-            let stretched = try AccountKeys.stretch(password: v.password, salt: try #require(Data(base64URL: v.kdfSalt)),
-                                                    iterations: v.iterations)
-            #expect(stretched.base64URLEncodedString == v.stretched, "\(v.name)")
-            let keys = try AccountKeys.passwordKeys(password: v.password, salts: salts, iterations: v.iterations)
-            #expect(keys.authKey.base64URLEncodedString == v.authKey, "\(v.name)")
-            #expect(keys.passwordKEK.base64URLEncodedString == v.passwordKEK, "\(v.name)")
+        for vector in file.vectors {
+            let salts = AccountKeys.Salts(kdf: vector.kdfSalt, auth: vector.authSalt, enc: vector.encSalt)
+            let stretched = try AccountKeys.stretch(password: vector.password, salt: try #require(Data(base64URL: vector.kdfSalt)),
+                                                    iterations: vector.iterations)
+            #expect(stretched.base64URLEncodedString == vector.stretched, "\(vector.name)")
+            let keys = try AccountKeys.passwordKeys(password: vector.password, salts: salts, iterations: vector.iterations)
+            #expect(keys.authKey.base64URLEncodedString == vector.authKey, "\(vector.name)")
+            #expect(keys.passwordKEK.base64URLEncodedString == vector.passwordKEK, "\(vector.name)")
             #expect(keys.authKey != keys.passwordKEK)
 
-            let code = try #require(RecoveryCode(bytes: try #require(Data(base64URL: v.recoveryCodeBytes))))
-            #expect(code.formatted == v.recoveryCode, "\(v.name)")
-            #expect(RecoveryCode(typed: v.recoveryCode) == code)
-            let recovery = try AccountKeys.recoveryKeys(code: code, salt: v.recoverySalt)
-            #expect(recovery.recoveryAuth.base64URLEncodedString == v.recoveryAuth)
-            #expect(recovery.recoveryKEK.base64URLEncodedString == v.recoveryKEK)
+            let codeBytes = try #require(Data(base64URL: vector.recoveryCodeBytes))
+            let code = try #require(RecoveryCode(bytes: codeBytes))
+            #expect(code.formatted == vector.recoveryCode, "\(vector.name)")
+            #expect(RecoveryCode(typed: vector.recoveryCode) == code)
+            let recovery = try AccountKeys.recoveryKeys(code: code, salt: vector.recoverySalt)
+            #expect(recovery.recoveryAuth.base64URLEncodedString == vector.recoveryAuth)
+            #expect(recovery.recoveryKEK.base64URLEncodedString == vector.recoveryKEK)
 
-            let dek = try #require(Data(base64URL: v.dek))
-            let passwordNonce = try #require(Data(base64URL: v.passwordEnvelope.nonce))
+            let dek = try #require(Data(base64URL: vector.dek))
+            let passwordNonce = try #require(Data(base64URL: vector.passwordEnvelope.nonce))
             #expect(try AccountKeys.wrap(dataKey: dek, with: keys.passwordKEK, kind: .password, nonce: passwordNonce)
-                    == v.passwordEnvelope)
-            #expect(try AccountKeys.unwrap(v.passwordEnvelope, with: keys.passwordKEK, kind: .password) == dek)
-            #expect(try AccountKeys.unwrap(v.recoveryEnvelope, with: recovery.recoveryKEK, kind: .recovery) == dek)
+                    == vector.passwordEnvelope)
+            #expect(try AccountKeys.unwrap(vector.passwordEnvelope, with: keys.passwordKEK, kind: .password) == dek)
+            #expect(try AccountKeys.unwrap(vector.recoveryEnvelope, with: recovery.recoveryKEK, kind: .recovery) == dek)
         }
     }
 
@@ -273,7 +274,7 @@ struct ServerClientTests {
 
     private func signedInClient(host: String = "api.test", accessExpiresIn: TimeInterval = 600) throws -> (ServerClient, SessionStore) {
         let store = SessionStore(secrets: MemorySecretStore())
-        let ms = { (t: TimeInterval) in Int64(Date.now.addingTimeInterval(t).timeIntervalSince1970 * 1000) }
+        let ms = { (seconds: TimeInterval) in Int64(Date.now.addingTimeInterval(seconds).timeIntervalSince1970 * 1000) }
         try store.save(StoredSession(userId: "u1", email: "me@example.com", response: SessionResponse(
             deviceId: "AAAAAAAAAAAAAAAAAAAAAA", deviceSecret: Data(repeating: 9, count: 32).base64URLEncodedString,
             accessToken: "v1.old", accessExpiresAt: ms(accessExpiresIn), refreshToken: "rt_old", refreshExpiresAt: ms(86_400))))
