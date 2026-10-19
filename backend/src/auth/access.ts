@@ -1,10 +1,10 @@
 import type { MiddlewareHandler } from "hono";
 import { ApiError } from "../lib/errors";
 import { base64urlDecode } from "../lib/crypto";
-import type { AppEnv } from "../types";
+import type { AdminEnv } from "../types";
 
 /**
- * Verifies the Cloudflare Access JWT on /admin routes (ADR-007) as defense in depth:
+ * Verifies the Cloudflare Access JWT on every admin Worker request (ADR-027 §7) as defense in depth:
  * Access already blocks unauthenticated requests at the edge, and the Worker checks
  * the signature, audience, issuer and expiry itself.
  */
@@ -88,7 +88,7 @@ export async function verifyAccessJwt(token: string, env: Env): Promise<string> 
   return payload.email;
 }
 
-export const accessAuth: MiddlewareHandler<AppEnv> = async (c, next) => {
+export const accessAuth: MiddlewareHandler<AdminEnv> = async (c, next) => {
   const token = c.req.header("Cf-Access-Jwt-Assertion");
   if (!token) throw new ApiError("unauthorized", 401);
   c.set("adminEmail", await verifyAccessJwt(token, c.env));

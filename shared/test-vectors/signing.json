@@ -1,0 +1,50 @@
+{
+  "version": "LK2",
+  "secret": "AQgPFh0kKzI5QEdOVVxjanF4f4aNlJuiqbC3vsXM09o",
+  "vectors": [
+    {
+      "name": "get-no-body",
+      "method": "GET",
+      "pathAndQuery": "/v1/account",
+      "body": "",
+      "timestamp": "1760000000000",
+      "nonce": "AQEBAQEBAQEBAQEBAQEBAQ",
+      "deviceId": "oKCgoKCgoKCgoKCgoKCgoA",
+      "canonical": "LK2\nGET\n/v1/account\n1760000000000\nAQEBAQEBAQEBAQEBAQEBAQ\noKCgoKCgoKCgoKCgoKCgoA\ne3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "signature": "OuGH9khaoCPZNhuwkj8Y_Y94BeRcj4mJwCKwX88dwd4"
+    },
+    {
+      "name": "post-json",
+      "method": "POST",
+      "pathAndQuery": "/v1/auth/refresh",
+      "body": "{\"refreshToken\":\"rt_AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\"}",
+      "timestamp": "1760000001000",
+      "nonce": "AgICAgICAgICAgICAgICAg",
+      "deviceId": "oaGhoaGhoaGhoaGhoaGhoQ",
+      "canonical": "LK2\nPOST\n/v1/auth/refresh\n1760000001000\nAgICAgICAgICAgICAgICAg\noaGhoaGhoaGhoaGhoaGhoQ\nfb94bd08359b72131d533035f2d034ce3df9159b846340e762f1f8f54d23bb70",
+      "signature": "Rb88UJZA9W2RUFjp6ado-_iQwusbgVnf_zpXhBaQrUc"
+    },
+    {
+      "name": "query-and-arabic",
+      "method": "PATCH",
+      "pathAndQuery": "/v1/account?lang=ar",
+      "body": "{\"note\":\"كشري\"}",
+      "timestamp": "1760000002000",
+      "nonce": "AwMDAwMDAwMDAwMDAwMDAw",
+      "deviceId": "oqKioqKioqKioqKioqKiog",
+      "canonical": "LK2\nPATCH\n/v1/account?lang=ar\n1760000002000\nAwMDAwMDAwMDAwMDAwMDAw\noqKioqKioqKioqKioqKiog\n2d005e3672adeddbfc0cfb72d842a12eaae733331a291981c8ca289d51fba483",
+      "signature": "VcZMavxMIpKeBifEKtcJpkeGho2mck6IDwVi0hNksmY"
+    },
+    {
+      "name": "lowercase-method",
+      "method": "delete",
+      "pathAndQuery": "/v1/account/devices/AAAAAAAAAAAAAAAAAAAAAA",
+      "body": "",
+      "timestamp": "1760000003000",
+      "nonce": "BAQEBAQEBAQEBAQEBAQEBA",
+      "deviceId": "o6Ojo6Ojo6Ojo6Ojo6Ojow",
+      "canonical": "LK2\nDELETE\n/v1/account/devices/AAAAAAAAAAAAAAAAAAAAAA\n1760000003000\nBAQEBAQEBAQEBAQEBAQEBA\no6Ojo6Ojo6Ojo6Ojo6Ojow\ne3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "signature": "QeftvLEO6kHlUS9YaEAoVQz6iVAbekMxPB23-C8pKIo"
+    }
+  ]
+}

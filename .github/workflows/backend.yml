@@ -1,7 +1,13 @@
 name: Backend
 
-# FROZEN (ADR-020): the backend is not used; run manually only.
+# Cloudflare Workers lakhas-api + lakhas-admin (ADR-027). CI never deploys: deploys and
+# remote migrations are run by the owner with wrangler.
 on:
+  push:
+    branches: [main]
+    paths: ["backend/**", "shared/test-vectors/**", ".github/workflows/backend.yml"]
+  pull_request:
+    paths: ["backend/**", "shared/test-vectors/**", ".github/workflows/backend.yml"]
   workflow_dispatch:
 
 concurrency:
@@ -34,6 +40,9 @@ jobs:
       - run: npm test
       - run: npm run build:dry
 
-      - name: Lint OpenAPI contract
-        working-directory: shared/frozen
-        run: npx --yes @redocly/cli@2 lint openapi.yaml
+      - name: Shared test vectors are up to date
+        working-directory: shared/test-vectors
+        run: |
+          node generate-signing.mjs
+          node generate-account-keys.mjs
+          git diff --exit-code -- signing.json account-keys.json

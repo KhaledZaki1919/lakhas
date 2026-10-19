@@ -1,0 +1,29 @@
+# lakhas-admin — the admin panel (ADR-027 §7). Its whole workers.dev hostname is behind
+# Cloudflare Access (policy: Cloudflare account members, 24h); the Worker verifies the Access JWT too.
+# Deploy: npx wrangler deploy -c wrangler.admin.toml
+name = "lakhas-admin"
+main = "src/admin/index.ts"
+compatibility_date = "2026-10-01"
+compatibility_flags = ["nodejs_compat"]
+workers_dev = true
+preview_urls = false
+
+[vars]
+ENVIRONMENT = "production"
+APP_VERSION = "0.2.0"
+# Public values from the Access application (not secrets).
+ACCESS_TEAM_DOMAIN = "att-gad.cloudflareaccess.com"
+ACCESS_AUD = "fec5aa1218ffb15634913489a018d84721e4fc30b06d0825d4b2920e0059ad49"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "lakhas"
+database_id = "c319c78a-2030-482b-9b5f-49ff7bcbbedb"
+migrations_dir = "migrations"
+
+[[kv_namespaces]]
+binding = "CACHE"
+id = "acee9f446dee490dbfb2e3d3bb9166c3"
+
+[observability]
+enabled = true

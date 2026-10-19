@@ -1,4 +1,4 @@
-/** Web Crypto helpers shared by device auth and caps (ADR-013). */
+/** Web Crypto helpers (ADR-027). Nothing here is slow: the server never runs a password KDF. */
 
 const encoder = new TextEncoder();
 
@@ -22,12 +22,18 @@ export function base64urlDecode(text: string): Uint8Array<ArrayBuffer> | null {
   }
 }
 
+/** Accepts base64 or base64url (Worker secrets are generated as base64url). */
 export function base64Decode(text: string): Uint8Array<ArrayBuffer> | null {
   return base64urlDecode(text.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, ""));
 }
 
 export function randomBytes(count: number): Uint8Array<ArrayBuffer> {
   return crypto.getRandomValues(new Uint8Array(count));
+}
+
+/** Random identifier: 16 bytes, base64url (22 characters). */
+export function randomId(): string {
+  return base64urlEncode(randomBytes(16));
 }
 
 export async function sha256Hex(data: ArrayBuffer | Uint8Array | string): Promise<string> {
@@ -39,7 +45,7 @@ export async function sha256Hex(data: ArrayBuffer | Uint8Array | string): Promis
 export async function hmacSha256(
   key: Uint8Array<ArrayBuffer>,
   message: string,
-): Promise<Uint8Array> {
+): Promise<Uint8Array<ArrayBuffer>> {
   const cryptoKey = await crypto.subtle.importKey(
     "raw",
     key,
@@ -50,6 +56,14 @@ export async function hmacSha256(
   return new Uint8Array(await crypto.subtle.sign("HMAC", cryptoKey, encoder.encode(message)));
 }
 
+/** HMAC keyed with a Worker secret (base64 or base64url text). */
+export async function hmacWithSecret(
+  secret: string,
+  message: string,
+): Promise<Uint8Array<ArrayBuffer>> {
+  return hmacSha256(secretBytes(secret), message);
+}
+
 /** Constant-time comparison of two byte arrays. */
 export function timingSafeEqual(a: Uint8Array, b: Uint8Array): boolean {
   if (a.length !== b.length) return false;
@@ -58,13 +72,19 @@ export function timingSafeEqual(a: Uint8Array, b: Uint8Array): boolean {
   return diff === 0;
 }
 
+function secretBytes(secret: string): Uint8Array<ArrayBuffer> {
+  const raw = base64Decode(secret);
+  if (!raw || raw.length < 32) throw new Error("Worker secret must be at least 32 bytes");
+  return raw;
+}
+
 async function aesKey(encodedKey: string): Promise<CryptoKey> {
-  const raw = base64Decode(encodedKey);
-  if (!raw || raw.length !== 32) throw new Error("TOKEN_ENC_KEY must be 32 bytes, base64");
+  const raw = secretBytes(encodedKey);
+  if (raw.length !== 32) throw new Error("DEVICE_ENC_KEY must be 32 bytes");
   return crypto.subtle.importKey("raw", raw, "AES-GCM", false, ["encrypt", "decrypt"]);
 }
 
-/** Encrypts a token secret at rest (AES-256-GCM, random 96-bit IV). */
+/** Encrypts a device secret at rest (AES-256-GCM, random 96-bit IV). */
 export async function encryptSecret(
   encodedKey: string,
   secret: Uint8Array<ArrayBuffer>,

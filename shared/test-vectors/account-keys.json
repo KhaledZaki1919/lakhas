@@ -1,0 +1,105 @@
+{
+  "kdf": "pbkdf2-sha256",
+  "vectors": [
+    {
+      "name": "ascii",
+      "password": "correct horse battery",
+      "iterations": 1000,
+      "kdfSalt": "CilIZ4alxOMCIUBffp282w",
+      "authSalt": "MlFwj67N7AsqSWiHpsXkAw",
+      "encSalt": "WnmYt9b1FDNScZCvzu0MKw",
+      "stretched": "jFB79YbbqYtBIScjJnnen8b0I1-cJ_ntt2hFpetXqRo",
+      "authKey": "-zQvpZTSow1nhELze31TxVRmaUAhmubGUQwJw_pSvss",
+      "passwordKEK": "7nadP1RUNvp7QitdI1yyo31mLXp4FS0nqX_sxTRKzz0",
+      "recoverySalt": "gqHA3_4dPFt6mbjX9hU0Uw",
+      "recoveryCodeBytes": "qsnoByZFZIOiweD_Hj1cew",
+      "recoveryCode": "VLE6-QBZG-IVSI-HIWB-4D7R-4PK4-PM",
+      "recoveryAuth": "4vviV9HP7XiKiVGAmgeeir2eyY-vBn5gnDlH6T74b_A",
+      "recoveryKEK": "cn03AvWmoz7neLlE0Ws5hRtMG_hZHqKE5J-IYdzpMUc",
+      "dek": "0vEQL05tjKvK6QgnRmWEo8LhAB8-XXybutn4FzZVdJM",
+      "passwordEnvelope": {
+        "nonce": "AyJBYH-evdz7GjlY",
+        "wrapped": "TmPEYsak2F76WyN-ZHWOjCPxudZp5xB-aDD2Z_oBUCAov-6nh69KeDluj62f3opu"
+      },
+      "recoveryEnvelope": {
+        "nonce": "ByZFZIOiweD_Hj1c",
+        "wrapped": "Mg5ZCdWgU-rC4PwByVtvCKdDt5pkGpEut7FuTCwGrFOO-76KcX6ExOp1oqr3Lh2t"
+      }
+    },
+    {
+      "name": "arabic-nfc",
+      "password": "كلمة سرّ طويلة ١٢٣",
+      "iterations": 1000,
+      "kdfSalt": "CypJaIemxeQDIkFgf5693A",
+      "authSalt": "M1JxkK_O7QwrSmmIp8blBA",
+      "encSalt": "W3qZuNf2FTRTcpGwz-4NLA",
+      "stretched": "M2Fgm-IKQ0L-KHM0SiI38EFOQMytVq9HMVabIrs8KoQ",
+      "authKey": "bHjWjZem9f8Ex_sNCiH-zGog0vkfIx8g8syAUkEhcb0",
+      "passwordKEK": "amJk-fpD4w2gflaqMtQcvZ67AnqL35ZNtRX2JUNApp8",
+      "recoverySalt": "g6LB4P8ePVx7mrnY9xY1VA",
+      "recoveryCodeBytes": "q8rpCCdGZYSjwuEAHz5dfA",
+      "recoveryCode": "VPFO-SCBH-IZSY-JI6C-4EAB-6PS5-PQ",
+      "recoveryAuth": "45eeDeW1OdnKbzfeUoc7I5YkEdXz-fX69Fl8jids8nk",
+      "recoveryKEK": "rgzoBJIzVueKCdM-svewZffEOdvsJzmsKFgUy3gk7kg",
+      "dek": "0_IRME9ujazL6gkoR2aFpMPiASA_Xn2cu9r5GDdWdZQ",
+      "passwordEnvelope": {
+        "nonce": "BCNCYYCfvt38GzpZ",
+        "wrapped": "o909p7e0fUxUy1UwKmgbN7EJXzCqkMwzqc8PFqRfCwUldDWszZg1dk7zRgr_JKaZ"
+      },
+      "recoveryEnvelope": {
+        "nonce": "CCdGZYSjwuEAHz5d",
+        "wrapped": "AeDes3llfV_6_k_EJ7eErDGzWhwzeHzb3Hq_O2-lhozeoH42Qqv-oYFAYciS6RtG"
+      }
+    },
+    {
+      "name": "decomposed-input-is-normalized",
+      "password": "café au lait",
+      "iterations": 1000,
+      "kdfSalt": "DCtKaYinxuUEI0JhgJ--3Q",
+      "authSalt": "NFNykbDP7g0sS2qJqMfmBQ",
+      "encSalt": "XHuaudj3FjVUc5Kx0O8OLQ",
+      "stretched": "-VDp9LsbxcD4Fi9RCDsPDE7Jp-tsr_ML3le4fzuqCHY",
+      "authKey": "rQdLnPoY0Y4scLKx1l80w73Hbo3p75oWNM_4MguBdmY",
+      "passwordKEK": "7FRoQsdc_mJW0tweyFBczJrc7ZzGDgDrm-5vfzWCQIk",
+      "recoverySalt": "hKPC4QAfPl18m7rZ-Bc2VQ",
+      "recoveryCodeBytes": "rMvqCShHZoWkw-IBID9efQ",
+      "recoveryCode": "VTF6-UCJI-I5TI-LJGD-4IAS-AP26-PU",
+      "recoveryAuth": "gquH8gl2-x0KA9Ac6R8sJA0tFScZxj4nRYRnx3YP4A0",
+      "recoveryKEK": "HDp9FSnsE3JHhW1vlT44_yCAImXid97ibVf8ZxcO7mQ",
+      "dek": "1PMSMVBvjq3M6wopSGeGpcTjAiFAX36dvNv6GThXdpU",
+      "passwordEnvelope": {
+        "nonce": "BSRDYoGgv979HDta",
+        "wrapped": "Rx8-HgxqAaBXfGTzJCg9rkaoXFhxHAP3j7YdGDVvdw4Fl23PfpXqkSj8OiJ4eTVz"
+      },
+      "recoveryEnvelope": {
+        "nonce": "CShHZoWkw-IBID9e",
+        "wrapped": "FddzS5ZvHohqX8GftSjCIjwzXumztMUORpsBKe-DL-srPZlZeBZBdj3Q3zRCQ-aI"
+      }
+    },
+    {
+      "name": "production-iterations",
+      "password": "Lakhas passphrase 2026",
+      "iterations": 600000,
+      "kdfSalt": "DSxLaomox-YFJENigaC_3g",
+      "authSalt": "NVRzkrHQ7w4tTGuKqcjnBg",
+      "encSalt": "XXybutn4FzZVdJOy0fAPLg",
+      "stretched": "valOpEi2ItXb-xuvynm4Ju52WlEh31F6wFTxnNtagC0",
+      "authKey": "RktfJUIxj3zbBG-T5uO9juhAREEx3GDp2jCvdWaZEcI",
+      "passwordKEK": "rkCqYQF6hBsMOJbQ_8dm3bL1Zra9XTHvO4j6_wvv7p0",
+      "recoverySalt": "haTD4gEgP159nLva-Rg3Vg",
+      "recoveryCodeBytes": "rczrCilIZ4alxOMCIUBffg",
+      "recoveryCode": "VXGO-WCRJ-JBTY-NJOE-4MBC-CQC7-PY",
+      "recoveryAuth": "I4QUzdehdolSl4N0XD_ptsxADesuBLvOqVSY_B8TXD0",
+      "recoveryKEK": "NGzYCy7TggFIcwFoqoMDOCpwJgy6WaQBgXY_VA26dSc",
+      "dek": "1fQTMlFwj67N7AsqSWiHpsXkAyJBYH-evdz7GjlYd5Y",
+      "passwordEnvelope": {
+        "nonce": "BiVEY4KhwN_-HTxb",
+        "wrapped": "n_7pSsQOWqhqfAKMUcwJuLHvME978AOuHwG_GP1Lx9RQHIEbaQf8Tngdc9QgdyKi"
+      },
+      "recoveryEnvelope": {
+        "nonce": "CilIZ4alxOMCIUBf",
+        "wrapped": "3WhZLua5PNeKapIUugaOwDNj63Z0vrgqbtCXTtMo0lgtRdJ-ZYFFZUJxMMydIKZe"
+      }
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 {
   "name": "lakhas-api",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -9,8 +9,11 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint . && prettier --check .",
     "format": "prettier --write .",
-    "build:dry": "wrangler deploy --dry-run --outdir dist",
-    "cf-typegen": "wrangler types --strict-vars false"
+    "build:dry": "wrangler deploy --dry-run --outdir dist/api && wrangler deploy -c wrangler.admin.toml --dry-run --outdir dist/admin",
+    "cf-typegen": "wrangler types --strict-vars false",
+    "deploy:api": "wrangler deploy",
+    "deploy:admin": "wrangler deploy -c wrangler.admin.toml",
+    "migrate:remote": "wrangler d1 migrations apply lakhas --remote"
   },
   "dependencies": {
     "hono": "^4.13.13",

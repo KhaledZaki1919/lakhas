@@ -1,37 +1,51 @@
-# lakhas-api — Cloudflare Worker (see docs/architecture.md)
+# lakhas-api — the app's API + /privacy and /terms (ADR-027). The admin panel is wrangler.admin.toml.
+# Free plan only (no R2, no card): budget and guards in docs/decisions.md ADR-027 §11.
 name = "lakhas-api"
-main = "src/index.ts"
+main = "src/api/index.ts"
 compatibility_date = "2026-10-01"
 compatibility_flags = ["nodejs_compat"]
+workers_dev = true
+preview_urls = false
 
 [vars]
-ENVIRONMENT = "dev"
-APP_VERSION = "0.1.0"
+ENVIRONMENT = "production"
+APP_VERSION = "0.2.0"
+# Shown on /privacy and /terms when set (left empty until the owner picks one).
+CONTACT_EMAIL = ""
 
-# IDs are placeholders until the Cloudflare account exists (Phase 2 deploy).
 [[d1_databases]]
 binding = "DB"
 database_name = "lakhas"
-database_id = "00000000-0000-0000-0000-000000000000"
+database_id = "c319c78a-2030-482b-9b5f-49ff7bcbbedb"
 migrations_dir = "migrations"
 
-[[r2_buckets]]
-binding = "MEDIA"
-bucket_name = "lakhas-media"
-
+# Dish photos only (Phase 11); never counters (1,000 free writes/day).
 [[kv_namespaces]]
 binding = "CACHE"
-id = "00000000000000000000000000000000"
+id = "acee9f446dee490dbfb2e3d3bb9166c3"
 
-# Per-IP burst limit (Workers Rate Limiting binding)
+# Workers Rate Limiting (free). Periods can only be 10 or 60 seconds.
 [[ratelimits]]
-name = "IP_LIMITER"
-namespace_id = "1001"
+name = "AUTH_LIMITER"       # prelogin, sign up, sign in, recovery: per IP
+namespace_id = "2701"
+simple = { limit = 10, period = 60 }
+
+[[ratelimits]]
+name = "PUBLIC_LIMITER"     # public pages, Explore sync, photos: per IP
+namespace_id = "2702"
+simple = { limit = 60, period = 60 }
+
+[[ratelimits]]
+name = "DEVICE_LIMITER"     # every signed request: per device
+namespace_id = "2703"
 simple = { limit = 60, period = 60 }
 
 [triggers]
-# every 10 min: purge nonces + stale cap reservations; daily: photo retention
-crons = ["*/10 * * * *", "15 3 * * *"]
+# purge nonces, expired refresh tokens and recovery tickets, old usage counters
+crons = ["*/10 * * * *"]
 
-# Secrets (wrangler secret put): ANTHROPIC_API_KEY, TOKEN_ENC_KEY, LOG_HASH_KEY,
-# YOUTUBE_API_KEY, META_OEMBED_TOKEN
+[observability]
+enabled = true
+
+# Secrets (set with `wrangler secret bulk`, never in this file):
+# PEPPER, DEVICE_ENC_KEY, ACCESS_TOKEN_KEY, LOG_HASH_KEY
