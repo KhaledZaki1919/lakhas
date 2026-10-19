@@ -44,6 +44,7 @@ struct TodayHeader: View {
                     .background(Theme.Palette.surface, in: Circle())
             }
             .accessibilityLabel(Text("settings.title"))
+            .accessibilityIdentifier("ax.today.settings")
         }
         .tint(Theme.Palette.ink)
     }
@@ -262,11 +263,32 @@ struct ProgressScreen: View {
 
 /// Settings (Phase 11 adds goals, language, units, reminders, backup).
 struct SettingsView: View {
+    @Environment(AccountModel.self) private var account
     @State private var settings = AISettings.load()
     @State private var hasKey = false
 
     var body: some View {
         List {
+            Section {
+                NavigationLink {
+                    AccountView()
+                } label: {
+                    LabeledContent {
+                        if let session = account.session {
+                            Text(verbatim: session.email)
+                                .lineLimit(1)
+                                .environment(\.layoutDirection, .leftToRight)
+                        } else {
+                            Text("settings.account.signedOut")
+                        }
+                    } label: {
+                        Label("account.title", systemImage: "person.crop.circle")
+                    }
+                }
+                .accessibilityIdentifier("ax.settings.account")
+            } footer: {
+                Text("settings.account.footer")
+            }
             Section {
                 NavigationLink {
                     AISettingsView()
@@ -298,9 +320,14 @@ struct SettingsView: View {
                         Link(destination: url) { Text("settings.about.odbl").font(.footnote) }
                     }
                 }
+                Link(destination: ServerConfig.privacyURL(language: AppFormat.current.language)) {
+                    Text("account.privacy").font(.footnote)
+                }
             } header: {
                 Text("settings.about")
             }
+            #if !LAKHAS_STORE
+            // Sideload-only (ADR-027 §10): hidden in an App Store build.
             Section {
                 NavigationLink {
                     CapabilityProbeView()
@@ -308,6 +335,7 @@ struct SettingsView: View {
                     Label("probe.title", systemImage: "stethoscope")
                 }
             }
+            #endif
         }
         .navigationTitle("settings.title")
         .onAppear {

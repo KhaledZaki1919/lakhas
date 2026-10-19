@@ -59,6 +59,8 @@ targets:
         ITSAppUsesNonExemptEncryption: false
         NSCameraUsageDescription: "نحتاج الكاميرا لتصوير وجباتك ومسح الباركود."
         LakhasAppGroup: group.com.khaled.lakhas
+        # Our Worker (ADR-027). The app reads it with ServerConfig.baseURL.
+        LakhasAPIBaseURL: https://lakhas-api.att-gad.workers.dev
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.khaled.lakhas

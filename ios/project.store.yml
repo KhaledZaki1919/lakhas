@@ -1,0 +1,12 @@
+# XcodeGen spec — future App Store build (ADR-027 §10): the full app (extensions included) with
+# LAKHAS_STORE, which hides sideload-only screens (capability probe, sideloading status).
+# Not built by CI yet; needs a paid developer account, a fixed team and App Group to ship.
+#   xcodegen generate --spec project.store.yml
+include:
+  - project.full.yml
+
+targets:
+  Lakhas:
+    settings:
+      base:
+        SWIFT_ACTIVE_COMPILATION_CONDITIONS: "$(inherited) LAKHAS_EXTENSIONS LAKHAS_STORE"
