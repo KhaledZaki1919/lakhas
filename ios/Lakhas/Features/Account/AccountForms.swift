@@ -53,7 +53,7 @@ private struct EmailField: View {
 
     var body: some View {
         TextField("account.email", text: $text)
-            .textContentType(.username)
+            .textContentType(ProcessInfo.processInfo.arguments.contains("-uiTesting") ? nil : .username)
             .keyboardType(.emailAddress)
             .textInputAutocapitalization(.never)
             .autocorrectionDisabled()
@@ -68,9 +68,12 @@ private struct PasswordField: View {
     var isNew = false
     let identifier: String
 
+    /// UI tests type into the field; password AutoFill on the Simulator swallows typed text.
+    private static let uiTesting = ProcessInfo.processInfo.arguments.contains("-uiTesting")
+
     var body: some View {
         SecureField(titleKey, text: $text)
-            .textContentType(isNew ? .newPassword : .password)
+            .textContentType(Self.uiTesting ? nil : (isNew ? .newPassword : .password))
             .textInputAutocapitalization(.never)
             .autocorrectionDisabled()
             .accessibilityIdentifier(identifier)

@@ -22,7 +22,14 @@ extension OnboardingUITests {
         XCTAssertTrue(field.waitForExistence(timeout: 5), "missing \(id)\n\(app.debugDescription)")
         scrollUntilHittable(field, in: app)
         field.tap()
-        field.typeText(text)
+        if field.elementType == .secureTextField {
+            // Secure fields drop keystrokes when typed in one burst on the Simulator.
+            for character in text { field.typeText(String(character)) }
+            let typed = (field.value as? String)?.count ?? 0
+            XCTAssertEqual(typed, text.count, "secure field \(id) has \(typed) characters\n\(app.debugDescription)")
+        } else {
+            field.typeText(text)
+        }
     }
 
     @MainActor
