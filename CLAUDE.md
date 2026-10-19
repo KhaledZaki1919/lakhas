@@ -15,7 +15,7 @@ Bilingual (Arabic default, RTL / English, LTR) AI calorie & macro tracker for iO
 | `ios/LakhasKit` | `NutritionMath` (pure math) + `LakhasKit` (AI providers, models, store resolver, Keychain, theme tokens, …) |
 | `ios/data/` | Source data + generators: `scripts/build-food-db.mjs` (food DB), `scripts/build-explore.mjs` (Explore dishes from `explore/dishes.mjs`; run after changing foods) |
 | `shared/test-vectors/` | `nutrition.json` (used by the Swift tests) and its generator |
-| `backend/` | Cloudflare Workers (ADR-027), Hono + TypeScript: `lakhas-api` (app API, `/privacy`, `/terms`) and `lakhas-admin` (panel behind Cloudflare Access). D1 `lakhas`, R2 `lakhas-media` + `lakhas-backups`, Workers Rate Limiting |
+| `backend/` | Cloudflare Workers (ADR-027), Hono + TypeScript: `lakhas-api` (app API, `/privacy`, `/terms`) and `lakhas-admin` (panel behind Cloudflare Access). D1 `lakhas` + `lakhas_backups` (Phase 10), KV `CACHE` (dish photos), Workers Rate Limiting. **No R2** (free tier, no card; budget in ADR-027 §11) |
 | `admin/`, `shared/frozen/` | **FROZEN** (ADR-020): old admin app and OpenAPI, reference only |
 | `docs/` | `architecture.md`, `design.md` (final design system), `decisions.md`, `sideloading.md`, `build-environment.md`; `archive/` for retired runbooks |
 
@@ -28,7 +28,7 @@ Bilingual (Arabic default, RTL / English, LTR) AI calorie & macro tracker for iO
 Backend (runs locally on Windows, in `backend/`; Git Bash with Node on PATH):
 ```
 npm ci
-npm test                          # Vitest + Workers pool (local D1/R2)
+npm test                          # Vitest + Workers pool (local D1/KV)
 npm run typecheck && npm run lint
 npx wrangler d1 migrations apply lakhas --remote    # only when the user asks; production data
 npx wrangler deploy                                 # API Worker (wrangler.toml); deploys only when the user asks

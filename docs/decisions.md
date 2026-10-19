@@ -303,17 +303,16 @@ Quotas become per-device daily **cost caps**, set to the old Pro limits: photo 1
 - **No AI:** Explore never calls a provider or reads the key. Logs have source `explore` and DB values. The UI tests run with no key and no AI stub.
 
 ### ADR-027 — A small backend again: accounts, Explore content, encrypted backup, sharing (AI stays BYOK)
-**Status:** **Accepted (2026-10-18)**, with the answers in "Decisions on the open questions" below. Amends ADR-020: there is a server again, but AI stays 100% on the device. Revives `backend/` (Hono, D1, R2, Workers Rate Limiting). Brings back ADR-007 (admin behind Cloudflare Access) and ADR-013's HMAC signing, adapted. Moves ADR-016's backup format forward. **No certificate pinning** (§8).
+**Status:** **Accepted (2026-10-18)**, with the answers in "Decisions on the open questions" below. **Amended 2026-10-19: no R2** (no payment card); storage is D1 + KV only (§3, §4, §11). Amends ADR-020: there is a server again, but AI stays 100% on the device. Revives `backend/` (Hono, D1, KV, Workers Rate Limiting). Brings back ADR-007 (admin behind Cloudflare Access) and ADR-013's HMAC signing, adapted. Moves ADR-016's backup format forward. **No certificate pinning** (§8).
 
 **Context:** I want Explore dishes I can edit without shipping an IPA, a backup that survives a reinstall or a new phone, and a little sharing between invited users: real votes and a common product library. Everything has to fit the Cloudflare free tier on a `*.workers.dev` subdomain. The app must keep working offline and without the server for everything else.
 
-**Free-plan limits that shape this design:**
+**Free-plan limits that shape this design** (no payment card, so no R2; full budget and guards in §11):
 - 10 ms CPU per request.
 - Workers' WebCrypto PBKDF2 is capped at 100,000 iterations.
 - 100k requests/day.
-- D1: 5M reads and 100k writes/day.
-- R2: 10 GB.
-- KV: 1,000 writes/day, so KV is not used for counters.
+- D1: 5M rows read and 100k rows written per day, 500 MB per database.
+- KV: 1,000 writes/day for the whole account, so KV holds only rarely written data (dish photos) and is never used for counters.
 
 **The server never:** calls an AI provider, receives or stores an AI key, sees a password, or sees backup contents.
 
@@ -344,7 +343,7 @@ Quotas become per-device daily **cost caps**, set to the old Pro limits: photo 1
   - An email reset added later only replaces the login credential. Opening the backup still needs the old password or the recovery code (§2).
   - **Sign in with Apple** (and Google) added later = a new `identities` row (`provider`, `subject`, `email`, `is_private_relay`), plus a **backup passphrase**. That passphrase is stretched exactly like the password, so the backup stays end-to-end encrypted. `users.email` may be an Apple private-relay address. Apple's token-revocation call on account deletion is planned in the deletion flow.
 - **Admin:** list users and their devices, disable a user (all their tokens stop working at once) or a single device, regenerate the invite code, and see an audit log.
-- **Account deletion in the app** (App Store guideline 5.1.1(v), built now). Settings → Account → Delete account needs the password or the recovery code. It deletes the user, identities, devices, sessions, key envelopes, all backups in R2, votes (totals are recounted) and pending product submissions, then signs out. Approved shared products stay but lose any link to the user. It happens immediately, with no grace period, and is audited without the email.
+- **Account deletion in the app** (App Store guideline 5.1.1(v), built now). Settings → Account → Delete account needs the password or the recovery code. It deletes the user, identities, devices, sessions, key envelopes, all backups, votes (totals are recounted) and pending product submissions, then signs out. Approved shared products stay but lose any link to the user. It happens immediately, with no grace period, and is audited without the email.
 
 #### 2. Recovery code
 - Shown **once** at sign up: 128 random bits as 26 base32 characters in groups (`K7QD-…`). The app offers Copy and only continues after you confirm you saved it.
@@ -358,16 +357,19 @@ Quotas become per-device daily **cost caps**, set to the old Pro limits: photo 1
 - **The UI says it plainly, at sign up and on the restore screen:** "If you lose both your password and your recovery code, nobody, not even the app's owner, can open your backup."
 
 #### 3. End-to-end encrypted backup
-- **Contents:** the whole SwiftData store plus photos (the ADR-016 export, moved up from Phase 11). **Never** included: AI keys, session credentials, or anything else in the Keychain.
+- **Contents:** the whole SwiftData store (the ADR-016 export, moved up from Phase 11). **Meal, recipe and product photos are not included**, to fit the free tier; they stay on the phone and are in the local file export only. **Never** included: AI keys, session credentials, or anything else in the Keychain.
 - **Keys:**
   - A random 256-bit data key (DEK) encrypts the backups.
-  - The server holds the DEK only in wrapped form (AES-GCM): once wrapped under `KEK = PBKDF2-SHA256(password, encSalt, 600,000)`, and once under the recovery KEK.
+  - The server holds the DEK only in wrapped form (AES-GCM): once under `passwordKEK` (§1: HKDF from the stretched password with `encSalt`), and once under the recovery KEK.
   - After sign in, the phone keeps the DEK in the Keychain, so daily backups don't ask for the password.
-- **Format:** a zlib-compressed archive, encrypted with AES-GCM in 1 MB chunks (CryptoKit). Each chunk has its own nonce and AAD (version, backup ID, index, last-chunk flag), so a truncated or reordered file fails to open.
-- **Storage:**
-  - Uploaded through the API Worker to the private R2 bucket `lakhas-backups` (`<userId>/<backupId>`). Dish and product photos live in a separate bucket, `lakhas-media`.
-  - D1 keeps the size, a SHA-256 of the ciphertext and the time.
-  - The last 7 daily and the last 4 weekly backups are kept, with a per-user cap (default 500 MB).
+- **Format:** a zlib-compressed archive, encrypted with AES-GCM in **512 KiB chunks** (CryptoKit). Each chunk has its own nonce and AAD (version, backup ID, index, last-chunk flag), so a truncated or reordered backup fails to open.
+- **Storage: D1, in a second database `lakhas_backups`** (binding `BACKUPS`), created in Phase 10:
+  - One row per encrypted chunk (`backup_id`, `idx`, `data` BLOB ≤ 512 KiB, under D1's 2 MB row limit). One chunk per request, so each request hashes at most 512 KiB (well inside 10 ms CPU), and an interrupted upload resumes at the next missing chunk.
+  - A backup becomes visible only once every chunk has arrived and the sizes match (`backups.complete = 1`). Incomplete uploads are deleted by the cron after 24 h.
+  - **Why D1, not KV:** a backup is several writes, and KV allows only 1,000 writes a day for the whole account, while D1 allows 100,000 rows. D1 is also strongly consistent, so a restore right after an upload never sees a stale copy.
+  - **Why a separate database:** the free plan caps each database at 500 MB. Keeping backups apart means a full backup store can never stop sign in or Explore, which live in `lakhas`.
+  - **Retention:** the **last 3 complete backups per account**. Older ones are deleted when a new one completes.
+  - **Caps (budget in §11):** at most 8 MiB per backup (compressed and encrypted, photos excluded), and at most 4 uploads started per account per day. New backups are refused (with a clear message) when `lakhas_backups` passes 400 MB; existing backups stay readable.
 - **When:**
   - automatically once a day when online (when the app opens and the last backup is over 24 h old, plus a `BGAppRefreshTask`);
   - **Back up now** in Settings;
@@ -382,11 +384,12 @@ Quotas become per-device daily **cost caps**, set to the old Pro limits: photo 1
 - **Admin panel:**
   - Add, edit, delete and publish dishes, with the same fields as ADR-026.
   - Ingredients are picked from the food DB (seeded into D1 from `foods.json`), so values stay grams × per-100 g.
-  - Photos go to R2. The panel downscales the JPEG in the browser; the Worker doesn't process images.
+  - **Photos go to KV** (`CACHE` namespace, key `media/<sha256>.jpg`). The panel resizes in the browser to at most 800 px on the long edge and re-encodes as JPEG (quality stepped down until ≤ 200 KB). The Worker refuses anything over 256 KB or not a JPEG. It doesn't process images (no CPU budget for that).
+  - Photo keys are content hashes, so they never change. That allows `Cache-Control: public, max-age=31536000, immutable`, and the phone keeps its own cached copy.
   - The 91 bundled dishes are seeded, so they can be edited too.
 - **Sync is public, without sign in**, and rate-limited per IP. Dish content isn't private, and this way Explore updates work before you sign in.
   - `GET /v1/explore?since=<version>` returns changed dishes and tombstones, with an ETag.
-  - `GET /v1/media/<key>` serves photos, cached at the edge.
+  - `GET /v1/media/<sha256>.jpg` serves photos from KV with immutable cache headers. The Cache API doesn't work on `workers.dev`, so caching relies on browser and phone caches. Each photo is downloaded once per phone.
 - **On the phone:**
   - A cached copy (`FileProtection`, excluded from backups) overlays the bundled set by dish ID.
   - A server tombstone hides a bundled dish.
@@ -400,7 +403,7 @@ Quotas become per-device daily **cost caps**, set to the old Pro limits: photo 1
   - My own rating also stays local, so it still works signed out.
   - Changing a vote replaces it (`PRIMARY KEY (dish_id, user_id)`), and totals are kept in the dish row.
 - **Shared products:**
-  - When a signed-in user saves a product they added themselves (typed, or read from label photos; not one from Open Food Facts), it goes to a **review queue** with its front photo. The photo is metadata-stripped and downscaled.
+  - When a signed-in user saves a product they added themselves (typed, or read from label photos; not one from Open Food Facts), its **extracted data only** goes to a **review queue**: barcode, names, brand, serving size and per-100 g values. **Photos are never uploaded.** The label photos stay on the phone.
   - Sending is **on by default** for signed-in users, with an off switch in Settings → Account. The product form says the product will be reviewed and shared.
   - The admin approves, edits or rejects it.
   - Barcode lookup becomes: local products → approved shared products (when online) → Open Food Facts. A shared product is cached locally once used.
@@ -412,12 +415,13 @@ Quotas become per-device daily **cost caps**, set to the old Pro limits: photo 1
   - Explore sync: 60/min per IP.
   - Uploads: 10/hour per device.
 - An `abuse_events` log in D1.
-- Body caps: 100 MB per backup upload (the free-plan limit; larger backups are sent in parts), 2 MB per photo, 64 KB of JSON.
+- Body caps: 512 KiB per backup chunk, 256 KB per dish photo (admin), 64 KB of JSON.
+- The full free-tier budget is in §11.
 
 #### 7. Admin panel protection (Cloudflare Access)
 - **Two Workers, one codebase (`backend/`):**
   - `lakhas-api` serves the app and the public pages (`/privacy`). It has **no admin routes**.
-  - `lakhas-admin` serves the panel and its API. It shares the same D1 database and R2 buckets.
+  - `lakhas-admin` serves the panel and its API. It shares the same D1 database and KV namespace.
 - **Why two:** without a domain of our own, Access can only be switched on for a Worker's whole `*.workers.dev` hostname, not for one path. A separate admin Worker puts its entire hostname behind Access while the API stays open to the app.
 - **Access:**
   - Zero Trust free plan, an Access application for `lakhas-admin.<subdomain>.workers.dev` (created by the Worker's "Cloudflare Access" switch), and a policy that allows only my email (one-time PIN login).
@@ -464,6 +468,24 @@ Built now, so a store build needs no redesign:
 - **Encryption export compliance:** the app uses its own AES-GCM backup encryption (CryptoKit), so `ITSAppUsesNonExemptEncryption = false` must be re-checked. Standard algorithms used to protect user data usually qualify for the mass-market exemption, but App Store Connect's export questions have to be answered (and possibly a self-classification report filed) for the store build.
 - **Background work:** daily backup uses `BGAppRefreshTask` (declared in `UIBackgroundModes`/`BGTaskSchedulerPermittedIdentifiers`); no silent audio or location tricks.
 - **Data deletion:** "Delete my data" and account deletion must also remove server backups (planned in §1).
+
+#### 11. Free-tier budget and guards (amended 2026-10-19)
+Only features that need no payment card: Workers, D1, KV, Workers Rate Limiting, Cloudflare Access. No R2, no Queues, no Durable Objects. Planning assumes at most ~50 active users.
+
+| Limit (free) | Our use | Guard |
+|---|---|---|
+| Workers: 100,000 requests/day | ~20–60 per active user per day (refresh, Explore sync with ETag, votes, one backup ≈ a few chunks) | Rate limits: 10/min per IP on auth routes, 60/min per IP on public routes, 60/min per device on signed routes. Explore sync returns `304` when nothing changed. The app syncs at most once every 6 h. |
+| Workers: 10 ms CPU per request | HMAC, AES-GCM on 32 bytes, SHA-256 of ≤ 512 KiB, small JSON | No password KDF on the server (§1). Chunked backups. No image processing. JSON ≤ 64 KB. |
+| Workers: 128 MB memory, 100 MB request body | ≤ 512 KiB bodies | Body-size middleware rejects larger requests with `413` before reading them. |
+| D1: 100,000 rows written/day | ~1 nonce per signed request; sign in, votes, backup chunks | Rate limits above. `last_seen_at` is written at most once an hour per device. Nonces are purged every 10 min. |
+| D1: 5,000,000 rows read/day | Indexed lookups by primary key | Every query hits an index. Admin lists are paginated (50 rows). |
+| D1: 500 MB per database, 10 databases | `lakhas` (accounts, dishes, votes, products: a few MB) and `lakhas_backups` (ciphertext) | Backups: 8 MiB × 3 per account, plus a 400 MB global stop for new backups. Admin overview shows both sizes. |
+| D1: 2 MB per row | Backup chunks ≤ 512 KiB | Chunk size is checked on upload. |
+| KV: 1,000 writes/day, 1,000 deletes/day, 1 GB stored, 25 MiB per value | Dish photos only (admin uploads) | `daily_usage` counter in D1: KV writes stop at 500/day with a clear admin message. Photos ≤ 256 KB. Total photo bytes are shown in the admin overview. |
+| KV: 100,000 reads/day | Photo downloads (once per phone per photo) | Immutable URLs + long cache headers; the phone caches photos on disk. |
+| Access: free for up to 50 users | Only me | Policy limited to account members. |
+
+The guards are enforced in code (`src/lib/limits.ts` and `src/services/quota.ts`) and covered by tests. If a limit is reached, the server answers `503 quota_exceeded` (or `429 rate_limited`) and the app keeps working offline.
 
 **Decisions on the open questions (2026-10-18):**
 1. **Password stretching on the phone: yes.** The auth secret and the backup key-encryption key come from separate HKDF derivations (different salts and info strings), so the server can never derive the backup key (§1).

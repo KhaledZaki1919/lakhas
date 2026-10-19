@@ -73,10 +73,10 @@ Target user: Arabic speakers, with strong recognition of Arabic and Egyptian/Gul
 - **No key set:** AI entry points open a friendly screen. It explains what a key is, how to get one for each provider (with links), what it roughly costs, and where to enter it. There is no fallback.
 
 ### Backend (ADR-027)
-- **Cloudflare Workers** free plan on the `*.workers.dev` subdomain (no custom domain), **Hono** + TypeScript, **D1** (accounts, devices, dishes, votes, products, backup index), **R2** (dish photos, product photos, encrypted backups), **Workers Rate Limiting** (per IP and per device). KV only for read caches.
+- **Cloudflare Workers** free plan on the `*.workers.dev` subdomain (no custom domain), **Hono** + TypeScript, **D1** `lakhas` (accounts, devices, dishes, votes, products) and `lakhas_backups` (encrypted backup chunks), **KV** (dish photos only), **Workers Rate Limiting** (per IP and per device). **No R2**: only free features that need no payment card (ADR-027 §11 lists the budget and guards).
 - The server **never calls an AI provider, never receives an AI key, never sees a password and never sees backup contents.**
-- **Two Workers from one codebase:** `lakhas-api` (the app's API, plus `/privacy` and `/terms`) and `lakhas-admin` (the admin panel), sharing D1 and R2. The **admin Worker's whole hostname is behind Cloudflare Access** (my email only), and it verifies the Access JWT itself (ADR-027 §7). The panel covers Explore dishes with photos, the product review queue, users and devices (disable), the invite code and the audit log.
-- R2 buckets: `lakhas-media` (dish and product photos) and `lakhas-backups` (private, ciphertext only).
+- **Two Workers from one codebase:** `lakhas-api` (the app's API, plus `/privacy` and `/terms`) and `lakhas-admin` (the admin panel), sharing D1 and KV. The **admin Worker's whole hostname is behind Cloudflare Access** (my email only), and it verifies the Access JWT itself (ADR-027 §7). The panel covers Explore dishes with photos, the product review queue, users and devices (disable), the invite code and the audit log.
+- Storage: dish photos in KV (≤ 800 px, ≤ 200 KB, resized in the admin panel); encrypted backups as 512 KiB chunks in D1 `lakhas_backups` (photos excluded, last 3 per account); shared products store extracted data only, never photos.
 - Unit tests with Vitest + the Workers pool; shared signing vectors with the Swift tests. Deployed by me with `wrangler deploy`; CI runs lint, typecheck, tests and a dry-run build.
 
 ### Build & distribution (ADR-012)
@@ -220,7 +220,7 @@ These are requirements, not suggestions.
 - **Account (optional, ADR-027):** sign up with my invite code, sign in, sign out, change password, reset the password with the recovery code, **delete the account in the app** (removes all server data and backups), share products on/off, privacy policy link.
 - **Backup:**
   - export all local data to a file (share sheet / Files) and import it back (ADR-016);
-  - when signed in: an **automatic daily end-to-end encrypted backup** when online (optionally Wi-Fi only), **Back up now**, **Restore**, and the last backup's date and size; after signing in on a new phone the latest backup is restored automatically;
+  - when signed in: an **automatic daily end-to-end encrypted backup** (data only; photos stay on the phone and in the file export) when online (optionally Wi-Fi only), **Back up now**, **Restore**, and the last backup's date and size; after signing in on a new phone the latest backup is restored automatically;
   - the API key and session credentials are never included.
 - **Sideloading status:** shows whether widgets and the share extension are active in this build (ADR-014). Hidden in a future App Store build (`LAKHAS_STORE` flag, ADR-027 §10).
 - Privacy notes (including where AI requests go), Open Food Facts attribution, Delete my data.
@@ -371,9 +371,9 @@ The Worker never calls an AI provider. `/admin` and `/shared/frozen/openapi.yaml
 | **7 — Recipes** ✅ | On-device link import (safe fetcher), screenshot import, share extension hand-off, My Recipes hub. |
 | **8 — Explore** ✅ | Bundled dishes, filters, favorites, log from Explore. |
 | **9 — Server foundation** *(ADR-027)* | Unfreeze `/backend`; D1 schema v2 (users, identities ready for Sign in with Apple, devices, sessions, key envelopes, invites, audit); invite-only accounts (prelogin salts, phone-side stretching + HKDF split, peppered verifier), devices with HMAC signing (LK2 + shared vectors), access/refresh tokens, rate limits, abuse log; **in-app account deletion**; `/privacy` and `/terms` pages (ar/en); admin Worker behind Cloudflare Access (users/devices, disable, invite code, audit); deploy both Workers; backend CI. iOS: API client, signer, Keychain session, Settings → Account (sign up with recovery code, sign in/out, password change and reset, delete account), `LAKHAS_STORE` build flag hiding sideload-only screens, server status in the probe. |
-| **10 — Encrypted backup** | Versioned backup format (ADR-016, moved up), on-device AES-GCM chunked encryption, wrapped data key (password + recovery code), R2 storage with retention, automatic daily backup + Back up now + Restore, automatic restore after sign in on a new phone, local export/import of the same format. |
-| **11 — Explore online** | Admin dish editor (food-DB ingredients, R2 photos, publish), seed the 91 bundled dishes, public sync with versions/tombstones, app cache over the bundled set, server votes (one per account, queued offline) with counts. |
-| **12 — Shared products** | Submission of user-added products with the front photo (on by default, off switch), admin review queue (approve/edit/reject), Report action, lookup local → shared → Open Food Facts, local cache. |
+| **10 — Encrypted backup** | Versioned backup format (ADR-016, moved up), on-device AES-GCM chunked encryption, wrapped data key (password + recovery code), D1 chunk storage (`lakhas_backups`, last 3 per account, photos excluded), automatic daily backup + Back up now + Restore, automatic restore after sign in on a new phone, local export/import of the same format. |
+| **11 — Explore online** | Admin dish editor (food-DB ingredients, photos resized in the browser and stored in KV, publish), seed the 91 bundled dishes, public sync with versions/tombstones, app cache over the bundled set, server votes (one per account, queued offline) with counts. |
+| **12 — Shared products** | Submission of user-added products, extracted data only and no photos (on by default, off switch), admin review queue (approve/edit/reject), Report action, lookup local → shared → Open Food Facts, local cache. |
 | **13 — Workouts** | Bundled exercise DB, program builder, logging, progress. |
 | **14 — Water, weight, progress, widgets, reminders** | |
 | **15 — Settings, delete-my-data (local + account), privacy manifest, Arabic & English copy review** | Review all copy in both languages for consistency, tone and completeness. Run the full app in each language. |

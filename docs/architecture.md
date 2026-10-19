@@ -43,13 +43,13 @@ flowchart LR
     API["lakhas-api Worker<br/>accounts · LK2 signing · rate limits<br/>backups · Explore sync · votes · products<br/>/privacy · /terms"]
     Admin["lakhas-admin Worker<br/>behind Cloudflare Access"]
     D1[("D1 lakhas")]
-    R2M[("R2 lakhas-media")]
-    R2B[("R2 lakhas-backups<br/>ciphertext only")]
+    KV[("KV CACHE<br/>dish photos")]
+    D1B[("D1 lakhas_backups<br/>ciphertext chunks")]
     API --> D1
-    API --> R2M
-    API --> R2B
+    API --> KV
+    API --> D1B
     Admin --> D1
-    Admin --> R2M
+    Admin --> KV
   end
   App -- "HTTPS, signed (optional, offline-first)" --> API
   Me["Admin (my browser)"] -- "Access login" --> Admin
@@ -132,7 +132,7 @@ Every AI entry point checks `AIKeyStore` for the selected provider. If no key is
 
 ## 6. Server (ADR-027)
 
-Two Cloudflare Workers from `backend/`, on the free plan and `*.workers.dev`. They share one D1 database and two R2 buckets. **No AI calls, no AI keys, no passwords, no backup plaintext on the server.**
+Two Cloudflare Workers from `backend/`, on the free plan and `*.workers.dev`. They share the D1 database `lakhas` and the KV namespace `CACHE`; the API Worker also uses the D1 database `lakhas_backups` (Phase 10). No R2 (free plan without a card; budget and guards in ADR-027 §11). **No AI calls, no AI keys, no passwords, no backup plaintext on the server.**
 
 | Worker | Host | Serves | Auth |
 |---|---|---|---|
@@ -147,7 +147,7 @@ stretched ──HKDF(encSalt,  "lakhas/backup-kek/v1")► passwordKEK ─┐
 recovery code ──HKDF(recSalt, "lakhas/recovery-kek/v1")► recoveryKEK ─┤ wrap (AES-GCM)
 recovery code ──HKDF(recSalt, "lakhas/recovery-auth/v1")► recoveryAuth ──► server stores HMAC(PEPPER, recoveryAuth)
 random DEK (256-bit) ◄──────────────────────────────────────────────────┘ stored on the server only wrapped, twice
-DEK ──AES-GCM, 1 MB chunks──► backup ciphertext ──► R2 lakhas-backups
+DEK ──AES-GCM, 512 KiB chunks──► backup ciphertext ──► D1 lakhas_backups (one row per chunk)
 ```
 The phone keeps the DEK, the device secret and the tokens in the Keychain (this device only). None of them go into a backup.
 
@@ -159,7 +159,8 @@ The phone keeps the DEK, the device secret and the tokens in the Keychain (this 
 - `devices`: id, user_id, label, encrypted device secret, status, created/last seen.
 - `refresh_tokens`: hashed token, device, expiry, rotated_from. `request_nonces`: device, nonce, time.
 - `invites`: code, expiry, use limit, uses.
-- `backups`: id, user_id, R2 key, size, SHA-256, created_at, kind (daily/weekly).
+- `backups` (in `lakhas_backups`): id, user_id, size, chunk count, complete, created_at; `backup_chunks`: backup_id, idx, data (BLOB ≤ 512 KiB).
+- `daily_usage`: day, resource, count (KV write guard).
 - `explore_dishes`, `explore_votes` (PK dish_id + user_id), `foods` (seeded from `foods.json`).
 - `products` (approved / pending_review / rejected), `product_reports`.
 - `abuse_events`, `admin_audit`.
@@ -173,13 +174,13 @@ The phone keeps the DEK, the device secret and the tokens in the Keychain (this 
    5. The recovery code is shown once.
 2. **Sign in:** `prelogin` → derive `authKey` → `POST /v1/auth/login` → device credential + tokens + the password envelope → unwrap the DEK on the phone.
 3. **Refresh:** `POST /v1/auth/refresh` (signed) rotates the refresh token. Reusing an old one revokes the device.
-4. **Backup (Phase 10):** export → compress → encrypt the chunks with the DEK → `PUT /v1/backups/<id>` → R2. Retention: 7 daily + 4 weekly.
+4. **Backup (Phase 10):** export (no photos) → compress → encrypt 512 KiB chunks with the DEK → `POST /v1/backups` (size, chunk count) → `PUT /v1/backups/<id>/chunks/<n>` per chunk → complete. Retention: the last 3.
 5. **Restore:** list backups → download → decrypt → replace the local store. Automatic after sign in on an empty phone.
 6. **Recovery reset:**
    1. Prove `recoveryAuth` and get the recovery envelope.
    2. Unwrap the DEK and re-wrap it with the new password.
    3. Send the new verifier and envelopes. All sessions are revoked.
-7. **Account deletion:** `DELETE /v1/account` (signed, with `authKey` or `recoveryAuth`) deletes the user rows, devices, sessions, envelopes, R2 backups, votes (totals recounted) and pending products, then signs out.
+7. **Account deletion:** `DELETE /v1/account` (signed, with `authKey` or `recoveryAuth`) deletes the user rows, devices, sessions, envelopes, backups, votes (totals recounted) and pending products, then signs out.
 8. **Explore sync (Phase 11):** `GET /v1/explore?since=` (public, ETag) overlays the bundled set. Votes go to `PUT /v1/explore/<id>/vote` (signed, one per account).
 9. **Shared products (Phase 12):** `POST /v1/products` (signed) → review queue → approved products are found via `GET /v1/products/<barcode>`.
 
