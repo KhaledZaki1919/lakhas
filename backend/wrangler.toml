@@ -10,8 +10,8 @@ preview_urls = false
 [vars]
 ENVIRONMENT = "production"
 APP_VERSION = "0.2.0"
-# Shown on /privacy and /terms when set (left empty until the owner picks one).
-CONTACT_EMAIL = ""
+# Shown on /privacy and /terms.
+CONTACT_EMAIL = "khaled96960@gmail.com"
 
 [[d1_databases]]
 binding = "DB"
