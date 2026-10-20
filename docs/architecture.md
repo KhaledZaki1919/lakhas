@@ -184,7 +184,19 @@ The phone keeps the DEK, the device secret and the tokens in the Keychain (this 
 8. **Explore sync (Phase 11):** `GET /v1/explore?since=` (public, ETag) overlays the bundled set. Votes go to `PUT /v1/explore/<id>/vote` (signed, one per account).
 9. **Shared products (Phase 12):** `POST /v1/products` (signed) → review queue → approved products are found via `GET /v1/products/<barcode>`.
 
-### 6.4 Limits
+### 6.4 On the phone (LakhasKit/Server)
+| Piece | Role |
+|---|---|
+| `AccountKeys` | PBKDF2-SHA256 (CommonCrypto) + HKDF split into `authKey` / `passwordKEK`, recovery code (base32, forgiving to type), AES-GCM key envelopes. Tested against `shared/test-vectors/account-keys.json` |
+| `RequestSigner` | LK2 headers; tested against `shared/test-vectors/signing.json` |
+| `SessionStore` | Session + backup data key in the Keychain (`lakhas.account`, `AfterFirstUnlockThisDeviceOnly`); memory under tests |
+| `ServerClient` (actor) | JSON over an ephemeral URLSession (no cookies or cache, 20 s timeout). Signs requests, refreshes once on `session_expired` (one refresh at a time), signs out locally on `device_revoked` / `account_disabled` / `unauthorized` and posts `.lakhasSignedOut` |
+| `AccountService` | Sign up (recovery code shown once), sign in, reset with the recovery code, change password, new recovery code, delete account. Key derivation runs off the main thread |
+| `UITestingServer` | In-memory stand-in for the Worker under `-uiTesting` |
+
+The app shows it all in Settings → Account (`Lakhas/Features/Account`). Sign-in is optional, and the rest of the app never waits on it.
+
+### 6.5 Limits
 Workers Rate Limiting per IP and per device (ADR-027 §6). The free-plan budget (10 ms CPU per request, D1 100k writes/day) is why the phone does the password stretching and why KV isn't used for counters.
 
 ---

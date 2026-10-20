@@ -12,9 +12,9 @@ Bilingual (Arabic default, RTL / English, LTR) AI calorie & macro tracker for iO
 | Path | What |
 |---|---|
 | `ios/` | XcodeGen specs, app (`Lakhas/`), extensions (`LakhasWidgets/`, `LakhasShare/`), app + UI tests, `LakhasKit/` SPM package |
-| `ios/LakhasKit` | `NutritionMath` (pure math) + `LakhasKit` (AI providers, models, store resolver, Keychain, theme tokens, …) |
+| `ios/LakhasKit` | `NutritionMath` (pure math) + `LakhasKit` (AI providers, models, store resolver, Keychain, theme tokens, `Server/` client for our Worker, …) |
 | `ios/data/` | Source data + generators: `scripts/build-food-db.mjs` (food DB), `scripts/build-explore.mjs` (Explore dishes from `explore/dishes.mjs`; run after changing foods) |
-| `shared/test-vectors/` | `nutrition.json` (used by the Swift tests) and its generator |
+| `shared/test-vectors/` | `nutrition.json`, `signing.json` (LK2) and `account-keys.json` (PBKDF2 + HKDF + envelopes), each with its generator; used by both the Swift and Worker tests |
 | `backend/` | Cloudflare Workers (ADR-027), Hono + TypeScript: `lakhas-api` (app API, `/privacy`, `/terms`) and `lakhas-admin` (panel behind Cloudflare Access). D1 `lakhas` + `lakhas_backups` (Phase 10), KV `CACHE` (dish photos), Workers Rate Limiting. **No R2** (free tier, no card; budget in ADR-027 §11) |
 | `admin/`, `shared/frozen/` | **FROZEN** (ADR-020): old admin app and OpenAPI, reference only |
 | `docs/` | `architecture.md`, `design.md` (final design system), `decisions.md`, `sideloading.md`, `build-environment.md`; `archive/` for retired runbooks |
@@ -40,6 +40,7 @@ iOS (CI only; locally you can only edit):
 ```
 xcodegen generate --spec project.full.yml   # app + widget + share extension (LAKHAS_EXTENSIONS)
 xcodegen generate --spec project.yml        # lite: app only
+xcodegen generate --spec project.store.yml  # future App Store build (LAKHAS_STORE; not built by CI)
 swift test --package-path LakhasKit
 python3 scripts/check-strings.py            # fails on missing ar/en translations or unknown keys
 swiftlint lint
@@ -82,7 +83,8 @@ SwiftLint is a separate, non-blocking job.
   - No certificate pinning.
 - **Offline first:** server features (backup, votes, shared products, Explore sync) fail soft. Nothing else may depend on the network or on being signed in.
 - **App Store readiness (ADR-027 §10):** sideload-only UI (Sideloading status, capability probe) goes behind `#if !LAKHAS_STORE`. Account deletion and the privacy policy link must stay reachable.
-- **UI tests** launch with `-uiTesting` (in-memory store, no key, Open Food Facts answered from `UITestingAIProvider.products`, recipe pages from `UITestingAIProvider.recipePages`) and `-uiTestingStubAI` (canned AI answers, no network).
+- **UI tests** launch with `-uiTesting` (in-memory store, no key, Open Food Facts answered from `UITestingAIProvider.products`, recipe pages from `UITestingAIProvider.recipePages`, our server answered by `UITestingServer` with invite code `TEST-INVITE`, account secrets in memory) and `-uiTestingStubAI` (canned AI answers, no network).
+- **Forms with secure fields:** never insert or remove rows while a `SecureField` is being edited (iOS clears a secure field when its cell reloads). Keep hint rows always present and change only their text, or use the section footer.
 
 ## Key decisions (see docs/decisions.md)
 ADR-012 unsigned IPA from CI · ADR-014 free-team fallbacks · ADR-016 backup export · ADR-017 design A · ADR-019 Swift 5 mode + compile-first CI · ADR-020 Bring Your Own Key, no server, device-only data · ADR-021 bundled food DB as JSON · ADR-022 barcode: Open Food Facts + local products + AI label reading · ADR-023 Last AI request diagnostics + Gemini hardening · ADR-024 hard AI deadlines + key sanitizing · ADR-025 recipes: on-device page text, AI extraction, clipboard hand-off · ADR-026 Explore: bundled dishes from the food DB, local favorites/ratings, logging without AI · **ADR-027 small backend: invite-only accounts, phone-side password stretching + HKDF split, LK2 signing, E2E backup with recovery code, admin Worker behind Access, no pinning, App Store readiness**.
