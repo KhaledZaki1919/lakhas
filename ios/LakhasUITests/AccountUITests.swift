@@ -28,6 +28,9 @@ extension OnboardingUITests {
         } else {
             field.typeText(text)
         }
+        // Return dismisses the keyboard, so buttons below the fields can be tapped.
+        field.typeText("
+")
     }
 
     @MainActor
@@ -77,9 +80,8 @@ extension OnboardingUITests {
         let signOut = element(app, "ax.account.signOut")
         scrollUntilHittable(signOut, in: app)
         signOut.tap()
-        let confirm = app.buttons["ax.account.signOutConfirm"].exists
-            ? app.buttons["ax.account.signOutConfirm"]
-            : app.sheets.buttons.element(boundBy: 0)
+        // The action sheet exposes the button twice (sheet + button): take the first.
+        let confirm = app.buttons.matching(identifier: "ax.account.signOutConfirm").firstMatch
         XCTAssertTrue(confirm.waitForExistence(timeout: 5), app.debugDescription)
         confirm.tap()
         XCTAssertTrue(element(app, "ax.account.signUp").waitForExistence(timeout: 10), app.debugDescription)
