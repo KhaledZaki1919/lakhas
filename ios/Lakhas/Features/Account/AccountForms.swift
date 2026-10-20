@@ -89,15 +89,21 @@ private struct NewPasswordFields: View {
         password.count >= AccountKeys.minimumPasswordLength && password == confirm
     }
 
+    private var isShort: Bool { !password.isEmpty && password.count < AccountKeys.minimumPasswordLength }
+    private var isMismatch: Bool { !isShort && !confirm.isEmpty && password != confirm }
+
+    /// The hint row is always there and only its text changes. Inserting a row while typing
+    /// reloads the secure field's cell, and iOS clears a secure field when editing starts again,
+    /// so every keystroke would replace the last one.
     var body: some View {
         PasswordField(titleKey: "account.newPassword", text: $password, isNew: true, identifier: "ax.account.password")
         PasswordField(titleKey: "account.confirmPassword", text: $confirm, isNew: true, identifier: "ax.account.confirm")
-        if !password.isEmpty, password.count < AccountKeys.minimumPasswordLength {
-            Text("account.password.short \(AppFormat.current.number(AccountKeys.minimumPasswordLength))")
-                .font(.footnote).foregroundStyle(Theme.Palette.warning)
-        } else if !confirm.isEmpty, password != confirm {
-            Text("account.password.mismatch").font(.footnote).foregroundStyle(Theme.Palette.warning)
-        }
+        Text(isMismatch
+             ? LocalizedStringKey("account.password.mismatch")
+             : LocalizedStringKey("account.password.short \(AppFormat.current.number(AccountKeys.minimumPasswordLength))"))
+        .font(.footnote)
+        .foregroundStyle(isShort || isMismatch ? Theme.Palette.warning : Theme.Palette.muted)
+        .accessibilityIdentifier("ax.account.passwordHint")
     }
 }
 
@@ -262,11 +268,13 @@ struct ResetPasswordView: View {
                     .autocorrectionDisabled()
                     .environment(\.layoutDirection, .leftToRight)
                     .accessibilityIdentifier("ax.account.codeField")
-                if !codeText.isEmpty, code == nil {
-                    Text("account.code.invalid").font(.footnote).foregroundStyle(Theme.Palette.warning)
-                }
             } footer: {
-                Text("account.reset.footer")
+                // In the footer, not a row: inserting rows while typing reloads the form's cells.
+                if !codeText.isEmpty, code == nil {
+                    Text("account.code.invalid").foregroundStyle(Theme.Palette.warning)
+                } else {
+                    Text("account.reset.footer")
+                }
             }
             Section {
                 NewPasswordFields(password: $password, confirm: $confirm)
