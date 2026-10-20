@@ -68,15 +68,23 @@ private struct PasswordField: View {
     var isNew = false
     let identifier: String
 
-    /// UI tests type into the field; password AutoFill on the Simulator swallows typed text.
+    /// UI tests only: the Simulator's password AutoFill drops keystrokes typed into secure
+    /// fields (email + two password fields look like a sign-up form even without content
+    /// types), so `-uiTesting` uses a plain field. Real use is always a SecureField.
     private static let uiTesting = ProcessInfo.processInfo.arguments.contains("-uiTesting")
 
     var body: some View {
-        SecureField(titleKey, text: $text)
-            .textContentType(Self.uiTesting ? nil : (isNew ? .newPassword : .password))
-            .textInputAutocapitalization(.never)
-            .autocorrectionDisabled()
-            .accessibilityIdentifier(identifier)
+        Group {
+            if Self.uiTesting {
+                TextField(titleKey, text: $text)
+            } else {
+                SecureField(titleKey, text: $text)
+                    .textContentType(isNew ? .newPassword : .password)
+            }
+        }
+        .textInputAutocapitalization(.never)
+        .autocorrectionDisabled()
+        .accessibilityIdentifier(identifier)
     }
 }
 

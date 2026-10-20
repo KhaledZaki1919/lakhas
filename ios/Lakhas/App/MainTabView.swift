@@ -35,6 +35,8 @@ struct MainTabView: View {
             LakhasTabBar(selection: $tab) {
                 logRequest = LogRequest(date: .now, mealType: nil)
             }
+            // Stays at the bottom behind the keyboard instead of riding up over forms.
+            .ignoresSafeArea(.keyboard, edges: .bottom)
         }
         .sheet(item: $logRequest) { request in
             LogSheet(request: request)
