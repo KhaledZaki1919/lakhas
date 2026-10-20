@@ -29,8 +29,7 @@ extension OnboardingUITests {
             field.typeText(text)
         }
         // Return dismisses the keyboard, so buttons below the fields can be tapped.
-        field.typeText("
-")
+        field.typeText("\n")
     }
 
     @MainActor
