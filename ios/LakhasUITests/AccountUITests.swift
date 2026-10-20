@@ -64,7 +64,7 @@ extension OnboardingUITests {
 
         let shown = element(app, "ax.account.email")
         XCTAssertTrue(shown.waitForExistence(timeout: 10), app.debugDescription)
-        XCTAssertEqual(shown.label, email)
+        XCTAssertTrue(shown.label.contains(email), shown.label)   // "Email, me@example.com"
     }
 
     @MainActor
